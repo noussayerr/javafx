@@ -1,0 +1,9 @@
+.login-button:hover {
+    -fx-background-color: linear-gradient(to right, #2980b9, #1f618d);
+    -fx-cursor: hand;
+}
+
+.login-button:pressed {
+    -fx-background-color: #1f618d;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 3, 0, 0, 1);
+}

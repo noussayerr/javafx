@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controller.ApprenantDashboardController"
+            style="-fx-background-color: #f5f7fa;">
+
+    <!-- Sidebar -->
+    <VBox prefWidth="220" style="-fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);">
+        <AnchorPane prefHeight="80" style="-fx-background-color: rgba(0,0,0,0.1);">
+            <Label text="Mon Apprentissage"
+                   style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"
+                   AnchorPane.leftAnchor="20" />
+        </AnchorPane>
+
+        <VBox spacing="10" style="-fx-padding: 20 0 0 0;">
+            <Button text="Tableau de bord"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <image>
+                            <Image url="@/icons/dashboard.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button text="Mes Cours"
+                    style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <image>
+                            <Image url="@/icons/courses.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button text="Progression"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <image>
+                            <Image url="@/icons/progress.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS"/>
+
+        <Button fx:id="logoutbutton"
+                text="Déconnexion"
+                style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;"
+                onAction="#logout">
+            <graphic>
+                <ImageView fitWidth="20" fitHeight="20">
+                    <image>
+                        <Image url="@/icons/logout.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+    </VBox>
+
+    <!-- Main Content -->
+    <VBox AnchorPane.leftAnchor="220" AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0">
+        <!-- Header -->
+        <HBox style="-fx-background-color: white; -fx-padding: 15 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+            <Label text="Bonjour, " style="-fx-font-size: 16px; -fx-text-fill: #2c3e50;">
+                <HBox.margin>
+                    <Insets left="20"/>
+                </HBox.margin>
+            </Label>
+            <Label fx:id="usernameLabel" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button style="-fx-background-color: transparent;">
+                <graphic>
+                    <ImageView fitWidth="30" fitHeight="30">
+                        <image>
+                            <Image url="@/icons/notification.jpg"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+
+        <!-- Dashboard Content -->
+        <ScrollPane fitToWidth="true" style="-fx-background: #f5f7fa; -fx-border-color: transparent;">
+            <VBox style="-fx-padding: 20;">
+                <!-- Stats Cards -->
+                <HBox spacing="20" style="-fx-padding: 0 0 20 0;">
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2); -fx-pref-width: 200;">
+                        <Label text="Cours suivis" style="-fx-text-fill: #7f8c8d; -fx-font-size: 14px;"/>
+                        <Label fx:id="coursesCountLabel" text="12" style="-fx-text-fill: #2c3e50; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+                    </VBox>
+
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2); -fx-pref-width: 200;">
+                        <Label text="Progression" style="-fx-text-fill: #7f8c8d; -fx-font-size: 14px;"/>
+                        <Label fx:id="progressLabel" text="75%" style="-fx-text-fill: #2c3e50; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Cours récents -->
+                <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <Label text="Mes Cours Récents" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                    <ListView fx:id="recentCoursesList" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                        <placeholder>
+                            <Label text="Aucun cours récent" style="-fx-text-fill: #95a5a6;"/>
+                        </placeholder>
+                    </ListView>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </VBox>
+</AnchorPane>

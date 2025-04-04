@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<?import java.net.URL?>
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controller.RegisterApprenant"
+            prefHeight="600.0" prefWidth="400.0"
+            style="-fx-background-color: linear-gradient(to bottom right, #e9ecef, #f4f4f4);">
+
+    <VBox alignment="CENTER" spacing="25.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0"
+          style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);">
+
+        <!-- Title -->
+        <Label text="Inscription Apprenant"
+               style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 20 0;"/>
+
+        <!-- Form Grid -->
+        <GridPane hgap="15" vgap="15">
+            <columnConstraints>
+                <ColumnConstraints prefWidth="120.0"/>
+                <ColumnConstraints prefWidth="200.0"/>
+            </columnConstraints>
+
+            <!-- Nom -->
+            <Label text="Nom:" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
+            <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
+                       promptText="Entrez votre nom"/>
+
+            <!-- Prénom -->
+            <Label text="Prénom:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
+            <TextField fx:id="prenomField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
+                       promptText="Entrez votre prénom"/>
+
+            <!-- Email -->
+            <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
+            <TextField fx:id="emailField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
+                       promptText="Entrez votre email"/>
+
+            <!-- Mot de passe -->
+            <Label text="Mot de passe:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
+            <PasswordField fx:id="passwordField" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                           style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
+                           promptText="Entrez votre mot de passe"/>
+
+            <!-- Téléphone -->
+            <Label text="Téléphone:" GridPane.rowIndex="4" GridPane.columnIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
+            <TextField fx:id="telephoneField" GridPane.rowIndex="4" GridPane.columnIndex="1"
+                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
+                       promptText="Entrez votre téléphone"/>
+
+            <!-- Date de naissance -->
+            <Label text="Date de naissance:" GridPane.rowIndex="5" GridPane.columnIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
+            <TextField fx:id="dateNaissanceField" GridPane.rowIndex="5" GridPane.columnIndex="1"
+                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
+                       promptText="YYYY-MM-DD"/>
+
+            <!-- Niveau -->
+            <Label text="Niveau:" GridPane.rowIndex="6" GridPane.columnIndex="0"
+                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
+            <ComboBox fx:id="niveauField" GridPane.rowIndex="6" GridPane.columnIndex="1"
+                      style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5; -fx-font-size: 14px;">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Débutant"/>
+                        <String fx:value="Intermédiaire"/>
+                        <String fx:value="Avancé"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+        </GridPane>
+
+        <!-- Register Button -->
+        <Button text="S'inscrire" onAction="#handleRegister"
+                style="-fx-background-color: linear-gradient(to right, #3498db, #2980b9); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 10 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);"
+                prefWidth="150.0" prefHeight="40.0">
+            <styleClass>
+                <String fx:value="register-button"/>
+            </styleClass>
+        </Button>
+
+        <!-- Error Label -->
+        <Label fx:id="errorLabel"
+               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px; -fx-padding: 5 0 0 0;"/>
+    </VBox>
+
+    <!-- Optional: Add subtle CSS for hover effect -->
+    <stylesheets>
+        <URL value="@/styles/register.css"/>
+    </stylesheets>
+</AnchorPane>

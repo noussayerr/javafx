@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<?import java.lang.String?>
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controller.ChoiceController"
+            prefHeight="400.0" prefWidth="300.0"
+            style="-fx-background-color: linear-gradient(to bottom right, #e9ecef, #f4f4f4);">
+
+    <VBox alignment="CENTER" spacing="25.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0"
+          style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);">
+
+        <!-- Title -->
+        <Label text="Choisir un rôle"
+               style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 20 0;"/>
+
+        <!-- Description -->
+        <Label text="Veuillez sélectionner votre rôle pour continuer l'inscription:"
+               style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d; -fx-wrap-text: true; -fx-alignment: center;"/>
+
+        <!-- Choice Boxes -->
+        <VBox spacing="15" alignment="CENTER">
+            <!-- Enseignant Option -->
+            <Button text="Enseignant" onAction="#redirectToTeacherRegister"
+                    style="-fx-background-color: linear-gradient(to right, #e74c3c, #c0392b); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 15 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);"
+                    prefWidth="200.0" prefHeight="60.0">
+                <styleClass>
+                    <String fx:value="teacher-button"/>
+                </styleClass>
+            </Button>
+
+            <!-- Apprenant Option -->
+            <Button text="Apprenant" onAction="#redirectToStudentRegister"
+                    style="-fx-background-color: linear-gradient(to right, #2ecc71, #27ae60); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 15 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);"
+                    prefWidth="200.0" prefHeight="60.0">
+                <styleClass>
+                    <String fx:value="student-button"/>
+                </styleClass>
+            </Button>
+        </VBox>
+
+        <!-- Back Button -->
+        <Button text="Retour" onAction="#goBackToLogin"
+                style="-fx-background-color: transparent; -fx-text-fill: #3498db; -fx-font-size: 12px; -fx-padding: 5 10;"
+                prefWidth="80.0">
+        </Button>
+    </VBox>
+</AnchorPane>
