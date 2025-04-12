@@ -89,6 +89,8 @@ public class Login {
         stage.setScene(new Scene(root));
         stage.setTitle(title);
         stage.centerOnScreen();
+        stage.setMaximized(true);
+
     }
 
     @FXML
@@ -97,6 +99,8 @@ public class Login {
             Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/choix.fxml"));
             Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
+            stage.centerOnScreen();
+            stage.setMaximized(true);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

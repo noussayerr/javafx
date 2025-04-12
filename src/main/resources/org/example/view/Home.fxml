@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.shape.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.Home"
+            style="-fx-background-color: linear-gradient(to bottom right, #f5f7fa, #c3cfe2);"
+            prefHeight="600.0" prefWidth="1000.0">
+
+    <!-- En-tête -->
+    <HBox alignment="CENTER" spacing="20" style="-fx-background-color: #5D69BE; -fx-padding: 15px;" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <ImageView fitHeight="50" fitWidth="50" preserveRatio="true">
+            <Image url="@/images/admin-icon.png" />
+        </ImageView>
+        <Label text="Dyscover" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 28px; -fx-font-family: 'Comic Sans MS';">
+            <effect>
+                <DropShadow color="#2d2d2d" radius="3" spread="0.5" />
+            </effect>
+        </Label>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- Menu de navigation -->
+        <HBox spacing="15" alignment="CENTER_RIGHT">
+            <Button text="Accueil" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-family: 'Arial Rounded MT Bold'; -fx-cursor: hand;" />
+            <Button text="Nos services" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-family: 'Arial Rounded MT Bold'; -fx-cursor: hand;" />
+            <Button text="Contactez-nous" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-family: 'Arial Rounded MT Bold'; -fx-cursor: hand;" />
+
+            <!-- Boutons d'authentification -->
+            <Button text="Inscription"
+                    style="-fx-background-color: #FFA726; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 5 15; -fx-font-size: 14px;"
+                    onAction="#goToRegister" />
+            <Button text="Login"
+                    style="-fx-background-color: #42A5F5; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 5 15; -fx-font-size: 14px;"
+                    onAction="#goToLogin" />
+        </HBox>
+    </HBox>
+
+    <!-- Contenu principal -->
+    <VBox alignment="CENTER" spacing="30" AnchorPane.topAnchor="100" AnchorPane.bottomAnchor="100" AnchorPane.leftAnchor="50" AnchorPane.rightAnchor="50">
+        <Text text="Bienvenue sur Dyscover" style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-fill: #3F51B5; -fx-font-family: 'Comic Sans MS';">
+            <effect>
+                <DropShadow color="rgba(0,0,0,0.1)" radius="5" />
+            </effect>
+        </Text>
+
+        <Text text="Votre plateforme d'apprentissage adaptée aux besoins des personnes dyslexiques"
+              style="-fx-font-size: 20px; -fx-fill: #555; -fx-font-family: 'Arial Rounded MT Bold'; -fx-text-alignment: center;"
+              textAlignment="CENTER" />
+
+        <HBox alignment="CENTER" spacing="30">
+            <!-- Carte d'activité 1 -->
+            <VBox style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);"
+                  alignment="CENTER" spacing="10" prefWidth="250">
+                <ImageView fitHeight="80" fitWidth="80">
+                    <Image url="@/images/admin-icon.png" />
+                </ImageView>
+                <Label text="Lecture" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #5D69BE; -fx-font-family: 'Arial Rounded MT Bold';" />
+                <Label text="Exercices adaptés pour améliorer la fluidité de lecture" style="-fx-font-size: 14px; -fx-text-fill: #666; -fx-wrap-text: true; -fx-font-family: 'Arial'; -fx-text-alignment: center;" textAlignment="CENTER" />
+                <Button text="Commencer" style="-fx-background-color: #5D69BE; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 20;" />
+            </VBox>
+
+            <!-- Carte d'activité 2 -->
+            <VBox style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);"
+                  alignment="CENTER" spacing="10" prefWidth="250">
+                <ImageView fitHeight="80" fitWidth="80">
+                    <Image url="@/images/admin-icon.png" />
+                </ImageView>
+                <Label text="Écriture" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #5D69BE; -fx-font-family: 'Arial Rounded MT Bold';" />
+                <Label text="Activités pour renforcer l'orthographe et l'expression écrite" style="-fx-font-size: 14px; -fx-text-fill: #666; -fx-wrap-text: true; -fx-font-family: 'Arial'; -fx-text-alignment: center;" textAlignment="CENTER" />
+                <Button text="Commencer" style="-fx-background-color: #5D69BE; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 20;" />
+            </VBox>
+
+            <!-- Carte d'activité 3 -->
+            <VBox style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);"
+                  alignment="CENTER" spacing="10" prefWidth="250">
+                <ImageView fitHeight="80" fitWidth="80">
+                    <Image url="@/images/admin-icon.png" />
+                </ImageView>
+                <Label text="Jeux" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #5D69BE; -fx-font-family: 'Arial Rounded MT Bold';" />
+                <Label text="Apprendre en s'amusant avec nos jeux éducatifs" style="-fx-font-size: 14px; -fx-text-fill: #666; -fx-wrap-text: true; -fx-font-family: 'Arial'; -fx-text-alignment: center;" textAlignment="CENTER" />
+                <Button text="Commencer" style="-fx-background-color: #5D69BE; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 20;" />
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- Pied de page -->
+    <VBox alignment="CENTER" style="-fx-background-color: #3F51B5; -fx-padding: 20;" spacing="10" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0">
+        <Label text="Dyscover - Plateforme d'apprentissage adapté" style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-family: 'Arial Rounded MT Bold';" />
+        <Label text="© 2023 Tous droits réservés" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 12px;" />
+    </VBox>
+
+</AnchorPane>

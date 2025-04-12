@@ -25,13 +25,12 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>17</version>
-            <classifier>win</classifier>
+            <version>17.0.12</version>            <classifier>win</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>17</version>
+            <version>17.0.12</version>
             <classifier>win</classifier>
         </dependency>
         <dependency>

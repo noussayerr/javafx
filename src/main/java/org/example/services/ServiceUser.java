@@ -63,4 +63,35 @@ public class ServiceUser {
         return roles;
     }
 
+    public boolean toggleUserStatus(int userId) throws SQLException {
+        // D'abord récupérer l'état actuel de l'utilisateur
+        String currentStateQuery = "SELECT etat FROM user WHERE id = ?";
+        String currentState = null;
+
+        try (PreparedStatement getStateStmt = connection.prepareStatement(currentStateQuery)) {
+            getStateStmt.setInt(1, userId);
+            ResultSet rs = getStateStmt.executeQuery();
+
+            if (rs.next()) {
+                currentState = rs.getString("etat");
+            } else {
+                throw new SQLException("User not found with ID: " + userId);
+            }
+        }
+
+        // Déterminer le nouvel état
+        String newState = "actif".equalsIgnoreCase(currentState) ? "inactif" : "actif";
+
+        // Mettre à jour l'état
+        String updateQuery = "UPDATE user SET etat = ? WHERE id = ?";
+
+        try (PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
+            updateStmt.setString(1, newState);
+            updateStmt.setInt(2, userId);
+
+            int rowsAffected = updateStmt.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
+
 }

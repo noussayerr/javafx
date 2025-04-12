@@ -18,20 +18,16 @@ import java.util.ResourceBundle;
 
 public class EnseignantDashboardController implements Initializable {
 
-    @FXML
-    private Label usernameLabel;
-    @FXML
-    private Label coursesCountLabel;
+
     @FXML
     private Label studentsCountLabel;
-
+    @FXML
+    private Button profileButton;
     @FXML
     private Button logoutButton;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialiser les données de l'utilisateur
-        usernameLabel.setText("Professeur Dupont");
-        coursesCountLabel.setText("8");
+
         studentsCountLabel.setText("142");
 
         // Configurer la table des cours à venir
@@ -61,26 +57,16 @@ public class EnseignantDashboardController implements Initializable {
     }
 
     @FXML
-    private void logout(MouseEvent event) {
+    private void logout() {
         try {
-            // Effacer la session utilisateur
             SessionManager.getInstance().logout();
-
-            // Charger la vue de connexion
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
             Parent root = loader.load();
-
-            // Obtenir la scène actuelle depuis le bouton existant
-            Stage stage = (Stage) logoutButton.getScene().getWindow(); // NPE here if logoutButton is null
-
-            // Changer la scène
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Connexion");
             stage.centerOnScreen();
-
-            // Afficher un message de confirmation
             showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
-
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
             e.printStackTrace();
@@ -92,6 +78,23 @@ public class EnseignantDashboardController implements Initializable {
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void handleProfile() {
+        try {
+            // Load the profile page
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ProfileEnseignant.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) profileButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Profil");
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement de la page de profil", e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 

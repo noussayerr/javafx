@@ -92,21 +92,35 @@ public class ServiceApprenant implements IService<Apprenant> {
 
     @Override
     public void modifier(Apprenant apprenant) throws SQLException {
+        System.out.println("Starting update for apprenant ID: " + apprenant.getId());
+        System.out.println("Updating with data: " + apprenant);
+
         String userQuery = "UPDATE user SET email = ?, password = ?, nom = ?, prenom = ?, dateNaissance = ?, etat = ?, telephone = ?, is_verified = ?, verification_token = ?, photo_profil = ?, interactions_count = ?, sessions_count = ?, last_activity = ? WHERE id = ?";
         String apprenantQuery = "UPDATE apprenant SET niveau = ? WHERE id = ?";
 
         try (PreparedStatement userStatement = connection.prepareStatement(userQuery);
              PreparedStatement apprenantStatement = connection.prepareStatement(apprenantQuery)) {
 
-            // Commencer une transaction
             connection.setAutoCommit(false);
+            System.out.println("Transaction started");
 
-            // Mise à jour dans la table User (sans toucher aux roles)
+            // Mise à jour dans la table User
             userStatement.setString(1, apprenant.getEmail());
-            String hashedPassword = BCrypt.hashpw(apprenant.getPassword(), BCrypt.gensalt());
-            hashedPassword = "$2y$" + hashedPassword.substring(4);
+            System.out.println("Email set to: " + apprenant.getEmail());
 
-            userStatement.setString(2, hashedPassword);
+            // Only hash password if it's not empty
+            String passwordToStore = apprenant.getPassword();
+            if (passwordToStore != null && !passwordToStore.isEmpty()) {
+                String hashedPassword = BCrypt.hashpw(passwordToStore, BCrypt.gensalt());
+                passwordToStore = "$2y$" + hashedPassword.substring(4);
+                System.out.println("Password hashed");
+            } else {
+                // Get current password from DB if not changed
+                passwordToStore = getCurrentPassword(apprenant.getId());
+                System.out.println("Keeping existing password");
+            }
+
+            userStatement.setString(2, passwordToStore);
             userStatement.setString(3, apprenant.getNom());
             userStatement.setString(4, apprenant.getPrenom());
             userStatement.setString(5, apprenant.getDateNaissance());
@@ -122,23 +136,29 @@ public class ServiceApprenant implements IService<Apprenant> {
             } else {
                 userStatement.setNull(12, Types.INTEGER);
             }
+
             if (apprenant.getLastActivity() != null) {
                 userStatement.setTimestamp(13, Timestamp.valueOf(apprenant.getLastActivity()));
             } else {
                 userStatement.setNull(13, Types.TIMESTAMP);
             }
+
             userStatement.setInt(14, apprenant.getId());
-            userStatement.executeUpdate();
+
+            int userRows = userStatement.executeUpdate();
+            System.out.println("User rows updated: " + userRows);
 
             // Mise à jour dans la table Apprenant
             apprenantStatement.setString(1, apprenant.getNiveau());
             apprenantStatement.setInt(2, apprenant.getId());
-            apprenantStatement.executeUpdate();
 
-            // Valider la transaction
+            int apprenantRows = apprenantStatement.executeUpdate();
+            System.out.println("Apprenant rows updated: " + apprenantRows);
+
             connection.commit();
+            System.out.println("Transaction committed successfully");
         } catch (SQLException e) {
-            // Annuler la transaction en cas d'erreur
+            System.err.println("Error during update: " + e.getMessage());
             connection.rollback();
             throw e;
         } finally {
@@ -146,6 +166,17 @@ public class ServiceApprenant implements IService<Apprenant> {
         }
     }
 
+    private String getCurrentPassword(int userId) throws SQLException {
+        String query = "SELECT password FROM user WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("password");
+            }
+        }
+        return null;
+    }
     @Override
     public void supprimer(int id) throws SQLException {
         String deleteApprenantQuery = "DELETE FROM apprenant WHERE id = ?";

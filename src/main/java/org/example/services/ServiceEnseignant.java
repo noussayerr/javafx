@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.entity.Enseignant;
 import org.example.utils.MyDatabase;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -31,7 +32,12 @@ public class ServiceEnseignant implements IService<Enseignant> {
             // Insertion dans la table User
             userStatement.setInt(1, enseignant.getId());
             userStatement.setString(2, enseignant.getEmail());
-            userStatement.setString(3, enseignant.getPassword());
+
+            String hashedPassword = BCrypt.hashpw(enseignant.getPassword(), BCrypt.gensalt());
+            hashedPassword = "$2y$" + hashedPassword.substring(4);
+
+
+            userStatement.setString(3, hashedPassword);
             userStatement.setString(4, enseignant.getNom());
             userStatement.setString(5, enseignant.getPrenom());
             userStatement.setString(6, rolesJson);

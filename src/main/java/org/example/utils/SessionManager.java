@@ -6,7 +6,6 @@ import org.example.entity.User;
 public class SessionManager {
     private static SessionManager instance;
     private User currentUser;
-    private Stage currentStage;
 
     private SessionManager() {}
 
@@ -25,16 +24,9 @@ public class SessionManager {
         this.currentUser = user;
     }
 
-    public Stage getCurrentStage() {
-        return currentStage;
-    }
 
-    public void setCurrentStage(Stage stage) {
-        this.currentStage = stage;
-    }
 
     public void logout() {
         this.currentUser = null;
-        this.currentStage = null;
     }
 }

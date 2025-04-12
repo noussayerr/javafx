@@ -1,12 +1,27 @@
 package org.example.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.example.entity.Enseignant;
 import org.example.services.ServiceEnseignant;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class RegisterEnseignant {
 
@@ -19,7 +34,9 @@ public class RegisterEnseignant {
     @FXML private TextField specialiteField;
     @FXML private ComboBox<String> experienceField;
     @FXML private Label errorLabel;
+    @FXML private TextField photoProfilField;
 
+    private File selectedPhotoFile;
     private ServiceEnseignant serviceEnseignant;
 
     public RegisterEnseignant() {
@@ -28,7 +45,22 @@ public class RegisterEnseignant {
 
     @FXML
     private void initialize() {
-        // Initialisation supplémentaire si nécessaire
+        // Initialisation du ComboBox d'expérience
+        experienceField.getItems().addAll("Débutant", "Intermédiaire", "Expérimenté");
+    }
+
+    @FXML
+    private void handlePhotoUpload() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choisir une photo de profil");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif")
+        );
+
+        selectedPhotoFile = fileChooser.showOpenDialog(photoProfilField.getScene().getWindow());
+        if (selectedPhotoFile != null) {
+            photoProfilField.setText(selectedPhotoFile.getName());
+        }
     }
 
     @FXML
@@ -49,6 +81,12 @@ public class RegisterEnseignant {
             enseignant.setDateNaissance(dateNaissanceField.getText());
             enseignant.setSpecialite(specialiteField.getText());
             enseignant.setExperience(experienceField.getValue());
+
+            // Gestion de la photo de profil
+            if (selectedPhotoFile != null) {
+                String photoPath = saveProfilePhoto(selectedPhotoFile);
+                enseignant.setPhotoProfil(photoPath);
+            }
 
             // Définir les valeurs par défaut
             List<String> roles = new ArrayList<>();
@@ -73,7 +111,29 @@ public class RegisterEnseignant {
         } catch (SQLException e) {
             errorLabel.setText("Erreur lors de l'enregistrement: " + e.getMessage());
             e.printStackTrace();
+        } catch (IOException e) {
+            errorLabel.setText("Erreur lors de l'enregistrement de la photo: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
+
+    private String saveProfilePhoto(File photoFile) throws IOException {
+        // Créer le dossier pdp s'il n'existe pas
+        File pdpDir = new File("src/main/resources/pdp");
+        if (!pdpDir.exists()) {
+            pdpDir.mkdirs();
+        }
+
+        // Générer un nom de fichier unique
+        String extension = getFileExtension(photoFile.getName());
+        String newFileName = UUID.randomUUID().toString() + extension;
+        Path targetPath = Paths.get(pdpDir.getAbsolutePath(), newFileName);
+
+        // Copier le fichier
+        Files.copy(photoFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+        // Retourner le chemin relatif
+        return "pdp/" + newFileName;
     }
 
     private boolean validateFields() {
@@ -110,6 +170,8 @@ public class RegisterEnseignant {
         dateNaissanceField.clear();
         specialiteField.clear();
         experienceField.getSelectionModel().clearSelection();
+        photoProfilField.clear();
+        selectedPhotoFile = null;
         errorLabel.setText("");
     }
 
@@ -123,7 +185,26 @@ public class RegisterEnseignant {
 
     private int generateNewId() {
         // Implémentez votre propre logique de génération d'ID
-        // Par exemple: récupérer le dernier ID de la base et incrémenter
         return (int) (Math.random() * 1000) + 1; // Exemple temporaire
+    }
+
+    @FXML
+    private void handleBack(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/choix.fxml"));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.setMaximized(true);
+            stage.centerOnScreen();
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getFileExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf('.');
+        return (dotIndex == -1) ? "" : fileName.substring(dotIndex);
     }
 }

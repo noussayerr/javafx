@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -30,7 +31,8 @@ public class ApprenantDashboardController {
 
     @FXML
     private ListView<?> recentCoursesList;
-
+    @FXML
+    private Button profileButton;
     // Méthode d'initialisation (optionnelle)
     @FXML
     private void initialize() {
@@ -77,4 +79,26 @@ public class ApprenantDashboardController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
+    public void handleExploreCourses(ActionEvent actionEvent) {
+    }
+    @FXML
+    private void handleProfile() {
+        try {
+            // Load the profile page
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ProfileApprenant.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) profileButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Profil");
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement de la page de profil", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+
 }

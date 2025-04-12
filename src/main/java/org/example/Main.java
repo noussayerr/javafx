@@ -11,12 +11,13 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Charger le fichier FXML (Assurez-vous que le chemin est correct)
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Home.fxml"));
 
         Scene scene = new Scene(loader.load(), 400, 500);
-        primaryStage.setTitle("Inscription Apprenant");
+        primaryStage.setTitle("Home");
         primaryStage.setScene(scene);
 
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 
