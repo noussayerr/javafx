@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.geometry.Insets?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.ListeMatiereFController"
+            prefHeight="600.0" prefWidth="1000.0" style="-fx-background-color: linear-gradient(to bottom right, #f8f9fa, #e9ecef);">
+
+    <!-- Header avec effet de verre -->
+    <HBox style="-fx-background-color: rgba(255,255,255,0.3); -fx-background-radius: 15;" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+        <effect>
+            <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
+        </effect>
+
+        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@/images/admin-icon.png" />
+            </image>
+        </ImageView>
+
+        <Label style="-fx-text-fill: #495057; -fx-font-size: 24px; -fx-font-weight: bold; -fx-font-family: 'Comic Sans MS';" text="DysCover" HBox.hgrow="ALWAYS" />
+
+        <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-padding: 0 15 0 0;">
+            <Button style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Tableau de bord" />
+            <Button onAction="#goMatiereF" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Mes Cours" />
+            <Button fx:id="studentsButton" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Étudiants" />
+            <Button onAction="#handleProfile" fx:id="profileButton" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Profile" />
+
+            <Button fx:id="logoutButton" onAction="#logout" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Déconnexion">
+                <HBox.margin>
+                    <Insets left="300.0" />
+                </HBox.margin>
+            </Button>
+        </HBox>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" prefHeight="500.0" AnchorPane.topAnchor="100.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0" style="-fx-background-color: transparent;">
+        <content>
+            <FlowPane fx:id="matiereContainer" hgap="20.0" vgap="20.0"
+                      style="-fx-background-color: transparent;"
+                      prefWidth="960">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+            </FlowPane>
+        </content>
+    </ScrollPane>
+
+    <!-- Footer -->
+    <HBox alignment="CENTER" style="-fx-background-color: rgba(255,255,255,0.5); -fx-background-radius: 10; -fx-padding: 10;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+        <Label style="-fx-text-fill: #495057; -fx-font-family: 'Arial Rounded MT Bold';" text="© 2023 DysCover - Plateforme d'éducation pour la dyslexie" />
+    </HBox>
+</AnchorPane>

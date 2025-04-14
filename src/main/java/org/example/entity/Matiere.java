@@ -17,28 +17,27 @@ public class Matiere {
 
     // Constructeur par défaut
     public Matiere() {
-        this.id = 0;
-        this.nomM = "";
-        this.titreM = "";
-        this.descM = "";
-        this.objM = "";
-        this.imgM = null;
-        this.cours = new ArrayList<>();
-        this.commentaires = new ArrayList<>();
-        this.evalus = new ArrayList<>();
+
     }
 
     // Constructeur avec paramètres principaux
-    public Matiere(String nomM, String titreM, String descM, String objM) {
-        this.id = 0;
+
+    public Matiere(int id, String nomM, String titreM, String descM, String objM, String imgM) {
+        this.id = id;
         this.nomM = nomM;
         this.titreM = titreM;
         this.descM = descM;
         this.objM = objM;
-        this.imgM = null;
-        this.cours = new ArrayList<>();
-        this.commentaires = new ArrayList<>();
-        this.evalus = new ArrayList<>();
+        this.imgM = imgM;
+    }
+
+    public Matiere(String nomM, String titreM, String descM, String objM, String imgM) {
+
+        this.nomM = nomM;
+        this.titreM = titreM;
+        this.descM = descM;
+        this.objM = objM;
+        this.imgM = imgM;
     }
 
     // Getters et Setters
