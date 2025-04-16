@@ -88,4 +88,43 @@ public class ServicePromotion implements IService<Promotion> {
         }
         return list;
     }
+    public void ajouterPromo(Promotion promotion,int idAbonnement) throws SQLException{
+        try {
+
+            String insertPromoQuery = "INSERT INTO promotion (titre, description, reduction, date_debut, date_fin) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement ps = connection.prepareStatement(insertPromoQuery, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, promotion.getTitre());
+            ps.setString(2, promotion.getDescription());
+            ps.setInt(3, promotion.getReduction());
+            ps.setDate(4, Date.valueOf(promotion.getDateDebut()));
+            ps.setDate(5, Date.valueOf(promotion.getDateFin()));
+            ps.executeUpdate();
+
+
+            ResultSet rs = ps.getGeneratedKeys();
+            int promoId = -1;
+            if (rs.next()) {
+                promoId = rs.getInt(1);
+            } else {
+                throw new SQLException("Erreur lors de l'insertion de la promotion : aucun ID généré.");
+            }
+
+
+            String updateAbonnementQuery = "UPDATE abonnement SET promotion_id = ? WHERE id = ?";
+            PreparedStatement ps1 = connection.prepareStatement(updateAbonnementQuery);
+            ps1.setInt(1, promoId);
+            ps1.setInt(2, idAbonnement);
+            ps1.executeUpdate();
+
+
+
+        } catch (SQLException e) {
+            connection.rollback();
+            throw e;
+        } finally {
+            connection.setAutoCommit(true);
+        }
+
+
+    }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.AjoutAbonnement">
+   <children>
+      <TextField fx:id="titreAbonnement" layoutX="164.0" layoutY="83.0" />
+      <TextField fx:id="prixAbonnement" layoutX="164.0" layoutY="140.0" />
+      <TextField fx:id="descriptionAbonnement" layoutX="164.0" layoutY="200.0" />
+      <Label layoutX="40.0" layoutY="87.0" text="titre Abonnement" />
+      <Label layoutX="40.0" layoutY="144.0" text="prix" />
+      <Label layoutX="40.0" layoutY="204.0" text="description" />
+      <Button fx:id="AjoutButton" layoutX="164.0" layoutY="306.0" mnemonicParsing="false" onAction="#AjouterPersonneAction" text="Button" />
+      <Label layoutX="50.0" layoutY="255.0" text="Periode" />
+      <ComboBox fx:id="periode" layoutX="164.0" layoutY="251.0" prefWidth="150.0" />
+   </children>
+</AnchorPane>

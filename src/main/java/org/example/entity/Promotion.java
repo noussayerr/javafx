@@ -23,6 +23,14 @@ public class Promotion {
         this.dateFin = dateFin;
     }
 
+    public Promotion(String description, String titre, int reduction, LocalDate dateDebut, LocalDate dateFin) {
+        this.description = description;
+        this.titre = titre;
+        this.reduction = reduction;
+        this.dateDebut = dateDebut;
+        this.dateFin = dateFin;
+    }
+
     // Getters et setters
     public int getId() {
         return id;

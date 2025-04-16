@@ -2,6 +2,7 @@ package org.example.services;
 
 import org.example.entity.Abonnement;
 import org.example.entity.Duration;
+import org.example.entity.Promotion;
 import org.example.utils.MyDatabase;
 
 import java.sql.*;
@@ -18,7 +19,7 @@ public class ServiceAbonnement implements IService<Abonnement> {
         String query = "INSERT INTO abonnement (titre_abonnement, prix, description, duration) VALUES (?, ?, ?, ?)";
         PreparedStatement ps = connection.prepareStatement(query);
         ps.setString(1, abonnement.getTitreAbonnement());
-        ps.setString(2, abonnement.getPrix());
+        ps.setInt(2, abonnement.getPrix());
         ps.setString(3, abonnement.getDescription());
         ps.setString(4, abonnement.getDuration().toString());
 
@@ -31,7 +32,7 @@ public class ServiceAbonnement implements IService<Abonnement> {
         PreparedStatement ps = connection.prepareStatement(query);
 
         ps.setString(1, abonnement.getTitreAbonnement());
-        ps.setString(2, abonnement.getPrix());
+        ps.setInt(2, abonnement.getPrix());
         ps.setString(3, abonnement.getDescription());
         ps.setString(4, abonnement.getDuration().toString());
         ps.setInt(5, abonnement.getId());
@@ -44,16 +45,23 @@ public class ServiceAbonnement implements IService<Abonnement> {
     @Override
     public void supprimer(int id) throws SQLException {
         String query = "DELETE FROM abonnement WHERE id = ?";
-        PreparedStatement ps = connection.prepareStatement(query);
-
-        ps.setInt(1, id);
-        ps.executeUpdate();
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            // On relance une exception spécifique pour que le contrôleur la capture
+            throw new SQLException("L'abonnement ne peut pas être supprimé car il est lié à un ou plusieurs apprenants.", e);
+        }
     }
+
 
     @Override
     public List<Abonnement> afficher() throws SQLException {
         List<Abonnement> list = new ArrayList<>();
-        String query = "SELECT * FROM abonnement";
+        String query = "SELECT a.*, p.id as promo_id, p.titre as promo_titre, p.description as promo_description, " +
+                "p.reduction, p.date_debut, p.date_fin " +
+                "FROM abonnement a LEFT JOIN promotion p ON a.promotion_id = p.id";
+
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(query);
 
@@ -61,14 +69,27 @@ public class ServiceAbonnement implements IService<Abonnement> {
             Abonnement a = new Abonnement();
             a.setId(rs.getInt("id"));
             a.setTitreAbonnement(rs.getString("titre_abonnement"));
-            a.setPrix(rs.getString("prix"));
+            a.setPrix(rs.getInt("prix"));
             a.setDescription(rs.getString("description"));
+            a.setDuration(Duration.valueOf(rs.getString("duration").toUpperCase()));
 
-            a.setDuration(Duration.valueOf(rs.getString("duration")));
+            // Vérifie si une promotion est liée
+            int promoId = rs.getInt("promo_id");
+            if (!rs.wasNull()) {
+                Promotion promo = new Promotion();
+                promo.setId(promoId);
+                promo.setTitre(rs.getString("promo_titre"));
+                promo.setDescription(rs.getString("promo_description"));
+                promo.setReduction(rs.getInt("reduction"));
+                promo.setDateDebut(rs.getDate("date_debut").toLocalDate());
+                promo.setDateFin(rs.getDate("date_fin").toLocalDate());
 
+                a.setPromotion(promo);
+            }
 
             list.add(a);
         }
         return list;
     }
+
 }

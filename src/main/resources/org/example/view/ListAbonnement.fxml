@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.ListAbonnementController">
+    <TableView fx:id="tableAbonnements" layoutX="20.0" layoutY="20.0" prefHeight="1000.0" prefWidth="1000.0">
+        <columns>
+            <TableColumn fx:id="colId" prefWidth="50.0" text="ID" />
+            <TableColumn fx:id="colTitre" prefWidth="150.0" text="Titre" />
+            <TableColumn fx:id="colPrix" prefWidth="100.0" text="Prix" />
+            <TableColumn fx:id="colDescription" prefWidth="160.0" text="Description" />
+            <TableColumn fx:id="colDuration" prefWidth="100.0" text="Durée" />
+            <TableColumn fx:id="colActions" prefWidth="140.0" text="Actions" />
+            <TableColumn fx:id="colPromotion" text="Promotion"/>
+
+
+        </columns>
+    </TableView>
+</AnchorPane>
