@@ -6,12 +6,12 @@ public class Reservation {
     private int id;
     private LocalDateTime dateres;
     private boolean valide;
-    private Event evenement;
+    private Evenement evenement;
     private Apprenant user;
     private String codeqr;
 
     // Constructeur
-    public Reservation(int id, LocalDateTime dateres, boolean valide, Event evenement, Apprenant user, String codeqr) {
+    public Reservation(int id, LocalDateTime dateres, boolean valide, Evenement evenement, Apprenant user, String codeqr) {
         this.id = id;
         this.dateres = dateres;
         this.valide = valide;
@@ -45,11 +45,11 @@ public class Reservation {
         this.valide = valide;
     }
 
-    public Event getEvenement() {
+    public Evenement getEvenement() {
         return evenement;
     }
 
-    public void setEvenement(Event evenement) {
+    public void setEvenement(Evenement evenement) {
         this.evenement = evenement;
     }
 

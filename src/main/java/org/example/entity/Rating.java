@@ -1,9 +1,11 @@
 package org.example.entity;
+import org.example.entity.Evenement;
+
 
 public class Rating {
     private int id;
     private int stars;
-    private Event event;
+    private Evenement event;
     private Apprenant user;
 
     // Constructeur
@@ -27,11 +29,11 @@ public class Rating {
         this.stars = stars;
     }
 
-    public Event getEvent() {
+    public Evenement getEvent() {
         return event;
     }
 
-    public void setEvent(Event event) {
+    public void setEvent(Evenement event) {
         this.event = event;
     }
 

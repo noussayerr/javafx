@@ -1,0 +1,104 @@
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: #f9f9f9;
+}
+
+/* Titres */
+.title-label {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #2c3e50;
+}
+
+/* Champs texte, combo, date, spinner */
+.text-field,
+.combo-box,
+.date-picker,
+.spinner {
+    -fx-background-color: #ffffff !important;
+    -fx-text-fill: #2c3e50 !important;
+    -fx-border-color: #dcdcdc;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 6 8;
+}
+
+/* Contenu interne texte */
+.text-field .content,
+.combo-box .text,
+.date-picker .text,
+.spinner .text {
+    -fx-fill: #2c3e50 !important;
+    -fx-text-fill: #2c3e50 !important;
+}
+
+/* Menu déroulant ComboBox */
+.combo-box .list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Boutons */
+.button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+.button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Erreurs */
+.error-label {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 11px;
+}
+.error-border {
+    -fx-border-color: #e74c3c !important;
+}
+.table-view {
+    -fx-background-color: white;
+    -fx-text-fill: #2c3e50;
+    -fx-table-cell-border-color: #ddd;
+    -fx-control-inner-background: white;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #f1f1f1;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #dfefff !important;
+}
+.main-container {
+    -fx-background-color: #f9f9f9;
+}
+
+/* Appliquer en priorité */
+.label, .text-field, .text-area {
+    -fx-text-fill: #000000 !important;
+}
+
+/* Titre principal */
+.label-titre {
+    -fx-text-fill: #000000 !important;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+/* Fond des champs */
+.text-field, .text-area {
+    -fx-background-color: #ffffff !important;
+}
+.erreur-label {
+    -fx-text-fill: red;
+    -fx-font-size: 11px;
+    -fx-font-style: italic;
+    -fx-padding: 0 0 5 0;
+}

@@ -6,7 +6,7 @@ import java.util.List;
 public class Apprenant extends User {
     private String niveau;
     private Abonnement abonnement;
-    private List<Event> evenements = new ArrayList<>();
+    private List<Evenement> evenements = new ArrayList<>();
     private List<Message> messages = new ArrayList<>();
     private List<Reclamation> reclamations = new ArrayList<>();
 
@@ -25,8 +25,8 @@ public class Apprenant extends User {
     public Abonnement getAbonnement() { return abonnement; }
     public void setAbonnement(Abonnement abonnement) { this.abonnement = abonnement; }
 
-    public List<Event> getEvenements() { return evenements; }
-    public void setEvenements(List<Event> evenements) { this.evenements = evenements; }
+    public List<Evenement> getEvenements() { return evenements; }
+    public void setEvenements(List<Evenement> evenements) { this.evenements = evenements; }
 
     public List<Message> getMessages() { return messages; }
     public void setMessages(List<Message> messages) { this.messages = messages; }

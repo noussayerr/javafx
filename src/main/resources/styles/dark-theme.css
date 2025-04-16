@@ -1,0 +1,120 @@
+/* 🌙 Dark Theme */
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: #1e1e1e; /* ✅ Fond global bien sombre */
+}
+
+/* Titres */
+.title-label {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff; /* ✅ Texte blanc */
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #cccccc; /* ✅ Texte gris clair */
+}
+
+/* Champs (text-field, combo, date-picker...) */
+.text-field,
+.combo-box,
+.date-picker,
+.spinner {
+    -fx-background-color: #2c2c2c;      /* ✅ Fond sombre */
+    -fx-text-fill: #ffffff;             /* ✅ Texte blanc */
+    -fx-border-color: #555555;          /* ✅ Bordures discrètes */
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 6 8;
+}
+
+/* Boutons */
+.button {
+    -fx-background-color: #3a3f44;       /* ✅ Bouton sombre */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+.button:hover {
+    -fx-background-color: #555a60;
+}
+
+/* Champs invalides */
+.error-border {
+    -fx-border-color: #e74c3c;
+}
+
+/* Labels d’erreur */
+.error-label {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 11px;
+}
+
+/* TableView - arrière-plan sombre et lignes visibles */
+.table-view {
+    -fx-background-color: #2b2b2b;
+    -fx-control-inner-background: #2b2b2b;
+    -fx-table-cell-border-color: #444; /* ✅ Bordures des cellules */
+    -fx-text-fill: white;
+}
+
+/* En-tête des colonnes */
+.table-view .column-header-background {
+    -fx-background-color: #3a3a3a;
+    -fx-border-color: #555;
+}
+
+/* Cellules des lignes */
+.table-view .table-row-cell {
+    -fx-background-color: #2b2b2b;
+    -fx-border-color: #444;
+    -fx-table-cell-border-color: #444;
+}
+
+/* Lignes sélectionnées */
+.table-view .table-row-cell:selected {
+    -fx-background-color: #3e3e3e !important;
+    -fx-text-fill: white;
+    -fx-border-color: #666;
+}
+
+.hbox, .vbox {
+    -fx-background-color: #1e1e1e;
+}
+.main-container {
+    -fx-background-color: #1e1e1e;
+}
+.anchor-pane-dark {
+    -fx-background-color: #2c3e50;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.vbox-dark {
+    -fx-background-color: #34495e;
+    -fx-background-radius: 10;
+}
+.label-titre {
+    -fx-text-fill: #ffffff;
+}
+.anchor-pane-dark {
+    -fx-background-color: #2c3e50;
+}
+
+.vbox-dark {
+    -fx-background-color: #34495e;
+    -fx-background-radius: 10;
+}
+.text-area {
+    -fx-background-color: #ffffff !important;
+}
+.label {
+    -fx-text-fill: #000000 !important;
+}
+.erreur-label {
+    -fx-text-fill: red;
+    -fx-font-size: 11px;
+    -fx-font-style: italic;
+    -fx-padding: 0 0 5 0;
+}

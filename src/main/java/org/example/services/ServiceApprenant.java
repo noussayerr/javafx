@@ -3,10 +3,6 @@ package org.example.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.entity.Apprenant;
-import org.example.entity.Abonnement;
-import org.example.entity.Event;
-import org.example.entity.Message;
-import org.example.entity.Reclamation;
 import org.example.utils.MyDatabase;
 import org.mindrot.jbcrypt.BCrypt;
 
