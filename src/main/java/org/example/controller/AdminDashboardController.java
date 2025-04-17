@@ -264,16 +264,6 @@ public class AdminDashboardController {
         alert.showAndWait();
     }
 
-<<<<<<< HEAD
-    public void goToMatiere(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
-=======
-
-    public void afficherEvenements(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
->>>>>>> 4a302bab86e1f1befc85cfdcd937c14d33473db4
-    }
-
     private void loadPage(ActionEvent event, String fxmlPath) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
@@ -285,26 +275,33 @@ public class AdminDashboardController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-<<<<<<< HEAD
-            // Gérer l'erreur (peut-être afficher un message à l'utilisateur)
         }
     }
-}
-=======
-        }}
+    public void goToMatiere(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
+    }
+
+
+    public void afficherEvenements(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
+    }
+
+
     @FXML
     private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
     }
+
     @FXML
-    public void afficherJeux(ActionEvent event) throws IOException  {
+    public void afficherJeux(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
     }
+
 }
->>>>>>> 4a302bab86e1f1befc85cfdcd937c14d33473db4
+
