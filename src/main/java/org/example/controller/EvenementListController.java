@@ -41,8 +41,6 @@ public class EvenementListController {
         configureScrollPane();
     }
 
-
-
     private void configureScrollPane() {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
