@@ -1,0 +1,174 @@
+.root {
+    -fx-background-color: #121212;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-text-fill: #e0e0e0;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #e0e0e0;
+}
+
+.root {
+    -fx-background-color: #121212;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-text-fill: #e0e0e0;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #e0e0e0;
+}
+
+/* Titre principal */
+.title-label {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+/* Champs texte, combo, spinner, date */
+.text-field, .combo-box, .date-picker, .spinner {
+    -fx-background-color: #1e1e1e;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #444;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 6 8;
+}
+
+/* Boutons */
+.button {
+    -fx-background-color: #0d47a1;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+.button:hover {
+    -fx-background-color: #1976d2;
+}
+
+/* Labels d’erreur */
+.error-label {
+    -fx-text-fill: #ef5350;
+    -fx-font-size: 11px;
+}
+
+/* Champs invalides */
+.error-border {
+    -fx-border-color: #ef5350;
+}
+
+/* ComboBox popup (optionnel si tu veux que la liste soit dark aussi) */
+.combo-box-popup .list-cell {
+    -fx-background-color: #1e1e1e;
+    -fx-text-fill: white;
+}
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #333333;
+}
+.erreur-label {
+    -fx-text-fill: red;
+    -fx-font-size: 11px;
+    -fx-font-style: italic;
+    -fx-padding: 0 0 5 0;
+}
+/* Titre principal */
+.title-label {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+/* Champs texte, combo, spinner, date */
+.text-field, .combo-box, .date-picker, .spinner {
+    -fx-background-color: #1e1e1e;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #444;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 6 8;
+}
+
+/* Boutons */
+.button {
+    -fx-background-color: #0d47a1;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+.button:hover {
+    -fx-background-color: #1976d2;
+}
+
+/* Labels d’erreur */
+.error-label {
+    -fx-text-fill: #ef5350;
+    -fx-font-size: 11px;
+}
+
+/* Champs invalides */
+.error-border {
+    -fx-border-color: #ef5350;
+}
+
+/* ComboBox popup (optionnel si tu veux que la liste soit dark aussi) */
+.combo-box-popup .list-cell {
+    -fx-background-color: #1e1e1e;
+    -fx-text-fill: white;
+}
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #333333;
+}
+.search-field {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #bdc3c7;
+    -fx-padding: 8;
+    -fx-font-size: 14px;
+}
+
+.button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: #2980b9;
+    -fx-translate-y: -2px;
+}
+/* elegant-styles.css */
+.root {
+    -pastel-violet: #D9B3FF;
+    -pastel-blue: #B3D9FF;
+    -pastel-pink: #FFB3E6;
+    -soft-white: #FFF9FE;
+}
+
+.event-card {
+    -fx-background-color: -soft-white;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(217, 179, 255, 0.3), 15, 0, 0, 5);
+    -fx-padding: 25;
+    -fx-border-radius: 20;
+    -fx-border-width: 1px;
+    -fx-border-color: linear-gradient(to right, -pastel-violet, -pastel-blue);
+    -fx-cursor: hand;
+}
+
+.event-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(217, 179, 255, 0.5), 25, 0, 0, 10);
+}
+
+.title-label {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2E2D4D;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0.5, 1, 2);
+}

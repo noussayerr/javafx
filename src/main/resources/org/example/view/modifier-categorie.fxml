@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controller.ModifierCategorieController"
+            prefWidth="1000.0" prefHeight="650.0"
+            style="-fx-background-color: linear-gradient(to bottom right, #f4f3fe, #eaeafc);">
+
+    <!-- ✅ TOP BAR -->
+    <top>
+        <HBox style="-fx-background-color: #34495e; -fx-padding: 15px;" alignment="CENTER_LEFT">
+            <ImageView fitHeight="40" fitWidth="40">
+                <Image url="@/images/admin-icon.png"/>
+            </ImageView>
+            <Label text="Tableau de bord Administrateur"
+                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 0 0 0 10;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="logoutButton"
+                        text="Déconnexion"
+                        onAction="#handleLogout"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Circle radius="20" fill="#3498db" stroke="#ecf0f1" strokeWidth="1"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- ✅ SIDEBAR GAUCHE -->
+    <left>
+        <VBox style="-fx-background-color: #2c3e50; -fx-padding: 20px 10px;" spacing="15" prefWidth="200">
+            <Label text="NAVIGATION" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold; -fx-padding: 0 0 10 5;"/>
+
+            <Button text="Utilisateurs" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT;">
+                <graphic><ImageView fitHeight="20" fitWidth="20"><Image url="@/images/users-icon.png"/></ImageView></graphic>
+            </Button>
+            <Button text="Statistiques" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT;">
+                <graphic><ImageView fitHeight="20" fitWidth="20"><Image url="@/images/stats-icon.png"/></ImageView></graphic>
+            </Button>
+            <Button text="Paramètres" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT;">
+                <graphic><ImageView fitHeight="20" fitWidth="20"><Image url="@/images/settings-icon.png"/></ImageView></graphic>
+            </Button>
+            <Button text="Événements" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT;">
+                <graphic><ImageView fitHeight="20" fitWidth="20"><Image url="@/images/events-icon.png"/></ImageView></graphic>
+            </Button>
+        </VBox>
+    </left>
+
+    <!-- ✅ CENTRE : FORMULAIRE -->
+    <center>
+        <VBox spacing="20" alignment="TOP_CENTER" style="-fx-padding: 30;">
+            <Label text="📝 Modifier une catégorie"
+                   style="-fx-font-size: 24px;
+                          -fx-font-weight: bold;
+                          -fx-text-fill: #8e44ad;" />
+
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="120"/>
+                    <ColumnConstraints minWidth="300"/>
+                </columnConstraints>
+
+                <!-- Nom -->
+                <Label text="Nom :" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtNom" promptText="Nom de la catégorie" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <Label fx:id="lblErreurNom" text="" textFill="red" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <!-- Description -->
+                <Label text="Description :" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextArea fx:id="txtDescription" promptText="Description"
+                          prefRowCount="3" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                <Label fx:id="lblErreurDescription" text="" textFill="red" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <!-- Image -->
+                <Label text="Image :" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <HBox spacing="5" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                    <TextField fx:id="txtImage" editable="false" promptText="Aucune image sélectionnée" HBox.hgrow="ALWAYS"/>
+                    <Button text="📁" onAction="#choisirImage"
+                            style="-fx-background-color: linear-gradient(to right, #8e44ad, #9b59b6);
+                                   -fx-text-fill: white;
+                                   -fx-background-radius: 25;
+                                   -fx-cursor: hand;" />
+                </HBox>
+            </GridPane>
+
+            <!-- ✅ BOUTONS -->
+            <HBox alignment="CENTER" spacing="20">
+                <Button text="💾 Enregistrer" onAction="#enregistrerModification"
+                        style="-fx-background-color: linear-gradient(to right, #74ebd5, #acb6e5);
+                               -fx-text-fill: #2c3e50;
+                               -fx-font-weight: bold;
+                               -fx-background-radius: 25;
+                               -fx-padding: 8 20;
+                               -fx-cursor: hand;" />
+            </HBox>
+        </VBox>
+    </center>
+
+    <!-- ✅ FOOTER -->
+    <bottom>
+        <HBox style="-fx-background-color: #ecf0f1; -fx-padding: 10px;" alignment="CENTER">
+            <Label text="© 2023 Système de Gestion Admin - Tous droits réservés"
+                   style="-fx-text-fill: #7f8c8d; -fx-font-size: 12px;"/>
+        </HBox>
+    </bottom>
+</BorderPane>

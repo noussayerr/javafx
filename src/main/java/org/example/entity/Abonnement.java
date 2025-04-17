@@ -6,7 +6,7 @@ import java.util.List;
 public class Abonnement {
     private int id;
     private String titreAbonnement;
-    private String prix;
+    private int prix;
     private String description;
     private Promotion promotion;
     private Duration duration;
@@ -15,7 +15,7 @@ public class Abonnement {
     // Constructeurs
     public Abonnement() {}
 
-    public Abonnement(int id, String titreAbonnement, String prix, String description, Duration duration) {
+    public Abonnement(int id, String titreAbonnement, int prix, String description, Duration duration) {
         this.id = id;
         this.titreAbonnement = titreAbonnement;
         this.prix = prix;
@@ -40,11 +40,11 @@ public class Abonnement {
         this.titreAbonnement = titreAbonnement;
     }
 
-    public String getPrix() {
+    public int getPrix() {
         return prix;
     }
 
-    public void setPrix(String prix) {
+    public void setPrix(int prix) {
         this.prix = prix;
     }
 

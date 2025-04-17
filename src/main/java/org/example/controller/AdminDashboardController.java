@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import org.example.entity.Apprenant;
@@ -17,6 +18,8 @@ import org.example.services.ServiceApprenant;
 import org.example.services.ServiceEnseignant;
 import org.example.services.ServiceUser;
 import org.example.utils.SessionManager;
+import javafx.scene.layout.StackPane;
+
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -67,6 +70,7 @@ public class AdminDashboardController {
     private ServiceApprenant serviceApprenant = new ServiceApprenant();
     private ServiceEnseignant serviceEnseignant = new ServiceEnseignant();
     private ServiceUser serviceUser = new ServiceUser();
+
 
     @FXML
     public void initialize() {
@@ -260,8 +264,14 @@ public class AdminDashboardController {
         alert.showAndWait();
     }
 
+<<<<<<< HEAD
     public void goToMatiere(ActionEvent actionEvent) {
         loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
+=======
+
+    public void afficherEvenements(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
+>>>>>>> 4a302bab86e1f1befc85cfdcd937c14d33473db4
     }
 
     private void loadPage(ActionEvent event, String fxmlPath) {
@@ -275,7 +285,26 @@ public class AdminDashboardController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+<<<<<<< HEAD
             // Gérer l'erreur (peut-être afficher un message à l'utilisateur)
         }
     }
 }
+=======
+        }}
+    @FXML
+    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+    @FXML
+    public void afficherJeux(ActionEvent event) throws IOException  {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+}
+>>>>>>> 4a302bab86e1f1befc85cfdcd937c14d33473db4

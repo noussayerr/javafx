@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.JeuxController"
+            prefHeight="300" prefWidth="600">
+    <VBox spacing="10" alignment="CENTER">
+        <GridPane hgap="10" vgap="10">
+            <Label text="Nom:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="nomField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label fx:id="nomError" textFill="red"/>
+            <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextArea fx:id="descriptionField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label fx:id="descError" textFill="red"/>
+            <Label text="Type:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <TextField fx:id="typeField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <Label fx:id="typeError" textFill="red"/>
+            <Label text="Date de Création:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <DatePicker fx:id="docPicker" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            <Label fx:id="docError" textFill="red"/>
+            <Label text="Game File:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <TextField fx:id="filePathField" editable="false" promptText="No file selected"/>
+                <Button text="Browse" onAction="#handleBrowse"/>
+            </HBox>
+            <Label fx:id="fileError" textFill="red"/>
+            <Label text="controller File:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+            <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                <TextField fx:id="controllerPathField" editable="false" promptText="No file selected"/>
+                <Button text="Browserrrr" onAction="#handleBrowseController"/>
+            </HBox>
+            <Label fx:id="controllerError" textFill="red"/>
+        </GridPane>
+
+        <HBox spacing="10">
+            <Button text="Ajouter" onAction="#ajouterJeux"/>
+            <Button text="Modifier" onAction="#modifierJeux"/>
+            <Button text="Annuler" onAction="#goToList"/>
+        </HBox>
+    </VBox>
+</AnchorPane>
