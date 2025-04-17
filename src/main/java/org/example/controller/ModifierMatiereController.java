@@ -136,13 +136,9 @@ public class ModifierMatiereController {
 
     @FXML
     private void handleAnnuler(ActionEvent event) {
-        // Code pour revenir à l'écran précédent (ex: liste des matières)
-        // Tu peux le remplacer par ton propre mécanisme de navigation
+        loadPage(event, "/org/example/view/ListeMatiere.fxml");
     }
 
-    /**
-     * Gère le bouton "Parcourir" pour sélectionner une image.
-     */
     @FXML
     private void handleUploadImage(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();

@@ -9,12 +9,12 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="org.example.controller.ListeMatiereFController">
+<AnchorPane prefHeight="633.0" prefWidth="1022.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.AfficherCoursFrontController">
 
     <!-- Header avec effet de verre -->
-    <HBox prefHeight="36.0" prefWidth="960.0" style="-fx-background-color: rgba(255,255,255,0.3); -fx-background-radius: 15;" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+    <HBox layoutX="20.0" layoutY="12.0" prefHeight="36.0" prefWidth="960.0" style="-fx-background-color: rgba(255,255,255,0.3); -fx-background-radius: 15;" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="12.0">
         <effect>
             <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
         </effect>
@@ -41,14 +41,17 @@
         </HBox>
     </HBox>
 
+    <Button fx:id="btnAjouterCours" text="Créer un cours" onAction="#ajouterCours" layoutX="65.0" layoutY="80.0" prefWidth="150.0"
+            style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8;" />
 
-    <!-- Zone d'affichage des matières avec scroll -->
-    <ScrollPane fitToWidth="true" layoutX="0" layoutY="70.4" prefHeight="630.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">
-        <TilePane fx:id="matiereContainer" alignment="TOP_CENTER" hgap="20.0" prefTileHeight="250" prefTileWidth="220" style="-fx-background-color: #f5f5f5;" vgap="20.0">
+    <ScrollPane fitToWidth="true" layoutX="65.0" layoutY="121.0" prefHeight="438.0" prefWidth="891.0">
+        <VBox fx:id="coursContainer" spacing="20">
             <padding>
-                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                <Insets bottom="10" left="15" right="15" top="10" />
             </padding>
-        </TilePane>
+
+        </VBox>
+
     </ScrollPane>
 
     <!-- Footer -->

@@ -35,10 +35,9 @@ public class ListeMatiereBController {
     private TableColumn<Matiere, String> descColumn;
 
     @FXML
-    private TableColumn<Matiere, String> imgColumn; // ← Modifié ici
+    private TableColumn<Matiere, String> imgColumn;
 
-    @FXML
-    private Button logoutButton;
+    @FXML private Button logoutButton;
 
     @FXML
     private TableView<Matiere> matieresTable;
@@ -77,6 +76,7 @@ public class ListeMatiereBController {
                     imageContainer.setAlignment(Pos.CENTER); // Centrage horizontal
                     imageContainer.getChildren().add(imageView);
                 }
+
                 @Override
                 protected void updateItem(String imageName, boolean empty) {
                     super.updateItem(imageName, empty);
@@ -85,9 +85,9 @@ public class ListeMatiereBController {
                         setGraphic(null);
                     } else {
                         try {
-                            // On construit le chemin complet
-                            String path = System.getProperty("user.dir") + "/src/main/resources/matiere/" + imageName;
-                            Image image = new Image("file:" + path, 80, 80, true, true);
+                            // Si l'image est dans le dossier ressources
+                            String path = "/matiere/" + imageName; // Utilisation d'un chemin relatif
+                            Image image = new Image(getClass().getResourceAsStream(path), 80, 80, true, true);
                             imageView.setImage(image);
                             imageView.setFitWidth(80);
                             imageView.setFitHeight(80);
@@ -99,7 +99,6 @@ public class ListeMatiereBController {
                     }
                 }
             });
-
 
             // Action column (Modifier + Supprimer)
             actionColumn.setCellFactory(param -> new javafx.scene.control.TableCell<>() {
@@ -220,6 +219,7 @@ public class ListeMatiereBController {
     }
 
     private void modifierMatiere(Matiere matiere) {
+
         System.out.println("Modifier : " + matiere.getNomM());
     }
 
@@ -234,8 +234,29 @@ public class ListeMatiereBController {
     }
 
     private void afficherCours(Matiere matiere) {
-        System.out.println("Afficher les cours de : " + matiere.getNomM());
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AfficherCoursB.fxml"));
+            Parent root = loader.load();
+
+            // Récupération du contrôleur pour passer la matière
+            AfficherCoursBController controller = loader.getController();
+            controller.setMatiere(matiere);
+
+            // Récupération de la scène actuelle
+            Stage currentStage = (Stage) matieresTable.getScene().getWindow();
+
+            // Remplacer le contenu de la scène
+            currentStage.setScene(new Scene(root));
+            currentStage.setTitle("Cours de : " + matiere.getNomM());
+            currentStage.centerOnScreen();
+            currentStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'afficher les cours", e.getMessage());
+        }
     }
+
 
     @FXML
     void handleLogout(ActionEvent event) {

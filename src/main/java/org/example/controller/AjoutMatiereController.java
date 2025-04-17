@@ -9,9 +9,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.example.entity.Matiere;
+import org.example.services.ServiceMatiere;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.sql.SQLException;
 
 public class AjoutMatiereController {
 
@@ -29,8 +35,9 @@ public class AjoutMatiereController {
     @FXML private Label imgErrorLabel;
     @FXML private Label errorLabel;
 
+    private ServiceMatiere matiereService = new ServiceMatiere();
     @FXML
-    private void handleAjouterMatiere(ActionEvent event) {
+    private void handleAjouterMatiere(ActionEvent event) throws SQLException {
         // Nettoyer les messages d'erreur
         clearErrorLabels();
 
@@ -44,7 +51,6 @@ public class AjoutMatiereController {
             nomErrorLabel.setText("Le nom ne doit contenir que des lettres.");
             valid = false;
         }
-
 
         if (titreMField.getText().trim().isEmpty()) {
             titreErrorLabel.setText("Le titre est requis.");
@@ -71,13 +77,50 @@ public class AjoutMatiereController {
             return;
         }
 
-        // Simuler l'ajout de la matière
-        System.out.println("Matière ajoutée avec succès !");
-        System.out.println("Nom : " + nomMField.getText());
-        System.out.println("Titre : " + titreMField.getText());
-        System.out.println("Description : " + descMField.getText());
-        System.out.println("Objectifs : " + objMField.getText());
-        System.out.println("Image : " + imgMField.getText());
+        // Créez une nouvelle matière
+        Matiere matiere = new Matiere();
+        matiere.setNomM(nom);
+        matiere.setTitreM(titreMField.getText());
+        matiere.setDescM(descMField.getText());
+        matiere.setObjM(objMField.getText());
+
+        File sourceImageFile = new File(imgMField.getText()); // Image choisie par l'utilisateur
+        if (sourceImageFile.exists()) {
+            // Récupérer uniquement le nom du fichier
+            String imageName = sourceImageFile.getName();
+
+            // Chemin relatif vers le dossier 'resources/matiere'
+            String projectRoot = System.getProperty("user.dir");
+            Path targetImagePath = Path.of(projectRoot, "src", "main", "resources", "matiere", imageName);
+
+            try {
+                // Copier l'image vers le dossier resources/matiere
+                Files.copy(sourceImageFile.toPath(), targetImagePath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Enregistrer uniquement le nom du fichier dans la base de données
+                matiere.setImgM(  imageName); // Enregistrement relatif dans la base de données
+            } catch (IOException e) {
+                e.printStackTrace();
+                errorLabel.setText("Erreur lors de la copie de l'image.");
+                return;
+            }
+        } else {
+            errorLabel.setText("Fichier image non trouvé.");
+            return;
+        }
+
+
+
+
+
+        // Ajoutez la matière à la base de données
+        try {
+            matiereService.ajouter(matiere);
+            System.out.println("Matière ajoutée avec succès !");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            errorLabel.setText("Erreur lors de l'ajout de la matière.");
+        }
 
         // Réinitialiser les champs
         resetFields();
@@ -134,6 +177,7 @@ public class AjoutMatiereController {
         loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
         // Implémente ici la navigation si nécessaire
     }
+
     private void loadPage(ActionEvent event, String fxmlPath) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));

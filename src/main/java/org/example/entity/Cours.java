@@ -1,5 +1,8 @@
 package org.example.entity;
 
+import org.example.services.ServiceMatiere;
+
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +84,13 @@ public class Cours {
         return matiere;
     }
 
+    public void setMatiere(Matiere matiere) {
+        this.matiere = matiere;
+    }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public List<Fichier> getFichiers() {
         return fichiers;
@@ -119,6 +128,23 @@ public class Cours {
             fichier.setCours(null);
         }
     }
+
+    // Nouvelle méthode qui associe la matière via un ID
+    public void setMatiereById(int matiereId, ServiceMatiere serviceMatiere) {
+        if (matiereId == 0) {
+            System.err.println("Erreur : ID de matière invalide (0).");
+            return;  // Sortir de la méthode si l'ID est invalide
+        }
+
+        try {
+            this.matiere = serviceMatiere.getMatiereById(matiereId); // Recherche de la matière via son ID
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération de la matière : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
 
 
 }

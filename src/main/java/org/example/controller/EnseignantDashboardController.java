@@ -107,7 +107,7 @@ public class EnseignantDashboardController implements Initializable {
 
     private void loadPage(ActionEvent event, String fxmlPath) {
         try {
-            System.out.println("Chargement du fichier : " + fxmlPath); // DEBUG
+            System.out.println("Chargement du fichier : " + fxmlPath);
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
             Scene scene = new Scene(root);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -116,8 +116,12 @@ public class EnseignantDashboardController implements Initializable {
             stage.setMaximized(true);
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // ← affiche l'erreur exacte dans la console
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger la page", e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace(); // ← attrape aussi toute autre erreur de controller
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Exception générale", e.getMessage());
         }
     }
+
 }

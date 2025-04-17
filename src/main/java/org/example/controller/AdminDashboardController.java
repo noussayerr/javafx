@@ -261,7 +261,6 @@ public class AdminDashboardController {
     }
 
     public void goToMatiere(ActionEvent actionEvent) {
-
         loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
     }
 

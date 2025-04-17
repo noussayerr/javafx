@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+
+<VBox spacing="10" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);" prefWidth="200" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <ImageView fx:id="imageView" fitHeight="120" fitWidth="180" preserveRatio="true"/>
+    <Label fx:id="nomLabel" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+    <Label fx:id="descLabel" wrapText="true" style="-fx-font-size: 12px;"/>
+    <Button text="Voir les cours" fx:id="voirCoursButton"/>
+</VBox>

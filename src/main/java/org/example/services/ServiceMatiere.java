@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ServiceMatiere implements IService<Matiere> {
 
-    Connection connection;
+    private Connection connection;
 
     public ServiceMatiere() {
         connection = MyDatabase.getInstance().getConnection();
@@ -18,28 +18,28 @@ public class ServiceMatiere implements IService<Matiere> {
     @Override
     public void ajouter(Matiere matiere) throws SQLException {
         String sql = "INSERT INTO matiere (nomM, titreM, descM, objM, imgM) VALUES (?, ?, ?, ?, ?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, matiere.getNomM());
-        preparedStatement.setString(2, matiere.getTitreM());
-        preparedStatement.setString(3, matiere.getDescM());
-        preparedStatement.setString(4, matiere.getObjM());
-        preparedStatement.setString(5, matiere.getImgM());
-        preparedStatement.executeUpdate();
-        preparedStatement.close();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, matiere.getNomM());
+            preparedStatement.setString(2, matiere.getTitreM());
+            preparedStatement.setString(3, matiere.getDescM());
+            preparedStatement.setString(4, matiere.getObjM());
+            preparedStatement.setString(5, matiere.getImgM());
+            preparedStatement.executeUpdate();
+        }
     }
 
     @Override
     public void modifier(Matiere matiere) throws SQLException {
         String sql = "UPDATE matiere SET nomM=?, titreM=?, descM=?, objM=?, imgM=? WHERE id=?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, matiere.getNomM());
-        preparedStatement.setString(2, matiere.getTitreM());
-        preparedStatement.setString(3, matiere.getDescM());
-        preparedStatement.setString(4, matiere.getObjM());
-        preparedStatement.setString(5, matiere.getImgM());
-        preparedStatement.setInt(6, matiere.getId());
-        preparedStatement.executeUpdate();
-        preparedStatement.close();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, matiere.getNomM());
+            preparedStatement.setString(2, matiere.getTitreM());
+            preparedStatement.setString(3, matiere.getDescM());
+            preparedStatement.setString(4, matiere.getObjM());
+            preparedStatement.setString(5, matiere.getImgM());
+            preparedStatement.setInt(6, matiere.getId());
+            preparedStatement.executeUpdate();
+        }
     }
 
     @Override
@@ -80,29 +80,81 @@ public class ServiceMatiere implements IService<Matiere> {
     }
 
 
+
     @Override
     public List<Matiere> afficher() throws SQLException {
         List<Matiere> matieres = new ArrayList<>();
         String sql = "SELECT * FROM matiere";
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(sql);
-
-        while (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            String nomM = resultSet.getString("nomM");
-            String titreM = resultSet.getString("titreM");
-            String descM = resultSet.getString("descM");
-            String objM = resultSet.getString("objM");
-            String imgM = resultSet.getString("imgM");
-
-            // Utilisation du constructeur avec ID pour éviter id=0
-            Matiere matiere = new Matiere(id, nomM, titreM, descM, objM, imgM);
-            matieres.add(matiere);
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Matiere m = new Matiere(
+                        rs.getInt("id"),
+                        rs.getString("nomM"),
+                        rs.getString("titreM"),
+                        rs.getString("descM"),
+                        rs.getString("objM"),
+                        rs.getString("imgM")
+                );
+                matieres.add(m);
+            }
         }
-
-        resultSet.close();
-        statement.close();
-
         return matieres;
     }
+
+    public List<Matiere> getAllMatieres() throws SQLException {
+        List<Matiere> matieres = new ArrayList<>();
+        String sql = "SELECT * FROM matiere";
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Matiere matiere = new Matiere();
+                matiere.setId(rs.getInt("id"));
+                matiere.setNomM(rs.getString("nomM"));
+                matieres.add(matiere);
+            }
+        }
+        return matieres;
+    }
+
+    public Matiere getMatiereById(int id) throws SQLException {
+        String sql = "SELECT * FROM matiere WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Matiere(
+                        rs.getInt("id"),
+                        rs.getString("nomM"),
+                        rs.getString("titreM"),
+                        rs.getString("descM"),
+                        rs.getString("objM"),
+                        rs.getString("imgM")
+                );
+            }
+        }
+        return null;
+    }
+
+    public Matiere getById(int id) throws SQLException {
+        String query = "SELECT * FROM matiere WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Matiere matiere = new Matiere();
+                    matiere.setId(rs.getInt("id"));
+                    matiere.setNomM(rs.getString("nomM"));
+                    return matiere;
+                }
+            }
+        } catch (SQLException e) {
+            // Log the error (consider using a logging framework)
+            e.printStackTrace();
+            throw new SQLException("Error retrieving Matiere with ID " + id, e);
+        }
+        return null;
+    }
+
+
 }

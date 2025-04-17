@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" style="-fx-background-color: linear-gradient(to bottom right, #f8f9fa, #e9ecef);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.EnseignantDashboardController">
+
+    <!-- Header avec effet de verre -->
+    <HBox style="-fx-background-color: rgba(255,255,255,0.3); -fx-background-radius: 15;" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+        <effect>
+            <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
+        </effect>
+
+        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@/images/admin-icon.png" />
+            </image>
+        </ImageView>
+
+        <Label style="-fx-text-fill: #495057; -fx-font-size: 24px; -fx-font-weight: bold; -fx-font-family: 'Comic Sans MS';" text="DysCover" HBox.hgrow="ALWAYS" />
+
+        <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-padding: 0 15 0 0;">
+            <Button style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Tableau de bord" />
+            <Button onAction="#goMatiereF" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Mes Cours" />
+            <Button fx:id="studentsButton" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Étudiants" />
+            <Button onAction="#handleProfile" fx:id="profileButton" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Profile" />
+
+            <Button fx:id="logoutButton" onAction="#logout" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Déconnexion">
+                <HBox.margin>
+                    <Insets left="300.0" />
+                </HBox.margin>
+            </Button>
+        </HBox>
+    </HBox>
+
+    <!-- Contenu principal -->
+    <VBox alignment="TOP_CENTER" spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="100.0">
+
+        <!-- Carte de bienvenue -->
+        <StackPane prefHeight="150.0" prefWidth="900.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 20;">
+            <effect>
+                <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
+            </effect>
+
+            <VBox alignment="CENTER_LEFT" spacing="10">
+                <Label style="-fx-font-size: 24px; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Comic Sans MS';" text="Bienvenue dans votre espace enseignant !" />
+                <Label style="-fx-font-size: 14px; -fx-text-fill: #6c757d; -fx-font-family: 'Arial Rounded MT Bold';" text="Gérez vos cours et suivez la progression de vos étudiants" />
+                <Button style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-font-family: 'Arial Rounded MT Bold';" text="Créer un nouveau cours" />
+            </VBox>
+
+            <Circle fill="rgba(108,117,125,0.1)" layoutX="700" layoutY="75" radius="60" />
+        </StackPane>
+
+        <!-- Grille de statistiques -->
+        <GridPane hgap="20" vgap="20">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="33" />
+                <ColumnConstraints percentWidth="33" />
+                <ColumnConstraints percentWidth="33" />
+            </columnConstraints>
+
+            <!-- Carte Statistique 1 -->
+            <StackPane style="-fx-background-color: white; -fx-background-radius: 15;" GridPane.columnIndex="0">
+                <effect>
+                    <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
+                </effect>
+                <VBox alignment="CENTER" spacing="15" style="-fx-padding: 20;">
+                    <ImageView fitHeight="60" fitWidth="60">
+                        <image>
+                            <Image url="@/images/admin-icon.png" />
+                        </image>
+                    </ImageView>
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-font-family: 'Comic Sans MS'; -fx-text-fill: #495057;" text="Cours Actifs" />
+                    <Label fx:id="activeCoursesLabel" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #6c757d;" text="5" />
+                </VBox>
+            </StackPane>
+
+            <!-- Carte Statistique 2 -->
+            <StackPane style="-fx-background-color: white; -fx-background-radius: 15;" GridPane.columnIndex="1">
+                <effect>
+                    <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
+                </effect>
+                <VBox alignment="CENTER" spacing="15" style="-fx-padding: 20;">
+                    <ImageView fitHeight="60" fitWidth="60">
+                        <image>
+                            <Image url="@/images/admin-icon.png" />
+                        </image>
+                    </ImageView>
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-font-family: 'Comic Sans MS'; -fx-text-fill: #495057;" text="Étudiants" />
+                    <Label fx:id="studentsCountLabel" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #6c757d;" text="128" />
+                </VBox>
+            </StackPane>
+
+            <!-- Carte Statistique 3 -->
+            <StackPane style="-fx-background-color: white; -fx-background-radius: 15;" GridPane.columnIndex="2">
+                <effect>
+                    <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
+                </effect>
+                <VBox alignment="CENTER" spacing="15" style="-fx-padding: 20;">
+                    <ImageView fitHeight="60" fitWidth="60">
+                        <image>
+                            <Image url="/images/admin-icon.png" />
+                        </image>
+                    </ImageView>
+                    <Label style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-font-family: 'Comic Sans MS'; -fx-text-fill: #495057;" text="Tâches en attente" />
+                    <Label fx:id="pendingTasksLabel" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #6c757d;" text="12" />
+                </VBox>
+            </StackPane>
+        </GridPane>
+
+        <!-- Section Cours Récents -->
+        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 20;">
+            <effect>
+                <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
+            </effect>
+
+            <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #495057; -fx-font-family: 'Comic Sans MS';" text="Vos Cours Récents" />
+
+            <!-- Liste des cours -->
+            <ListView fx:id="recentCoursesList" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                <!-- Exemple d'élément de liste personnalisé -->
+                <placeholder>
+                    <Label text="Aucun cours récent" style="-fx-text-fill: #6c757d; -fx-font-family: 'Arial Rounded MT Bold';" />
+                </placeholder>
+            </ListView>
+        </VBox>
+    </VBox>
+
+    <!-- Footer -->
+    <HBox alignment="CENTER" style="-fx-background-color: rgba(255,255,255,0.5); -fx-background-radius: 10; -fx-padding: 10;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+        <Label style="-fx-text-fill: #495057; -fx-font-family: 'Arial Rounded MT Bold';" text="© 2023 DysCover - Plateforme d'éducation pour la dyslexie" />
+    </HBox>
+</AnchorPane>
