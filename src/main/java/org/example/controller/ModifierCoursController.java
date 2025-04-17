@@ -10,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.example.entity.Cours;
 import org.example.services.ServiceCours;
-import org.example.services.ServiceMatiere;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -30,35 +29,20 @@ public class ModifierCoursController {
     @FXML private Label niveauErrorLabel;
     @FXML private Label typeErrorLabel;
 
-    private int matiereId;
-
-    private final ServiceCours serviceCours = new ServiceCours();
-    private final ServiceMatiere  serviceMatiere = new ServiceMatiere();
     private Cours coursAModifier;
     private CoursModifieListener coursModifieListener;
+    private final ServiceCours serviceCours = new ServiceCours();
 
-
-    // Injecter le cours à modifier
-    // Méthode pour initialiser avec l'ID de la matière
-    public void setMatiereId(int matiereId) {
-        this.matiereId = matiereId;
-    }
     public void setCours(Cours cours) {
         this.coursAModifier = cours;
 
-        if (cours.getMatiere() == null) {
-            System.err.println("⚠ Le cours n'a pas de matière associée !");
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Le cours n'a pas de matière associée.");
-            return;  // Bloque la modification si la matière est manquante
+        if (cours != null) {
+            nomField.setText(cours.getNomC());
+            objField.setText(cours.getObjC());
+            datePicker.setValue(cours.getDateC().toLocalDate());
+            niveauCombo.setValue(cours.getNivC());
+            typeCombo.setValue(cours.getType());
         }
-
-        nomField.setText(cours.getNomC());
-        objField.setText(cours.getObjC());
-        datePicker.setValue(cours.getDateC().toLocalDate());
-        niveauCombo.setValue(cours.getNivC());
-        typeCombo.setValue(cours.getType());
-
-
     }
 
     @FXML
@@ -79,7 +63,7 @@ public class ModifierCoursController {
         }
 
         if (objectif.isEmpty()) {
-            objErrorLabel.setText("L’objectif est obligatoire.");
+            objErrorLabel.setText("L'objectif est obligatoire.");
             isValid = false;
         }
 
@@ -98,12 +82,6 @@ public class ModifierCoursController {
             isValid = false;
         }
 
-        // 🔒 Sécurité supplémentaire avant l'appel au service
-        if (coursAModifier.getMatiere() == null) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Le cours n’a pas de matière associée.");
-            return;
-        }
-
         if (!isValid) return;
 
         coursAModifier.setNomC(nom);
@@ -117,7 +95,6 @@ public class ModifierCoursController {
             if (coursModifieListener != null) {
                 coursModifieListener.onCoursModifie();
             }
-            // Fermer la fenêtre actuelle
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.close();
         } catch (SQLException e) {
@@ -164,5 +141,10 @@ public class ModifierCoursController {
         this.coursModifieListener = listener;
     }
 
+    @FXML
+    public void initialize() {
+        niveauCombo.getItems().addAll("Débutant", "Intermédiaire", "Avancé");
+        typeCombo.getItems().addAll("Vidéo", "Document", "Quiz", "Lien");
+    }
 
 }

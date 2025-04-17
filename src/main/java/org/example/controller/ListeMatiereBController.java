@@ -304,4 +304,8 @@ public class ListeMatiereBController {
     public void handleAfficherAjoutMatiere(ActionEvent actionEvent) {
         loadPage(actionEvent, "/org/example/view/AjoutMatiere.fxml");
     }
+
+    public void goToUtilisateurs(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
+    }
 }

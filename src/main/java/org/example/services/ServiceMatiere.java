@@ -18,58 +18,48 @@ public class ServiceMatiere implements IService<Matiere> {
     @Override
     public void ajouter(Matiere matiere) throws SQLException {
         String sql = "INSERT INTO matiere (nomM, titreM, descM, objM, imgM) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, matiere.getNomM());
-            preparedStatement.setString(2, matiere.getTitreM());
-            preparedStatement.setString(3, matiere.getDescM());
-            preparedStatement.setString(4, matiere.getObjM());
-            preparedStatement.setString(5, matiere.getImgM());
-            preparedStatement.executeUpdate();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, matiere.getNomM());
+            ps.setString(2, matiere.getTitreM());
+            ps.setString(3, matiere.getDescM());
+            ps.setString(4, matiere.getObjM());
+            ps.setString(5, matiere.getImgM());
+            ps.executeUpdate();
         }
     }
 
     @Override
     public void modifier(Matiere matiere) throws SQLException {
         String sql = "UPDATE matiere SET nomM=?, titreM=?, descM=?, objM=?, imgM=? WHERE id=?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, matiere.getNomM());
-            preparedStatement.setString(2, matiere.getTitreM());
-            preparedStatement.setString(3, matiere.getDescM());
-            preparedStatement.setString(4, matiere.getObjM());
-            preparedStatement.setString(5, matiere.getImgM());
-            preparedStatement.setInt(6, matiere.getId());
-            preparedStatement.executeUpdate();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, matiere.getNomM());
+            ps.setString(2, matiere.getTitreM());
+            ps.setString(3, matiere.getDescM());
+            ps.setString(4, matiere.getObjM());
+            ps.setString(5, matiere.getImgM());
+            ps.setInt(6, matiere.getId());
+            ps.executeUpdate();
         }
     }
 
     @Override
     public void supprimer(int id) throws SQLException {
-        // Commencer par supprimer les cours associés à la matière
-        String deleteCoursSql = "DELETE FROM cours WHERE matiere_id = ?";
-        try (PreparedStatement preparedStatementCours = connection.prepareStatement(deleteCoursSql)) {
-            preparedStatementCours.setInt(1, id);
-            preparedStatementCours.executeUpdate();
-        }
+        try (PreparedStatement psCours = connection.prepareStatement("DELETE FROM cours WHERE matiere_id = ?");
+             PreparedStatement psCommentaire = connection.prepareStatement("DELETE FROM commentaire WHERE matiere_id = ?");
+             PreparedStatement psEvalu = connection.prepareStatement("DELETE FROM evalu WHERE matiere_id = ?");
+             PreparedStatement psMatiere = connection.prepareStatement("DELETE FROM matiere WHERE id = ?")) {
 
-        // Ensuite, supprimer les commentaires associés à la matière
-        String deleteCommentaireSql = "DELETE FROM commentaire WHERE matiere_id = ?";
-        try (PreparedStatement preparedStatementCommentaire = connection.prepareStatement(deleteCommentaireSql)) {
-            preparedStatementCommentaire.setInt(1, id);
-            preparedStatementCommentaire.executeUpdate();
-        }
+            psCours.setInt(1, id);
+            psCours.executeUpdate();
 
-        // Supprimer les évaluations associées à la matière
-        String deleteEvaluSql = "DELETE FROM evalu WHERE matiere_id = ?";
-        try (PreparedStatement preparedStatementEvalu = connection.prepareStatement(deleteEvaluSql)) {
-            preparedStatementEvalu.setInt(1, id);
-            preparedStatementEvalu.executeUpdate();
-        }
+            psCommentaire.setInt(1, id);
+            psCommentaire.executeUpdate();
 
-        // Enfin, supprimer la matière elle-même
-        String sql = "DELETE FROM matiere WHERE id = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
-            int rowsAffected = preparedStatement.executeUpdate();
+            psEvalu.setInt(1, id);
+            psEvalu.executeUpdate();
+
+            psMatiere.setInt(1, id);
+            int rowsAffected = psMatiere.executeUpdate();
 
             if (rowsAffected == 0) {
                 throw new SQLException("Aucune matière supprimée, ID introuvable : " + id);
@@ -78,8 +68,6 @@ public class ServiceMatiere implements IService<Matiere> {
             }
         }
     }
-
-
 
     @Override
     public List<Matiere> afficher() throws SQLException {
@@ -102,22 +90,7 @@ public class ServiceMatiere implements IService<Matiere> {
         return matieres;
     }
 
-    public List<Matiere> getAllMatieres() throws SQLException {
-        List<Matiere> matieres = new ArrayList<>();
-        String sql = "SELECT * FROM matiere";
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                Matiere matiere = new Matiere();
-                matiere.setId(rs.getInt("id"));
-                matiere.setNomM(rs.getString("nomM"));
-                matieres.add(matiere);
-            }
-        }
-        return matieres;
-    }
-
-    public Matiere getMatiereById(int id) throws SQLException {
+    public Matiere getById(int id) throws SQLException {
         String sql = "SELECT * FROM matiere WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -136,25 +109,24 @@ public class ServiceMatiere implements IService<Matiere> {
         return null;
     }
 
-    public Matiere getById(int id) throws SQLException {
+    public Matiere getMatiereById(int id) throws SQLException {
         String query = "SELECT * FROM matiere WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        try (Connection conn = MyDatabase.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    Matiere matiere = new Matiere();
-                    matiere.setId(rs.getInt("id"));
-                    matiere.setNomM(rs.getString("nomM"));
-                    return matiere;
-                }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Matiere matiere = new Matiere();
+                matiere.setId(rs.getInt("id"));
+                matiere.setNomM(rs.getString("nomM"));
+                matiere.setTitreM(rs.getString("titreM"));
+                matiere.setDescM(rs.getString("descM"));
+                matiere.setObjM(rs.getString("objM"));
+                matiere.setImgM(rs.getString("imgM"));
+                return matiere;
             }
-        } catch (SQLException e) {
-            // Log the error (consider using a logging framework)
-            e.printStackTrace();
-            throw new SQLException("Error retrieving Matiere with ID " + id, e);
         }
         return null;
     }
-
 
 }

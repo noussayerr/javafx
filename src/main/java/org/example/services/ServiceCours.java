@@ -20,8 +20,15 @@ public class ServiceCours implements IService<Cours> {
 
     @Override
     public void ajouter(Cours cours) throws SQLException {
+        if (cours.getMatiere() == null || cours.getMatiere().getId() <= 0) {
+            throw new IllegalArgumentException("ID de matière invalide");
+        }
+        if (cours.getUser() == null || cours.getUser().getId() <= 0) {
+            throw new IllegalArgumentException("ID utilisateur invalide");
+        }
+
         String sql = "INSERT INTO cours (nomC, objC, dateC, nivC, type, matiere_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, cours.getNomC());
             ps.setString(2, cours.getObjC());
             ps.setTimestamp(3, Timestamp.valueOf(cours.getDateC()));
@@ -30,12 +37,18 @@ public class ServiceCours implements IService<Cours> {
             ps.setInt(6, cours.getMatiere().getId());
             ps.setInt(7, cours.getUser().getId());
             ps.executeUpdate();
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    cours.setId(generatedKeys.getInt(1));
+                }
+            }
         }
     }
 
     @Override
     public void modifier(Cours cours) throws SQLException {
-        String sql = "UPDATE cours SET nomC=?, objC=?, dateC=?, nivC=?, type=?, matiere_id=?, user_id=? WHERE id=?";
+        String sql = "UPDATE cours SET nomC=?, objC=?, dateC=?, nivC=?, type=?, matiere_id=? WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, cours.getNomC());
             ps.setString(2, cours.getObjC());
@@ -43,8 +56,7 @@ public class ServiceCours implements IService<Cours> {
             ps.setString(4, cours.getNivC());
             ps.setString(5, cours.getType());
             ps.setInt(6, cours.getMatiere().getId());
-            ps.setInt(7, cours.getUser().getId());
-            ps.setInt(8, cours.getId());
+            ps.setInt(7, cours.getId());
             ps.executeUpdate();
         }
     }
@@ -67,94 +79,83 @@ public class ServiceCours implements IService<Cours> {
     @Override
     public List<Cours> afficher() throws SQLException {
         List<Cours> coursList = new ArrayList<>();
-        String sql = "SELECT c.*, u.nom AS user_nom FROM cours c JOIN user u ON c.user_id = u.id";
+        String sql = "SELECT c.*, u.nom AS user_nom, u.prenom AS user_prenom FROM cours c JOIN user u ON c.user_id = u.id";
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Cours c = new Cours();
-                c.setId(rs.getInt("id"));
-                c.setNomC(rs.getString("nomC"));
-                c.setObjC(rs.getString("objC"));
-                c.setDateC(rs.getTimestamp("dateC").toLocalDateTime());
-                c.setNivC(rs.getString("nivC"));
-                c.setType(rs.getString("type"));
-
-                User user = new User();
-                user.setId(rs.getInt("user_id"));
-                user.setNom(rs.getString("user_nom"));
-                c.setUser(user);
-
-                Matiere m = new Matiere();
-                m.setId(rs.getInt("matiere_id"));
-                c.setMatiere(m);
-
-                coursList.add(c);
+                coursList.add(createCoursFromResultSet(rs));
             }
         }
         return coursList;
     }
 
-    public List<Cours> getCoursParMatiere(int matiereId) throws SQLException {
+    public List<Cours> afficherParMatiere(int matiereId) throws SQLException {
+        if (matiereId <= 0) {
+            throw new IllegalArgumentException("ID de matière invalide");
+        }
+
         List<Cours> coursList = new ArrayList<>();
-        String sql = "SELECT * FROM cours WHERE matiere_id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, matiereId);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                Cours cours = new Cours();
-                cours.setId(rs.getInt("id"));
-                cours.setNomC(rs.getString("nomC"));
-                cours.setObjC(rs.getString("objC"));
-                cours.setNivC(rs.getString("nivC"));
-                cours.setType(rs.getString("type"));
-                coursList.add(cours);
+        String sql = "SELECT c.*, u.nom AS user_nom, u.prenom AS user_prenom FROM cours c JOIN user u ON c.user_id = u.id WHERE c.matiere_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, matiereId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    coursList.add(createCoursFromResultSet(rs));
+                }
             }
         }
         return coursList;
     }
 
     public Cours getCoursById(int id) throws SQLException {
-        String query = "SELECT * FROM cours WHERE id = ?";
-        PreparedStatement ps = connection.prepareStatement(query);
-        ps.setInt(1, id);
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            Cours cours = new Cours();
-            cours.setId(rs.getInt("id"));
-            cours.setNomC(rs.getString("nom"));
-            cours.setObjC(rs.getString("objectif"));
-            cours.setDateC(rs.getTimestamp("date").toLocalDateTime());
-            cours.setNivC(rs.getString("niveau"));
-            cours.setType(rs.getString("type"));
-
-            // 👉 Ne PAS oublier de récupérer la matière associée
-            int matiereId = rs.getInt("matiere_id");
-            cours.setMatiere(serviceMatiere.getById(matiereId));  // ⚠️ Nécessite une méthode getById dans ServiceMatiere
-
-            return cours;
+        String query = "SELECT c.*, u.nom AS user_nom, u.prenom AS user_prenom FROM cours c JOIN user u ON c.user_id = u.id WHERE c.id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return createCoursFromResultSet(rs);
+                }
+            }
         }
-
         return null;
     }
 
-    public List<Cours> afficherParMatiere(int matiereId) throws SQLException {
-        List<Cours> coursList = new ArrayList<>();
-        String sql = "SELECT * FROM cours WHERE matiere_id = ?";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setInt(1, matiereId);
-        ResultSet rs = ps.executeQuery();
+    private Cours createCoursFromResultSet(ResultSet rs) throws SQLException {
+        Cours cours = new Cours();
+        cours.setId(rs.getInt("id"));
+        cours.setNomC(rs.getString("nomC"));
+        cours.setObjC(rs.getString("objC"));
+        cours.setDateC(rs.getTimestamp("dateC").toLocalDateTime());
+        cours.setNivC(rs.getString("nivC"));
+        cours.setType(rs.getString("type"));
 
-        while (rs.next()) {
-            Cours c = new Cours();
-            c.setId(rs.getInt("id"));
-            c.setNomC(rs.getString("nomC"));
-            c.setObjC(rs.getString("objC"));
-            // Ajoute les autres champs si besoin
-            coursList.add(c);
+        User user = new User();
+        user.setId(rs.getInt("user_id"));
+        user.setNom(rs.getString("user_nom"));
+        user.setPrenom(rs.getString("user_prenom"));
+        cours.setUser(user);
+
+        Matiere matiere = serviceMatiere.getById(rs.getInt("matiere_id"));
+        cours.setMatiere(matiere);
+
+        return cours;
+    }
+
+    public List<Cours> getCoursParMatiere(int matiereId) throws SQLException {
+        if (matiereId <= 0) {
+            throw new IllegalArgumentException("ID de matière invalide");
+        }
+
+        List<Cours> coursList = new ArrayList<>();
+        String sql = "SELECT c.*, u.nom AS user_nom, u.prenom AS user_prenom FROM cours c JOIN user u ON c.user_id = u.id WHERE c.matiere_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, matiereId);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                coursList.add(createCoursFromResultSet(rs));
+            }
         }
         return coursList;
     }
-
 
 }

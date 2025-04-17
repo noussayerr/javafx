@@ -10,18 +10,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.example.entity.Cours;
 import org.example.entity.Matiere;
 import org.example.services.ServiceCours;
 import org.example.utils.SessionManager;
-
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.control.Button;
-
 
 import java.io.IOException;
 import java.net.URL;
@@ -32,7 +27,6 @@ public class AfficherCoursFrontController implements Initializable {
 
     @FXML private Button profileButton;
     @FXML private Button logoutButton;
-
     @FXML private VBox coursContainer;
 
     private Matiere matiere;
@@ -40,24 +34,20 @@ public class AfficherCoursFrontController implements Initializable {
 
     public void setMatiere(Matiere matiere) {
         this.matiere = matiere;
-
         loadCours();
     }
 
     private void loadCours() {
         try {
             List<Cours> coursList = serviceCours.afficherParMatiere(matiere.getId());
-
-            coursContainer.getChildren().clear(); // vider avant d'ajouter pour éviter les doublons
+            coursContainer.getChildren().clear();
 
             for (Cours cours : coursList) {
                 Label nomLabel = new Label("Nom : " + cours.getNomC());
                 nomLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
                 Label descLabel = new Label("Objectif : " + cours.getObjC());
-                Label userLabel = new Label("Ajouté par : " +
-                        (cours.getUser() != null ? cours.getUser().getNom() : "Inconnu"));
-
-
+                Label userLabel = new Label("Ajouté par : " + cours.getUser().getNom());
 
                 Button editButton = new Button("Modifier");
                 editButton.setStyle("-fx-background-color: #FFA726; -fx-text-fill: white; -fx-background-radius: 6;");
@@ -68,25 +58,26 @@ public class AfficherCoursFrontController implements Initializable {
                 deleteButton.setOnAction(e -> supprimerCours(cours));
 
                 HBox buttonBox = new HBox(10, editButton, deleteButton);
-
                 VBox box = new VBox(5, nomLabel, descLabel, userLabel, buttonBox);
-
                 box.setStyle("-fx-background-color: #fff; -fx-padding: 10; -fx-border-color: #ccc; -fx-border-radius: 5;");
+
                 coursContainer.getChildren().add(box);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement des cours", e.getMessage());
         }
     }
 
     private void supprimerCours(Cours cours) {
         try {
-            serviceCours.supprimer(cours.getId()); // Supprimer de la base
-            loadCours(); // Recharger après suppression
-            showAlert(Alert.AlertType.INFORMATION, "Suppression", "Matière supprimée avec succès", "");
+            serviceCours.supprimer(cours.getId());
+            loadCours();
+            showAlert(Alert.AlertType.INFORMATION, "Succès", "Cours supprimé", "Le cours a été supprimé avec succès.");
         } catch (Exception e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Suppression échouée", e.getMessage());
         }
     }
 
@@ -94,27 +85,75 @@ public class AfficherCoursFrontController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ModifierCours.fxml"));
             Parent root = loader.load();
+
             ModifierCoursController controller = loader.getController();
             controller.setCours(cours);
-            controller.setCoursModifieListener(() -> { loadCours();
-            });
+            controller.setCoursModifieListener(this::loadCours);
+
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.setTitle("Modifier Cours");
             stage.show();
 
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de modification", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void ajouterCours(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AjouterCoursF.fxml"));
+            Parent root = loader.load();
+
+            AjouterCoursFController controller = loader.getController();
+            controller.setMatiere(matiere); // lie la matière actuelle
+            controller.setCoursAjouteListener(this::loadCours); // recharge les cours après ajout
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Ajouter un Cours");
+            stage.show();
 
         } catch (IOException e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur d’ajout", e.getMessage());
         }
     }
 
 
+    @FXML
+    private void handleProfile() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ProfileEnseignant.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) profileButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Profil");
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Chargement du profil échoué", e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        // Rien ici pour l'instant
+    @FXML
+    private void logout() {
+        try {
+            SessionManager.getInstance().logout();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Connexion");
+            stage.centerOnScreen();
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion", "Déconnecté avec succès", "");
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de déconnexion", e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void goMatiereF(ActionEvent actionEvent) {
@@ -132,42 +171,10 @@ public class AfficherCoursFrontController implements Initializable {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Navigation échouée", e.getMessage());
         }
     }
 
-    @FXML
-    private void handleProfile() {
-        try {
-            // Load the profile page
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ProfileEnseignant.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) profileButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Profil");
-            stage.centerOnScreen();
-            stage.setMaximized(true);
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement de la page de profil", e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void logout() {
-        try {
-            SessionManager.getInstance().logout();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) logoutButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Connexion");
-            stage.centerOnScreen();
-            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
-            e.printStackTrace();
-        }
-    }
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -176,27 +183,8 @@ public class AfficherCoursFrontController implements Initializable {
         alert.showAndWait();
     }
 
-    public void ajouterCours(ActionEvent actionEvent) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AjouterCoursF.fxml"));
-            Parent root = loader.load();
-
-            AjouterCoursFController controller = loader.getController();
-            controller.setMatiereId(matiere.getId());
-
-            // 👇 Ici on définit le callback qui recharge les cours quand un cours est ajouté
-            controller.setCoursAjouteListener(() -> {
-                loadCours(); // recharge les cours dès qu'un cours est ajouté
-            });
-
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Ajouter un Cours");
-            stage.centerOnScreen();
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // Initialisation si nécessaire
     }
-
 }

@@ -59,7 +59,12 @@ public class AfficherCoursBController {
     }
 
     public void setMatiere(Matiere matiere) {
-        this.selectedMatiere = matiere;
+        if (matiere == null || matiere.getId() <= 0) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Matière invalide", "La matière sélectionnée est invalide.");
+            return;
+        }
+
+        this.selectedMatiere= matiere;
         loadCours();
     }
 
@@ -78,18 +83,13 @@ public class AfficherCoursBController {
 
     private void initActionColumn() {
         actionColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button editButton = new Button("Modifier");
+
             private final Button deleteButton = new Button("Supprimer");
 
             {
-                editButton.setStyle("-fx-background-color: #2980b9; -fx-text-fill: white;");
+
                 deleteButton.setStyle("-fx-background-color: #c0392b; -fx-text-fill: white;");
 
-                editButton.setOnAction(event -> {
-                    Cours cours = getTableView().getItems().get(getIndex());
-                    System.out.println("Modifier cours: " + cours.getNomC());
-                    // Tu peux charger ici une autre interface pour modifier le cours
-                });
 
                 deleteButton.setOnAction(event -> {
                     Cours cours = getTableView().getItems().get(getIndex());
@@ -115,7 +115,7 @@ public class AfficherCoursBController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    HBox hbox = new HBox(10, editButton, deleteButton);
+                    HBox hbox = new HBox(10,  deleteButton);
                     setGraphic(hbox);
                 }
             }
