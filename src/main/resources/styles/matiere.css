@@ -1,0 +1,67 @@
+/* styles.css */
+.root {
+    -fx-background-color: #f5f7fa;
+}
+
+.cours-box {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-padding: 15;
+}
+
+.toggle-files-btn {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+    -fx-background-radius: 4;
+    -fx-font-size: 12px;
+}
+
+.toggle-files-btn:hover {
+    -fx-background-color: #5a6268;
+}
+
+.edit-btn {
+    -fx-background-color: #17a2b8;
+    -fx-text-fill: white;
+    -fx-background-radius: 4;
+    -fx-font-size: 12px;
+}
+
+.edit-btn:hover {
+    -fx-background-color: #138496;
+}
+
+.delete-btn {
+    -fx-background-color: #dc3545;
+    -fx-text-fill: white;
+    -fx-background-radius: 4;
+    -fx-font-size: 12px;
+}
+
+.delete-btn:hover {
+    -fx-background-color: #c82333;
+}
+
+.download-btn {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-background-radius: 4;
+    -fx-font-size: 12px;
+}
+
+.download-btn:hover {
+    -fx-background-color: #218838;
+}
+
+.add-file-btn {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-background-radius: 4;
+    -fx-font-size: 12px;
+}
+
+.add-file-btn:hover {
+    -fx-background-color: #45a049;
+}

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controller.AjouterFichierController"
+      spacing="10" style="-fx-padding: 20;">
+
+    <Label text="Ajouter un fichier" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="Nom du fichier:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Type:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="typeCombo" GridPane.rowIndex="1" GridPane.columnIndex="1">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="PDF"/>
+                    <String fx:value="Word"/>
+                    <String fx:value="Excel"/>
+                    <String fx:value="Autre"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+
+        <Label text="Fichier:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <HBox spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="1">
+            <Button text="Parcourir..." onAction="#handleBrowse"/>
+            <Label fx:id="filePathLabel" text="Aucun fichier sélectionné"/>
+        </HBox>
+    </GridPane>
+
+    <HBox spacing="10" style="-fx-padding: 10 0 0 0;">
+        <Button text="Ajouter" onAction="#ajouterFichier" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+        <Button text="Annuler" onAction="#handleAnnuler"/>
+    </HBox>
+</VBox>

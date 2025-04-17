@@ -30,6 +30,7 @@ import org.example.utils.SessionManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
@@ -60,10 +61,43 @@ public class ListeMatiereFController{
                 card.setAlignment(Pos.CENTER);
                 card.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 10; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
 
-                ImageView imageView = new ImageView(new Image("/matiere/" + matiere.getImgM()));
+                // Create ImageView outside the try-catch
+                ImageView imageView = new ImageView();
                 imageView.setFitWidth(150);
                 imageView.setFitHeight(100);
                 imageView.setPreserveRatio(true);
+
+                try {
+                    // Try to load the subject image
+                    if (matiere.getImgM() != null && !matiere.getImgM().isEmpty()) {
+                        // First try as resource
+                        InputStream resourceStream = getClass().getResourceAsStream(matiere.getImgM());
+                        if (resourceStream != null) {
+                            imageView.setImage(new Image(resourceStream));
+                        } else {
+                            // Then try as file path
+                            try {
+                                imageView.setImage(new Image(new File(matiere.getImgM()).toURI().toString()));
+                            } catch (Exception e) {
+                                throw new RuntimeException("Couldn't load image from path");
+                            }
+                        }
+                    } else {
+                        throw new RuntimeException("No image path specified");
+                    }
+                } catch (Exception e) {
+                    // Load default image if anything fails
+                    try {
+                        InputStream defaultStream = getClass().getResourceAsStream("/images/default-subject.png");
+                        if (defaultStream != null) {
+                            imageView.setImage(new Image(defaultStream));
+                        } else {
+                            System.err.println("Default image not found in resources");
+                        }
+                    } catch (Exception ex) {
+                        System.err.println("Failed to load default image: " + ex.getMessage());
+                    }
+                }
 
                 Label nom = new Label(matiere.getNomM());
                 nom.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
@@ -83,23 +117,22 @@ public class ListeMatiereFController{
                         stage.setScene(new Scene(root));
                         stage.setMaximized(true);
                         stage.show();
-
                     } catch (IOException e) {
                         e.printStackTrace();
+                        showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger la page des cours", e.getMessage());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur inattendue est survenue", e.getMessage());
                     }
                 });
 
                 matiereContainer.getChildren().add(card);
             }
-
-
-
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur SQL", "Problème lors du chargement des matières", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "SQL Error", "Problem loading subjects", e.getMessage());
             e.printStackTrace();
         }
     }
-
     public void goMatiereF(ActionEvent actionEvent) {
         loadPage(actionEvent, "/org/example/view/ListeMatiereF.fxml");
     }
