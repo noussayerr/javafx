@@ -280,4 +280,8 @@ public class AdminDashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }}
+    @FXML
+    public void afficherJeux(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/jeuxIndex.fxml");
+    }
 }
