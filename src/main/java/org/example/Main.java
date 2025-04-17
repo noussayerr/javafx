@@ -17,7 +17,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Charger le fichier FXML (Assurez-vous que le chemin est correct)
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ApprenantDashboard.fxml"));
 
         // Obtenir la taille de l'écran
         double screenWidth = Screen.getPrimary().getBounds().getWidth();

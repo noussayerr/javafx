@@ -42,6 +42,11 @@
                     </ImageView>
                 </graphic>
             </Button>
+            <Button text="Mes Abonnements"
+                    onAction="#handleAbonnementsNavigation"
+                    style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;">
+
+            </Button>
 
             <Button text="Progression"
                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;">

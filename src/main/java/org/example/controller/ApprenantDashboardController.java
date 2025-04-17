@@ -1,7 +1,9 @@
 package org.example.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -75,6 +77,33 @@ public class ApprenantDashboardController {
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
+        alert.showAndWait();
+    }
+    @FXML
+    private void handleAbonnementsNavigation(ActionEvent event) {
+        try {
+            // Load the AbonnementApprenant view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AbonnementApprenant.fxml"));
+            Parent root = loader.load();
+
+            // Get the current stage
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            // Set the new scene
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Erreur", "Impossible de charger la page des abonnements.", Alert.AlertType.ERROR);
+        }
+    }
+
+    private void showAlert(String title, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
         alert.showAndWait();
     }
 }

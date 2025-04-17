@@ -1,7 +1,9 @@
 package org.example.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -48,5 +50,28 @@ public class AdminDashboardController {
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+    @FXML
+    private void handleAbonnementsNavigation(ActionEvent event) {
+        try {
+            // Load the listAbonnement view
+            Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/listAbonnement.fxml"));
+            Scene scene = new Scene(root);
+
+            // Get the current stage
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            // Set the new scene
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Show error message to user
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Navigation Error");
+            alert.setHeaderText("Could not load Abonnements page");
+            alert.setContentText("An error occurred while trying to navigate to the Abonnements page.");
+            alert.showAndWait();
+        }
     }
 }
