@@ -82,7 +82,7 @@ public class EvenementDetailController {
             }
 
             // Nettoyer le nom de l’image
-            imageName = imageName.replaceAll("[^a-zA-Z0-9._-]", "_");
+
 
             URL imageUrl = getClass().getResource("/images/" + imageName);
             if (imageUrl == null) throw new Exception("Image introuvable : " + imageName);

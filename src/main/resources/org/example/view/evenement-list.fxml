@@ -17,25 +17,10 @@
            xmlns="http://javafx.com/javafx/23.0.1"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="org.example.controller.EvenementListController"
-           style="-fx-background-color: linear-gradient(to bottom, #f0f4ff, #e8eaf6);">
+           style="-fx-background-color: linear-gradient(to bottom, #f0f4ff, #e8eaf6)">
 
     <children>
 
-        <!-- ✅ EN-TÊTE MODERNE -->
-        <StackPane alignment="TOP_CENTER" maxWidth="1000"
-                   style="-fx-background-color: linear-gradient(to right, #6a11cb, #2575fc);
-                          -fx-background-radius: 25;
-                          -fx-padding: 35 60;
-                          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0.3, 0, 3);">
-            <HBox alignment="CENTER">
-                <Label fx:id="titleLabel"
-                       text="🎉 Liste des événements"
-                       style="-fx-font-size: 40px;
-                              -fx-font-family: 'Segoe UI', sans-serif;
-                              -fx-text-fill: white;
-                              -fx-font-weight: bold;" />
-            </HBox>
-        </StackPane>
 
         <!-- ✅ LISTE ÉVÉNEMENTS STYLE CARTE -->
         <ScrollPane fx:id="scrollPane"

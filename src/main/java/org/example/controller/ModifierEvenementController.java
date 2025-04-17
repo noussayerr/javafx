@@ -1,8 +1,12 @@
 package org.example.controller;
 
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import org.example.dao.EvenementDAO;
 import org.example.entity.Evenement;
 import org.example.utils.MyDatabase;
+import org.example.utils.SessionManager;
 import org.example.utils.Toast;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -37,6 +42,8 @@ public class ModifierEvenementController {
     @FXML private TextField txtImage;
     @FXML private TextField txtPrix;
     @FXML private Label lblErreurPrix;
+    @FXML
+    private Button logoutButton;
     @FXML private Button btnTheme;
 
     private Evenement evenementActuel;
@@ -276,6 +283,30 @@ public class ModifierEvenementController {
             stylesheets.add(light);
             btnTheme.setText("🌙");
             Toast.show((Stage) scene.getWindow(), "☀️ Thème clair activé !");
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    @FXML
+    private void handleLogout() {
+        try {
+            SessionManager.getInstance().logout();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Connexion");
+            stage.centerOnScreen();
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
+            e.printStackTrace();
         }
     }
 }

@@ -1,7 +1,11 @@
 package org.example.controller;
 
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import org.example.dao.CategorieDAO;
 import org.example.entity.Categorie;
+import org.example.utils.SessionManager;
 import org.example.utils.Toast;
 import javafx.animation.PauseTransition;
 import javafx.collections.ObservableList;
@@ -39,6 +43,8 @@ public class AjouterCategorieController {
     private TextField txtImage;
     @FXML private Label lblNomImage;
     @FXML private ImageView imagePreview;
+    @FXML
+    private Button logoutButton;
 
     @FXML
     private Button btnTheme;
@@ -98,6 +104,8 @@ public class AjouterCategorieController {
                 Files.copy(selectedFile.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
 
                 lblNomImage.setText(nomImageFinale);
+                txtImage.setText(nomImageFinale);
+
 
                 // Prévisualisation
                 Image img = new Image(destinationPath.toUri().toString());
@@ -196,8 +204,8 @@ public class AjouterCategorieController {
         Scene scene = txtNom.getScene();
         ObservableList<String> stylesheets = scene.getStylesheets();
 
-        String light = getClass().getResource("/com/example/firsttry/styles/mode-clair.css").toExternalForm();
-        String dark = getClass().getResource("/com/example/firsttry/styles/dark-theme.css").toExternalForm();
+        String light = getClass().getResource("/org/example/styles/mode-clair.css").toExternalForm();
+        String dark = getClass().getResource("/org/example/styles/dark-theme.css").toExternalForm();
 
         stylesheets.removeIf(s -> s.contains("mode-clair.css") || s.contains("dark-theme.css"));
 
@@ -209,6 +217,29 @@ public class AjouterCategorieController {
             stylesheets.add(light);
             Toast.show((Stage) scene.getWindow(), "☀️ Thème clair activé !");
             btnTheme.setText("🌙");
+        }
+    }
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    @FXML
+    private void handleLogout() {
+        try {
+            SessionManager.getInstance().logout();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Connexion");
+            stage.centerOnScreen();
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
+            e.printStackTrace();
         }
     }
 }

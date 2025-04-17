@@ -1,5 +1,9 @@
 package org.example.controller;
 
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import org.example.dao.EvenementDAO;
 import org.example.entity.Evenement;
 import org.example.utils.MyDatabase;
@@ -9,14 +13,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.example.utils.SessionManager;
 import org.example.utils.Toast;
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.scene.Scene;
+
 
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
@@ -25,6 +32,9 @@ import javafx.util.Duration;
 public class AjouterEvenementController {
     @FXML
     private Button btnTheme;
+    @FXML
+    private Button logoutButton;
+
 
     @FXML
     private ComboBox<String> comboCategorie;
@@ -293,8 +303,8 @@ public class AjouterEvenementController {
         Scene scene = txtTitre.getScene(); // ✅ Utilisation d'un champ valide
         ObservableList<String> stylesheets = scene.getStylesheets();
 
-        String light = getClass().getResource("/com/example/firsttry/styles/mode-clair.css").toExternalForm();
-        String dark = getClass().getResource("/com/example/firsttry/styles/dark-theme.css").toExternalForm();
+        String light = getClass().getResource("/org/example/styles/mode-clair.css").toExternalForm();
+        String dark = getClass().getResource("/org/example//styles/dark-theme.css").toExternalForm();
 
         stylesheets.removeIf(s -> s.contains("mode-clair.css") || s.contains("dark-theme.css"));
 
@@ -307,5 +317,45 @@ public class AjouterEvenementController {
             Toast.show((Stage) scene.getWindow(), "☀️ Thème clair activé !");
             btnTheme.setText("🌙");
         }
+    }
+
+    @FXML
+    private void handleLogout() {
+        try {
+            SessionManager.getInstance().logout();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Connexion");
+            stage.centerOnScreen();
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }}
+    public void afficherEvenements(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
     }
 }

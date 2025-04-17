@@ -37,14 +37,13 @@ public class EvenementDAO {
         }
     }
 
-    // 🔁 Lire tous les événements
     public List<Evenement> getAllEvenements() {
         List<Evenement> list = new ArrayList<>();
-        String sql = "SELECT * FROM event";
+        String sql = "SELECT e.*, c.nom AS nomCategorie " +
+                "FROM event e JOIN category c ON e.category_id = c.id";
 
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-
 
             while (rs.next()) {
                 Evenement e = new Evenement(
@@ -59,9 +58,9 @@ public class EvenementDAO {
                         rs.getString("image"),
                         rs.getFloat("prix")
                 );
+                e.setNomCategorie(rs.getString("nomCategorie")); // ✅ ICI
                 list.add(e);
             }
-
 
         } catch (SQLException e) {
             System.err.println("❌ Erreur de lecture des événements : " + e.getMessage());

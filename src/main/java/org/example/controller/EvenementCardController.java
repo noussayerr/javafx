@@ -50,7 +50,7 @@ public class EvenementCardController {
 
     private void openDetails(MouseEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/firsttry/views/evenement-detail.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/evenement-detail.fxml"));
             Parent root = loader.load();
             EvenementDetailController controller = loader.getController();
             controller.setEvenement(evenement);

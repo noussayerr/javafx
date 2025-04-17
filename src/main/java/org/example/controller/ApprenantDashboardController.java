@@ -100,5 +100,19 @@ public class ApprenantDashboardController {
     }
 
 
+    @FXML
+    private void ouvrirListeEvenements() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/evenement-list.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("📅 Liste des Événements");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

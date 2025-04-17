@@ -1,7 +1,11 @@
 package org.example.controller;
 
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import org.example.dao.CategorieDAO;
 import org.example.entity.Categorie;
+import org.example.utils.SessionManager;
 import org.example.utils.Toast;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -20,6 +24,8 @@ import javafx.util.Duration;
 
 
 public class ModifierCategorieController {
+    @FXML
+    private Button logoutButton;
 
     @FXML
     private TextField txtNom;
@@ -95,19 +101,25 @@ public class ModifierCategorieController {
         lblErreurNom.setText("");
         lblErreurDescription.setText("");
 
-        // ✅ Validation : nom non vide
+        // ✅ Vérification du nom
         if (nom.isEmpty()) {
-            lblErreurNom.setText("❗ Le nom est requis.");
             txtNom.setStyle("-fx-border-color: red;");
+            lblErreurNom.setText("❌ Le nom est requis.");
             isValid = false;
-        }
-        // ✅ Validation : lettres uniquement
-        else if (!nom.matches("[a-zA-Z ]+")) {
-            lblErreurNom.setText("❗ Le nom doit contenir uniquement des lettres.");
+        } else if (!nom.matches("[a-zA-Z ]+")) {
             txtNom.setStyle("-fx-border-color: red;");
+            lblErreurNom.setText("❌ Le nom doit contenir uniquement des lettres.");
             isValid = false;
+        } else {
+            CategorieDAO dao = new CategorieDAO();
+            boolean existe = dao.getAllCategories().stream()
+                    .anyMatch(cat -> cat.getNom().equalsIgnoreCase(nom));
+            if (existe) {
+                txtNom.setStyle("-fx-border-color: red;");
+                lblErreurNom.setText("❌ Ce nom existe déjà.");
+                isValid = false;
+            }
         }
-
         // ✅ Validation : description
         if (description.isEmpty()) {
             lblErreurDescription.setText("❗ La description est requise.");
@@ -150,6 +162,30 @@ public class ModifierCategorieController {
         } else {
             stylesheets.add(light);
             btnTheme.setText("🌙");
+        }
+    }
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void handleLogout() {
+        try {
+            SessionManager.getInstance().logout();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Connexion");
+            stage.centerOnScreen();
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
+            e.printStackTrace();
         }
     }
 }

@@ -1,33 +1,30 @@
 package org.example.controller;
 
+import javafx.event.ActionEvent;
+import javafx.scene.control.*;
 import org.example.dao.CategorieDAO;
 import org.example.entity.Categorie;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.TableCell;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
-import javafx.scene.control.Alert;
+
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.scene.control.TextField;
+import org.example.utils.SessionManager;
 import org.example.utils.Toast;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
-import javafx.scene.control.Label;
-import javafx.scene.control.Pagination;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.control.ButtonType;
+
 import java.io.File;
 
 
@@ -45,10 +42,12 @@ public class CategorieController {
     private TableColumn<Categorie, String> colImage;
     @FXML
     private TextField txtRecherche;
+    @FXML private Button btnTheme;
     @FXML
     private CategorieController parentController;
     @FXML
     private Label loadingIcon;
+    @FXML private Button logoutButton;
 
 
     @FXML
@@ -92,24 +91,17 @@ public class CategorieController {
                     setGraphic(null);
                 } else {
                     try {
-                        File imageFile = new File("src/main/resources/images/" + imagePath);
-                        if (imageFile.exists()) {
-                            Image img = new Image(imageFile.toURI().toString());
-                            imageView.setImage(img);
-                            setGraphic(imageView);
-                        } else {
-                            System.out.println("⚠️ Image introuvable : " + imagePath);
-                            setGraphic(null);
-                        }
+                        // ✅ Charge l’image à partir du dossier resources/images/
+                        Image img = new Image(getClass().getResource("/images/" + imagePath).toExternalForm());
+                        imageView.setImage(img);
+                        setGraphic(imageView);
                     } catch (Exception e) {
-                        System.out.println("❌ Erreur chargement image dans table : " + imagePath);
-                        e.printStackTrace();
+                        System.out.println("❌ Image introuvable : " + imagePath);
                         setGraphic(null);
                     }
                 }
             }
         });
-
 
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
@@ -139,8 +131,13 @@ public class CategorieController {
 
     public void rafraichirTable() {
         CategorieDAO dao = new CategorieDAO();
-        allCategories.setAll(dao.getAllCategories());
+        ObservableList<Categorie> nouvellesCategories = FXCollections.observableArrayList(dao.getAllCategories());
+
+        allCategories.setAll(nouvellesCategories);         // maj data principale
+        listCategories.setAll(nouvellesCategories);        // maj pagination
+        filteredData = new FilteredList<>(listCategories, p -> true); // ⚠️ recréer ici
         pagination.setPageCount((int) Math.ceil((double) allCategories.size() / ROWS_PER_PAGE));
+        pagination.setCurrentPageIndex(0); // revenir à la page 1
         pagination.setPageFactory(this::createPage);
     }
 
@@ -148,7 +145,7 @@ public class CategorieController {
     @FXML
     private void ouvrirFormulaireAjout() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/firsttry/views/ajouter-categorie.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ajouter-categorie.fxml"));
             Parent root = loader.load();
 
             // 🔁 Lien entre les deux contrôleurs
@@ -182,7 +179,7 @@ public class CategorieController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/firsttry/views/modifier-categorie.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/modifier-categorie.fxml"));
             Parent root = loader.load();
 
             ModifierCategorieController controller = loader.getController();
@@ -217,8 +214,8 @@ public class CategorieController {
                 if (response == ButtonType.OK) {
                     CategorieDAO dao = new CategorieDAO();
                     dao.supprimerCategorie(selected.getId());
-                    listCategories.remove(selected);
-                    tableCategories.refresh();
+
+                    rafraichirTable(); // ✅ Rafraîchir TOUTES les listes, pagination, etc.
                     Toast.show((Stage) tableCategories.getScene().getWindow(), "✅ Catégorie supprimée !");
                 }
             });
@@ -226,6 +223,7 @@ public class CategorieController {
             Toast.show((Stage) tableCategories.getScene().getWindow(), "⚠️ Veuillez sélectionner une catégorie.");
         }
     }
+
 
     @FXML
     private void trierParNom() {
@@ -278,6 +276,74 @@ public class CategorieController {
         scale.setOnFinished(e -> label.setVisible(false));
         scale.play();
     }
+
+    @FXML
+    private void handleLogout() {
+        try {
+            SessionManager.getInstance().logout();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Connexion");
+            stage.centerOnScreen();
+
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void toggleTheme() {
+        Scene scene = tableCategories.getScene();//mode sombre et claire
+        ObservableList<String> stylesheets = scene.getStylesheets();
+        String light = getClass().getResource("/org/example/styles/mode-clair.css").toExternalForm();
+        String dark = getClass().getResource("/org/example/styles/dark-theme.css").toExternalForm();
+
+        stylesheets.removeIf(s -> s.contains("mode-clair.css") || s.contains("dark-theme.css"));
+        if (btnTheme.getText().equals("🌙")) {
+            stylesheets.add(dark);
+            btnTheme.setText("☀️");
+            Toast.show((Stage) scene.getWindow(), "🌙 Thème sombre activé !");
+        } else {
+            stylesheets.add(light);
+            btnTheme.setText("🌙");
+            Toast.show((Stage) scene.getWindow(), "☀️ Thème clair activé !");
+        }
+    }
+
+    public void afficherEvenements(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
+    }
+
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }}
+
 }
+
+
+
+
 
 

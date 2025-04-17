@@ -34,40 +34,14 @@ public class EvenementListController {
 
     @FXML
     public void initialize() {
-        setupModernBackground();
+
         playTitleAnimation();
 
         loadEventsWithModernAnimations();
         configureScrollPane();
     }
 
-    private void setupModernBackground() {
-        Rectangle bgRect = new Rectangle();
-        bgRect.widthProperty().bind(mainContainer.widthProperty());
-        bgRect.heightProperty().bind(mainContainer.heightProperty());
 
-        bgRect.setFill(Color.web(PASTEL_VIOLET));
-        mainContainer.getChildren().add(0, bgRect);
-
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(0),
-                        new KeyValue(bgRect.fillProperty(), Color.web(PASTEL_VIOLET))),
-                new KeyFrame(Duration.seconds(5),
-                        new KeyValue(bgRect.fillProperty(), Color.web(PASTEL_BLUE))),
-                new KeyFrame(Duration.seconds(10),
-                        new KeyValue(bgRect.fillProperty(), Color.web(PASTEL_PINK))),
-                new KeyFrame(Duration.seconds(15),
-                        new KeyValue(bgRect.fillProperty(), Color.web(PASTEL_VIOLET)))
-        );
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.setAutoReverse(true);
-        timeline.play();
-
-        Rectangle noiseTexture = new Rectangle();
-        noiseTexture.widthProperty().bind(mainContainer.widthProperty());
-        noiseTexture.heightProperty().bind(mainContainer.heightProperty());
-        mainContainer.getChildren().add(1, noiseTexture);
-    }
 
     private void configureScrollPane() {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -99,7 +73,7 @@ public class EvenementListController {
 
     private void createModernEventCard(Evenement event, int delayMillis) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/firsttry/views/evenement-card.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/evenement-card.fxml"));
             Region card = loader.load();
 
             EvenementCardController controller = loader.getController();

@@ -2,8 +2,10 @@ package org.example.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -15,6 +17,8 @@ import org.example.services.ServiceApprenant;
 import org.example.services.ServiceEnseignant;
 import org.example.services.ServiceUser;
 import org.example.utils.SessionManager;
+import javafx.scene.layout.StackPane;
+
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -65,6 +69,7 @@ public class AdminDashboardController {
     private ServiceApprenant serviceApprenant = new ServiceApprenant();
     private ServiceEnseignant serviceEnseignant = new ServiceEnseignant();
     private ServiceUser serviceUser = new ServiceUser();
+
 
     @FXML
     public void initialize() {
@@ -257,4 +262,22 @@ public class AdminDashboardController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
+
+    public void afficherEvenements(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
+    }
+
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }}
 }

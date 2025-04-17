@@ -2,6 +2,7 @@ package org.example.controller;
 
 import org.example.dao.EvenementDAO;
 import org.example.entity.Evenement;
+import org.example.utils.SessionManager;
 import org.example.utils.Toast;
 import javafx.animation.ScaleTransition;
 import javafx.collections.FXCollections;
@@ -49,8 +50,11 @@ public class EvenementController {
     @FXML private Label loadingIcon;
     @FXML private Pagination pagination;
     @FXML private TextField txtEmail;
+    @FXML private Button logoutButton;
+
     @FXML
     private TableColumn<Evenement, Void> colPayer;
+
 
 
     private static final int ROWS_PER_PAGE = 10;
@@ -96,7 +100,8 @@ public class EvenementController {
 
 
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colCategorie.setCellValueFactory(new PropertyValueFactory<>("categoryId"));
+        colCategorie.setCellValueFactory(new PropertyValueFactory<>("nomCategorie"));
+
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
@@ -144,6 +149,8 @@ public class EvenementController {
     }
     private Node createPage(int pageIndex) {
         String filtre = searchField.getText().toLowerCase();
+
+        // Filtrage dynamique
         FilteredList<Evenement> filtered = new FilteredList<>(allEvenements, e ->
                 filtre == null || filtre.isEmpty()
                         || e.getNom().toLowerCase().contains(filtre)
@@ -151,15 +158,27 @@ public class EvenementController {
                         || e.getLieu().toLowerCase().contains(filtre)
         );
 
+        // 🆕 Mise à jour dynamique du nombre de pages après filtre
+        int totalItems = filtered.size();
+        int totalPages = (int) Math.ceil((double) totalItems / ROWS_PER_PAGE);
+        pagination.setPageCount(Math.max(totalPages, 1));
+
+
         int fromIndex = pageIndex * ROWS_PER_PAGE;
-        int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, filtered.size());
+        int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, totalItems);
 
-        SortedList<Evenement> sorted = new SortedList<>(FXCollections.observableArrayList(filtered.subList(fromIndex, toIndex)));
-        sorted.comparatorProperty().bind(tableEvenements.comparatorProperty());
 
-        tableEvenements.setItems(sorted);
-        return new AnchorPane();
+        if (fromIndex > toIndex || filtered.isEmpty()) {
+            tableEvenements.setItems(FXCollections.observableArrayList());
+        } else {
+            SortedList<Evenement> sorted = new SortedList<>(FXCollections.observableArrayList(filtered.subList(fromIndex, toIndex)));
+            sorted.comparatorProperty().bind(tableEvenements.comparatorProperty());
+            tableEvenements.setItems(sorted);
+        }
+
+        return new AnchorPane(); // requis par la pagination
     }
+
 
     public void rafraichirTable() {
         EvenementDAO dao = new EvenementDAO();
@@ -169,10 +188,11 @@ public class EvenementController {
     }
 
 
+
     @FXML
     private void ouvrirFormulaireAjout() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/firsttry/views/ajouter-evenement.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ajouter-evenement.fxml"));
             Parent root = loader.load();
 
             // ✅ IMPORTANT : injecter le parentController dans le contrôleur du formulaire
@@ -195,7 +215,7 @@ public class EvenementController {
         Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
         if (selected != null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/firsttry/views/modifier-evenement.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/modifier-evenement.fxml"));
                 Parent root = loader.load();
                 ModifierEvenementController controller = loader.getController();
                 controller.initData(selected, this);
@@ -271,12 +291,12 @@ public class EvenementController {
     }
 
 
-    @FXML
+    /*@FXML
     private void toggleTheme() {
         Scene scene = tableEvenements.getScene();//mode sombre et claire
         ObservableList<String> stylesheets = scene.getStylesheets();
-        String light = getClass().getResource("/com/example/firsttry/styles/mode-clair.css").toExternalForm();
-        String dark = getClass().getResource("/com/example/firsttry/styles/dark-theme.css").toExternalForm();
+        String light = getClass().getResource("/org/example/styles/mode-clair.css").toExternalForm();
+        String dark = getClass().getResource("/org/example/styles/dark-theme.css").toExternalForm();
 
         stylesheets.removeIf(s -> s.contains("mode-clair.css") || s.contains("dark-theme.css"));
         if (btnTheme.getText().equals("🌙")) {
@@ -288,7 +308,7 @@ public class EvenementController {
             btnTheme.setText("🌙");
             Toast.show((Stage) scene.getWindow(), "☀️ Thème clair activé !");
         }
-    }
+    }*/
     @FXML
     private void exporterPDF(ActionEvent event) {
         Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
@@ -328,7 +348,7 @@ public class EvenementController {
         }
     }
 
-    @FXML
+   /* @FXML
     private void envoyerPDFParMail() {
         Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
         String email = txtEmail.getText();
@@ -359,7 +379,7 @@ public class EvenementController {
             Toast.show((Stage) tableEvenements.getScene().getWindow(),
                     "❌ Veuillez sélectionner un événement et entrer un email !");
         }
-    }
+    }*/
     @FXML
     private void payerEvenement(Evenement evenement) {
         if (evenement != null) {
@@ -375,4 +395,54 @@ public class EvenementController {
         }
     }
 
+    @FXML
+    private void handleLogout() {
+        try {
+            SessionManager.getInstance().logout();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Connexion");
+            stage.centerOnScreen();
+
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    public void ouvrirCategorieView(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/categorie-view.fxml");
+    }
+
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }}
+
+
+    public void afficherEvenements(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
+    }
 }

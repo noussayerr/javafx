@@ -7,7 +7,9 @@ import java.util.Locale;
 
 public class Evenement {
     private int id;
+
     private int categoryId;
+    private String nomCategorie;
 
     private String nom;
     private String description;
@@ -20,6 +22,7 @@ public class Evenement {
     private String lieu;
     private String image;
     private float prix;
+
 
     public Evenement() {}
 
@@ -65,6 +68,8 @@ public class Evenement {
     public void setId(int id) { this.id = id; }
 
     public int getCategoryId() { return categoryId; }
+    public String getNomCategorie() { return nomCategorie; }
+    public void setNomCategorie(String nomCategorie) { this.nomCategorie = nomCategorie; }
     public void setCategoryId(int categoryId) { this.categoryId = categoryId; }
 
     public String getNom() { return nom; }
