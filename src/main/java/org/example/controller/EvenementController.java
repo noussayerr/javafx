@@ -395,18 +395,20 @@ public class EvenementController {
         }
     }
 
+    public void ouvrirCategorieView(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/categorie-view.fxml");
+    }
+
     @FXML
     private void handleLogout() {
         try {
             SessionManager.getInstance().logout();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
             Parent root = loader.load();
-
             Stage stage = (Stage) logoutButton.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Connexion");
             stage.centerOnScreen();
-
             showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
@@ -414,18 +416,12 @@ public class EvenementController {
         }
     }
 
-
-
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
-    }
-
-    public void ouvrirCategorieView(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/categorie-view.fxml");
     }
 
     private void loadPage(ActionEvent event, String fxmlPath) {
@@ -439,10 +435,34 @@ public class EvenementController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-        }}
-
+        }
+    }
+    public void goToMatiere(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
+    }
 
     public void afficherEvenements(ActionEvent actionEvent) {
         loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
     }
+
+    public void goToUtilisateurs(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
+    }
+
+    @FXML
+    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+    @FXML
+    public void afficherJeux(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
 }

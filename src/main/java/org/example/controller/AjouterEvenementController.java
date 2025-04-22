@@ -343,6 +343,7 @@ public class AjouterEvenementController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
     private void loadPage(ActionEvent event, String fxmlPath) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
@@ -354,8 +355,34 @@ public class AjouterEvenementController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-        }}
+        }
+    }
+    public void goToMatiere(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
+    }
+
     public void afficherEvenements(ActionEvent actionEvent) {
         loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
     }
+
+    public void goToUtilisateurs(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
+    }
+
+    @FXML
+    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+    @FXML
+    public void afficherJeux(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
 }

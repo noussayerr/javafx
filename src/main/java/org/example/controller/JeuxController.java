@@ -423,40 +423,14 @@ public class JeuxController {
         }
     }
 
-    @FXML
-    private void showCourses(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/CoursApprenant.fxml"));
-            AnchorPane listPane = loader.load();
-
-            // Get the stage from the event source
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(listPane));
-            stage.show(); // Show the new scene
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    
 
     @FXML
     private void showGames() throws IOException {
         loadView("jeuxApprenant.fxml");
     }
 
-    @FXML
-    private void ouvrirListeEvenements(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Evenement-list.fxml"));
-            AnchorPane listPane = loader.load();
 
-            // Get the stage from the event source
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(listPane));
-            stage.show(); // Show the new scene
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @FXML
     private void handleProfile(ActionEvent event) throws IOException {
@@ -480,4 +454,49 @@ public class JeuxController {
         stage.setScene(new Scene(root));
         stage.show();
     }
+
+
+
+
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void goToMatiere(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
+    }
+
+    public void afficherEvenements(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
+    }
+
+    public void goToUtilisateurs(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
+    }
+
+    @FXML
+    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+    @FXML
+    public void afficherJeux(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
 }

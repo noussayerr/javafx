@@ -184,7 +184,7 @@ public class ListeMatiereBController {
 
             // Cours column
             coursColumn.setCellFactory(param -> new javafx.scene.control.TableCell<>() {
-                private final Button coursButton = new Button("Voir");
+                private final Button coursButton = new Button("Voir cOURS");
                 private final HBox container = new HBox(coursButton);
 
                 {

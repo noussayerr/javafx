@@ -142,29 +142,20 @@ public class ModifierAbonnementController {
     @FXML
     private void handleLogout() {
         try {
-            // Effacer la session utilisateur
             SessionManager.getInstance().logout();
-
-            // Charger la vue de connexion
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
             Parent root = loader.load();
-
-            // Obtenir la scène actuelle depuis le bouton existant
-            Stage stage = (Stage) logoutButton.getScene().getWindow(); // NPE here if logoutButton is null
-
-            // Changer la scène
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Connexion");
             stage.centerOnScreen();
-
-            // Afficher un message de confirmation
             showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
-
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
             e.printStackTrace();
         }
     }
+
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -172,28 +163,47 @@ public class ModifierAbonnementController {
         alert.setContentText(content);
         alert.showAndWait();
     }
-    @FXML
-    private void handleAbonnementsNavigation(ActionEvent event) {
+
+    private void loadPage(ActionEvent event, String fxmlPath) {
         try {
-            // Load the listAbonnement view
-            Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/listAbonnement.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
             Scene scene = new Scene(root);
-
-            // Get the current stage
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            // Set the new scene
             stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            // Show error message to user
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Navigation Error");
-            alert.setHeaderText("Could not load Abonnements page");
-            alert.setContentText("An error occurred while trying to navigate to the Abonnements page.");
-            alert.showAndWait();
         }
     }
+    public void goToMatiere(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
+    }
+
+    public void afficherEvenements(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
+    }
+
+    public void goToUtilisateurs(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
+    }
+
+    @FXML
+    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+    @FXML
+    public void afficherJeux(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
 }
 
