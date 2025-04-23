@@ -94,4 +94,31 @@ public class ServiceUser {
         }
     }
 
+    public User findByEmail(String email) throws SQLException {
+        String query = "SELECT * FROM user WHERE email = ?";
+        User user = null;
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setEmail(resultSet.getString("email"));
+                user.setNom(resultSet.getString("nom"));
+                user.setPrenom(resultSet.getString("prenom"));
+                user.setEtat(resultSet.getString("etat"));
+                user.setPhotoProfil(resultSet.getString("photo_profil"));
+                user.setPassword(resultSet.getString("password"));
+                user.setTelephone(resultSet.getInt("telephone"));
+
+
+                String rolesJson = resultSet.getString("roles");
+                List<String> roles = convertJsonToRoles(rolesJson);
+                user.setRoles(roles);
+            }
+        }
+        return user;
+    }
 }

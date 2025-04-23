@@ -1,4 +1,7 @@
 package org.example.controller;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import org.example.dao.EvenementDAO;
 import org.example.entity.Evenement;
 import javafx.animation.*;

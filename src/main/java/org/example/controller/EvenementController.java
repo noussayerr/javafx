@@ -348,6 +348,11 @@ public class EvenementController {
         }
     }
 
+
+    public void goToUtilisateurs(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
+    }
+
    /* @FXML
     private void envoyerPDFParMail() {
         Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();

@@ -86,6 +86,17 @@ public class ServiceEnseignant implements IService<Enseignant> {
         }
     }
 
+    public boolean emailExists(String email) throws SQLException {
+        String query = "SELECT COUNT(*) FROM user WHERE email = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1) > 0; // Returns true if email exists
+            }
+        }
+        return false; // Returns false if no matching email is found or an error occurs
+    }
     @Override
     public void modifier(Enseignant enseignant) throws SQLException {
         String userQuery = "UPDATE user SET email = ?, password = ?, nom = ?, prenom = ?, dateNaissance = ?, etat = ?, telephone = ?, is_verified = ?, verification_token = ?, photo_profil = ?, interactions_count = ?, sessions_count = ?, last_activity = ? WHERE id = ?";

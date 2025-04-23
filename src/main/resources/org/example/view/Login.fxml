@@ -1,75 +1,124 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<?import javafx.geometry.Insets?>
-
 <?import java.lang.String?>
 <?import java.net.URL?>
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.171"
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.controller.Login"
-            prefHeight="600.0" prefWidth="500.0"
-            style="-fx-background-color: linear-gradient(to bottom right, #e9ecef, #f4f4f4);">
+            prefHeight="768.0" prefWidth="1366.0"
+            style="-fx-background-color: #f4f4f4;">
 
-    <VBox alignment="CENTER" spacing="35.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="40.0"
-          style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 40; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 15, 0, 0, 8);">
+    <!-- Left Side: Image -->
+    <left>
+        <StackPane prefWidth="683.0" style="-fx-background-color: #2c3e50;">
+            <ImageView fitWidth="683.0" fitHeight="768.0" preserveRatio="true">
+                <image>
+                    <Image url="@/images/event1.jpg"/>
+                </image>
+            </ImageView>
+            <VBox alignment="CENTER" spacing="20" style="-fx-padding: 50;">
+                <Label text="Connexion Sécurisée"
+                       style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label text="Accédez à votre espace personnel pour gérer vos cours et progresser"
+                       style="-fx-font-size: 18px; -fx-text-fill: #ecf0f1; -fx-wrap-text: true; -fx-max-width: 500;"/>
+            </VBox>
+        </StackPane>
+    </left>
 
-        <!-- Title - Enhanced -->
-        <Label text="Connexion"
-               style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 30 0;"/>
+    <!-- Right Side: Form -->
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <content>
+                <VBox alignment="CENTER" spacing="20" style="-fx-padding: 50; -fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 15, 0, 0, 5); -fx-max-width: 600;">
 
-        <!-- Form Grid - Enlarged -->
-        <GridPane hgap="15" vgap="20">
-            <columnConstraints>
-                <ColumnConstraints prefWidth="120.0"/>
-                <ColumnConstraints prefWidth="200.0"/>
-            </columnConstraints>
+                    <!-- Title -->
+                    <Label text="Connexion"
+                           style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 20 0;"/>
 
-            <!-- Email - Bigger -->
-            <Label text="Email:" GridPane.rowIndex="0" GridPane.columnIndex="0"
-                   style="-fx-font-size: 16px; -fx-text-fill: #34495e;"/>
-            <TextField fx:id="emailField" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 12; -fx-font-size: 16px;"
-                       promptText="Entrez votre email"/>
+                    <!-- Form Grid -->
+                    <GridPane hgap="15" vgap="15">
+                        <columnConstraints>
+                            <ColumnConstraints prefWidth="150.0"/>
+                            <ColumnConstraints prefWidth="300.0"/>
+                            <ColumnConstraints prefWidth="150.0"/>
+                        </columnConstraints>
 
-            <!-- Mot de passe - Bigger -->
-            <Label text="Mot de passe:" GridPane.rowIndex="1" GridPane.columnIndex="0"
-                   style="-fx-font-size: 16px; -fx-text-fill: #34495e;"/>
-            <PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                           style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 12; -fx-font-size: 16px;"
-                           promptText="Entrez votre mot de passe"/>
-        </GridPane>
+                        <!-- Email -->
+                        <Label text="Email :" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <TextField fx:id="emailField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 14px;"
+                                   promptText="Entrez votre email"/>
+                        <Label fx:id="emailError" GridPane.rowIndex="0" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
 
-        <!-- Buttons Container for better alignment -->
-        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 20 0 0 0;">
-            <!-- Login Button - Enhanced -->
-            <Button text="Se connecter" onAction="#handleLogin"
-                    style="-fx-background-color: linear-gradient(to right, #3498db, #2980b9); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-background-radius: 10; -fx-padding: 15 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 3);"
-                    prefWidth="200.0" prefHeight="50.0">
-                <styleClass>
-                    <String fx:value="login-button"/>
-                </styleClass>
-            </Button>
+                        <!-- Mot de passe -->
+                        <Label text="Mot de passe :" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 14px;"
+                                       promptText="Entrez votre mot de passe"/>
+                        <Label fx:id="passwordError" GridPane.rowIndex="1" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
 
-            <!-- Sign Up Button - Enhanced -->
-            <Button text="S'inscrire" onAction="#redirectToChoice"
-                    style="-fx-background-color: transparent; -fx-text-fill: #3498db; -fx-font-weight: bold; -fx-font-size: 16px; -fx-border-color: #3498db; -fx-border-radius: 10; -fx-border-width: 2; -fx-padding: 12 30;"
-                    prefWidth="200.0" prefHeight="50.0">
-                <styleClass>
-                    <String fx:value="signup-button"/>
-                </styleClass>
-            </Button>
-        </VBox>
+                        <!-- CAPTCHA -->
+                        <Label text="Vérification :" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <HBox GridPane.rowIndex="2" GridPane.columnIndex="1" spacing="10" alignment="CENTER_LEFT">
+                            <ImageView fx:id="captchaQuestionImageView" fitWidth="150" fitHeight="40" preserveRatio="true"/>
+                            <TextField fx:id="captchaAnswerField"
+                                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 14px; -fx-pref-width: 100;"
+                                       promptText="Réponse"/>
+                        </HBox>
+                        <Label fx:id="captchaError" GridPane.rowIndex="2" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
+                    </GridPane>
 
-        <!-- Error Label - Bigger -->
-        <Label fx:id="errorLabel"
-               style="-fx-text-fill: #e74c3c; -fx-font-size: 14px; -fx-padding: 10 0 0 0;"/>
-    </VBox>
+                    <!-- Buttons Container -->
+                    <VBox alignment="CENTER" spacing="20" style="-fx-padding: 30 0 0 0;">
+                        <!-- HBox for FaceID and Se connecter -->
+                        <HBox alignment="CENTER" spacing="20">
+                            <Button fx:id="faceIdButton" text="FaceID" onAction="#handleFaceId"
+                                    style="-fx-background-color: linear-gradient(to right, #2ecc71, #27ae60); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-background-radius: 10; -fx-padding: 12 40; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);"
+                                    prefWidth="200.0" prefHeight="50.0"
+                                    disable="true">
+                                <styleClass>
+                                    <String fx:value="faceid-button"/>
+                                </styleClass>
+                            </Button>
+                            <Button text="Se connecter" onAction="#handleLogin"
+                                    style="-fx-background-color: linear-gradient(to right, #3498db, #2980b9); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-background-radius: 10; -fx-padding: 12 40; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);"
+                                    prefWidth="200.0" prefHeight="50.0">
+                                <styleClass>
+                                    <String fx:value="login-button"/>
+                                </styleClass>
+                            </Button>
+                            <Button text="Mot de passe oublié ?" onAction="#handleForgotPassword"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #e67e22; -fx-font-size: 14px; -fx-underline: true;"/>
 
-    <!-- Optional: Add subtle CSS for hover effect -->
+                        </HBox>
+                        <!-- S'inscrire button below -->
+                        <Button text="S'inscrire" onAction="#redirectToChoice"
+                                style="-fx-background-color: transparent; -fx-text-fill: #3498db; -fx-font-weight: bold; -fx-font-size: 16px; -fx-border-color: #3498db; -fx-border-radius: 10; -fx-border-width: 2; -fx-padding: 12 40;"
+                                prefWidth="200.0" prefHeight="50.0">
+                            <styleClass>
+                                <String fx:value="signup-button"/>
+                            </styleClass>
+                        </Button>
+                    </VBox>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <!-- CSS for hover effects and animations -->
     <stylesheets>
         <URL value="@/styles/login.css"/>
     </stylesheets>
-</AnchorPane>
+</BorderPane>

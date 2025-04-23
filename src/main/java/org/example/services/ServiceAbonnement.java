@@ -75,17 +75,6 @@ public class ServiceAbonnement implements IService<Abonnement> {
 
             // Vérifie si une promotion est liée
             int promoId = rs.getInt("promo_id");
-            if (!rs.wasNull()) {
-                Promotion promo = new Promotion();
-                promo.setId(promoId);
-                promo.setTitre(rs.getString("promo_titre"));
-                promo.setDescription(rs.getString("promo_description"));
-                promo.setReduction(rs.getInt("reduction"));
-                promo.setDateDebut(rs.getDate("date_debut").toLocalDate());
-                promo.setDateFin(rs.getDate("date_fin").toLocalDate());
-
-                a.setPromotion(promo);
-            }
 
             list.add(a);
         }

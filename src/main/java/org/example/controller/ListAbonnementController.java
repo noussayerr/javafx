@@ -252,4 +252,20 @@ public class ListAbonnementController implements Initializable {
             alert.showAndWait();
         }
     }
+    public void goToUtilisateurs(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
+    }
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

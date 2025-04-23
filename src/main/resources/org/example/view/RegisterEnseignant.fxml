@@ -7,129 +7,185 @@
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 <?import java.net.URL?>
+<?import javafx.scene.image.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.171"
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.controller.RegisterEnseignant"
-            prefHeight="650.0" prefWidth="450.0"
-            style="-fx-background-color: linear-gradient(to bottom right, #e9ecef, #f4f4f4);">
+            prefHeight="768.0" prefWidth="1366.0"
+            style="-fx-background-color: #f4f4f4;">
 
-    <VBox alignment="CENTER" spacing="25.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0"
-          style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);">
+    <!-- Left Side: Image -->
+    <left>
+        <StackPane prefWidth="683.0" style="-fx-background-color: #2c3e50;">
+            <ImageView fitWidth="683.0" fitHeight="768.0" preserveRatio="true">
 
-        <!-- Title -->
-        <Label text="Inscription Enseignant"
-               style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 20 0;"/>
+            </ImageView>
+            <VBox alignment="CENTER" spacing="20" style="-fx-padding: 50;">
+                <Label text="Rejoignez-nous!"
+                       style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label text="Inscrivez-vous pour partager votre expertise et inspirer les apprenants"
+                       style="-fx-font-size: 18px; -fx-text-fill: #ecf0f1; -fx-wrap-text: true; -fx-max-width: 500;"/>
+            </VBox>
+        </StackPane>
+    </left>
 
-        <!-- Form Grid -->
-        <GridPane hgap="15" vgap="15">
-            <columnConstraints>
-                <ColumnConstraints prefWidth="120.0"/>
-                <ColumnConstraints prefWidth="250.0"/>
-            </columnConstraints>
+    <!-- Right Side: Form -->
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <content>
+                <VBox alignment="CENTER" spacing="0" style="-fx-padding: 50; -fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 15, 0, 0, 5); -fx-max-width: 600;">
 
-            <!-- Nom -->
-            <Label text="Nom:" GridPane.rowIndex="0" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
-            <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
-                       promptText="Entrez votre nom"/>
+                    <!-- Title -->
+                    <Label text="Inscription Enseignant"
+                           style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 20 0;"/>
 
-            <!-- Prénom -->
-            <Label text="Prénom:" GridPane.rowIndex="1" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
-            <TextField fx:id="prenomField" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
-                       promptText="Entrez votre prénom"/>
+                    <!-- Form Grid -->
+                    <GridPane hgap="15" vgap="15">
+                        <columnConstraints>
+                            <ColumnConstraints prefWidth="150.0"/>
+                            <ColumnConstraints prefWidth="300.0"/>
+                            <ColumnConstraints prefWidth="150.0"/>
+                        </columnConstraints>
 
-            <!-- Email -->
-            <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
-            <TextField fx:id="emailField" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
-                       promptText="Entrez votre email"/>
+                        <!-- Nom -->
+                        <Label text="Nom:" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 12px;"
+                                   promptText="Entrez votre nom"/>
+                        <Label fx:id="nomError" GridPane.rowIndex="0" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
 
-            <!-- Mot de passe -->
-            <Label text="Mot de passe:" GridPane.rowIndex="3" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
-            <PasswordField fx:id="passwordField" GridPane.rowIndex="3" GridPane.columnIndex="1"
-                           style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
-                           promptText="Entrez votre mot de passe"/>
+                        <!-- Prénom -->
+                        <Label text="Prénom:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <TextField fx:id="prenomField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 12px;"
+                                   promptText="Entrez votre prénom"/>
+                        <Label fx:id="prenomError" GridPane.rowIndex="1" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
 
-            <!-- Téléphone -->
-            <Label text="Téléphone:" GridPane.rowIndex="4" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
-            <TextField fx:id="telephoneField" GridPane.rowIndex="4" GridPane.columnIndex="1"
-                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
-                       promptText="Entrez votre téléphone"/>
+                        <!-- Email -->
+                        <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <TextField fx:id="emailField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 12px;"
+                                   promptText="Entrez votre email"/>
+                        <Label fx:id="emailError" GridPane.rowIndex="2" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
 
-            <!-- Date de naissance -->
-            <Label text="Date de naissance:" GridPane.rowIndex="5" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
-            <TextField fx:id="dateNaissanceField" GridPane.rowIndex="5" GridPane.columnIndex="1"
-                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
-                       promptText="YYYY-MM-DD"/>
+                        <!-- Mot de passe -->
+                        <Label text="Mot de passe:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <PasswordField fx:id="passwordField" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 12px;"
+                                       promptText="Entrez votre mot de passe"/>
+                        <Label fx:id="passwordError" GridPane.rowIndex="3" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
 
-            <!-- Spécialité -->
-            <Label text="Spécialité:" GridPane.rowIndex="6" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
-            <TextField fx:id="specialiteField" GridPane.rowIndex="6" GridPane.columnIndex="1"
-                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
-                       promptText="Votre domaine d'expertise"/>
+                        <!-- Confirmer Mot de passe -->
+                        <Label text="Confirmer:" GridPane.rowIndex="4" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <PasswordField fx:id="confirmPasswordField" GridPane.rowIndex="4" GridPane.columnIndex="1"
+                                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 12px;"
+                                       promptText="Confirmez votre mot de passe"/>
+                        <Label fx:id="confirmPasswordError" GridPane.rowIndex="4" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
 
-            <!-- Expérience -->
-            <Label text="Expérience:" GridPane.rowIndex="7" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
-            <ComboBox fx:id="experienceField" GridPane.rowIndex="7" GridPane.columnIndex="1"
-                      style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5; -fx-font-size: 14px;">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Débutant (0-2 ans)"/>
-                        <String fx:value="Intermédiaire (3-5 ans)"/>
-                        <String fx:value="Expérimenté (5+ ans)"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
+                        <!-- Téléphone -->
+                        <Label text="Téléphone:" GridPane.rowIndex="5" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <TextField fx:id="telephoneField" GridPane.rowIndex="5" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 12px;"
+                                   promptText="Entrez votre téléphone"/>
+                        <Label fx:id="telephoneError" GridPane.rowIndex="5" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
 
-            <Label text="Photo de profil:" GridPane.rowIndex="8" GridPane.columnIndex="0"
-                   style="-fx-font-size: 14px; -fx-text-fill: #34495e;"/>
-            <HBox GridPane.rowIndex="8" GridPane.columnIndex="1" spacing="10">
-                <TextField fx:id="photoProfilField"
-                           style="-fx-background-color: #ecf0f1; -fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-font-size: 14px;"
-                           promptText="Choisir une photo" editable="false"/>
-                <Button text="Parcourir" onAction="#handlePhotoUpload"
-                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 12px; -fx-background-radius: 5; -fx-padding: 5 15;"/>
-            </HBox>
-        </GridPane>
-        <HBox alignment="CENTER" spacing="20" style="-fx-padding: 20 0 0 0;">
+                        <!-- Date de naissance -->
+                        <Label text="Date de naissance:" GridPane.rowIndex="6" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <TextField fx:id="dateNaissanceField" GridPane.rowIndex="6" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 12px;"
+                                   promptText="YYYY-MM-DD"/>
+                        <Label fx:id="dateNaissanceError" GridPane.rowIndex="6" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
 
-        <!-- Register Button -->
-        <Button text="S'inscrire" onAction="#handleRegister"
-                style="-fx-background-color: linear-gradient(to right, #e74c3c, #c0392b); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 10 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);"
-                prefWidth="150.0" prefHeight="40.0">
-            <styleClass>
-                <String fx:value="register-button"/>
-            </styleClass>
-        </Button>
+                        <!-- Spécialité -->
+                        <Label text="Spécialité:" GridPane.rowIndex="7" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <TextField fx:id="specialiteField" GridPane.rowIndex="7" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 12px;"
+                                   promptText="Votre domaine d'expertise"/>
+                        <Label fx:id="specialiteError" GridPane.rowIndex="7" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
 
-        <Button text="Retour" onAction="#handleBack"
-                style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d; -fx-font-weight: bold; -fx-font-size: 14px; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-border-width: 2; -fx-padding: 10 25;"
-                prefWidth="150.0" prefHeight="40.0">
-            <styleClass>
-                <String fx:value="back-button"/>
-            </styleClass>
-        </Button>
+                        <!-- Expérience -->
+                        <Label text="Expérience:" GridPane.rowIndex="8" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="experienceField" GridPane.rowIndex="8" GridPane.columnIndex="1"
+                                  style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 5; -fx-font-size: 12px;">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Débutant (0-2 ans)"/>
+                                    <String fx:value="Intermédiaire (3-5 ans)"/>
+                                    <String fx:value="Expérimenté (5+ ans)"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Label fx:id="experienceError" GridPane.rowIndex="8" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
 
-        </HBox>
+                        <!-- Photo de profil -->
+                        <Label text="Photo de profil:" GridPane.rowIndex="9" GridPane.columnIndex="0"
+                               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-font-weight: bold;"/>
+                        <HBox GridPane.rowIndex="9" GridPane.columnIndex="1" spacing="10">
+                            <TextField fx:id="photoProfilField"
+                                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 12px;"
+                                       promptText="Choisir une photo" editable="false"/>
+                            <Button text="Parcourir" onAction="#handlePhotoUpload"
+                                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 10 20; -fx-font-weight: bold;"/>
+                        </HBox>
+                        <Label fx:id="photoProfilError" GridPane.rowIndex="9" GridPane.columnIndex="2"
+                               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
+                    </GridPane>
+                    <!-- Ajoutez cette section juste avant le conteneur des boutons -->
+                    <!-- Verification Code Section -->
+                    <VBox spacing="10" style="-fx-padding: 20 0 0 0;">
+                        <HBox spacing="10">
+                            <TextField fx:id="verificationCodeField" promptText="Code de vérification"
+                                       style="-fx-background-color: #ecf0f1; -fx-background-radius: 8; -fx-border-color: #bdc3c7; -fx-border-radius: 8; -fx-padding: 10; -fx-font-size: 14px;"
+                                       prefWidth="200.0"/>
+                            <Button text="Envoyer Code" onAction="#handleSendVerificationCode" fx:id="sendVerificationCodeButton"
+                                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 10 20; -fx-font-weight: bold;"/>
+                            <Button text="Vérifier Code" onAction="#handleVerifyCode"
+                                    style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 10 20; -fx-font-weight: bold;"/>
+                        </HBox>
+                        <Label fx:id="verificationCodeError" style="-fx-text-fill: #e74c3c; -fx-font-size: 12px;"/>
+                    </VBox>                    <!-- Buttons Container -->
+                    <HBox alignment="CENTER" spacing="20" style="-fx-padding: 30 0 0 0;">
+                        <Button text="S'inscrire" onAction="#handleRegister"
+                                style="-fx-background-color: linear-gradient(to right, #e74c3c, #c0392b); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-background-radius: 10; -fx-padding: 12 40; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);"
+                                prefWidth="200.0" prefHeight="50.0">
+                            <styleClass>
+                                <String fx:value="register-button"/>
+                            </styleClass>
+                        </Button>
+                        <Button text="Retour" onAction="#handleBack"
+                                style="-fx-background-color: transparent; -fx-text-fill: #34495e; -fx-font-weight: bold; -fx-font-size: 16px; -fx-border-color: #e74c3c; -fx-border-radius: 10; -fx-border-width: 2; -fx-padding: 12 40;"
+                                prefWidth="200.0" prefHeight="50.0">
+                            <styleClass>
+                                <String fx:value="back-button"/>
+                            </styleClass>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
 
-
-        <!-- Error Label -->
-        <Label fx:id="errorLabel"
-               style="-fx-text-fill: #e74c3c; -fx-font-size: 12px; -fx-padding: 5 0 0 0;"/>
-    </VBox>
-
-    <!-- Optional: Add subtle CSS for hover effect -->
+    <!-- CSS for hover effects and animations -->
     <stylesheets>
         <URL value="@/styles/register.css"/>
     </stylesheets>
-</AnchorPane>
+</BorderPane>
