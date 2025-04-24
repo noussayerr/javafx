@@ -1,5 +1,8 @@
 package org.example.controller;
 
+import javafx.animation.FadeTransition;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
 import org.example.entity.Evenement;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,11 +24,14 @@ public class EvenementCardController {
     @FXML private Label eventName;
     @FXML private Label eventDate;
     @FXML private HBox eventCard;
+    @FXML private TextArea commentaireField;
+    private Evenement event;
 
-    private Evenement evenement;
+    @FXML private VBox root;
+
 
     public void setData(Evenement evenement) {
-        this.evenement = evenement;
+        this.event = evenement; // Stocker pour l’utiliser dans d'autres méthodes
 
         eventName.setText(evenement.getNom());
         eventDate.setText(evenement.getDate().toString());
@@ -35,25 +41,32 @@ public class EvenementCardController {
                 String imagePath = "/images/" + evenement.getImage();
                 Image image = new Image(getClass().getResource(imagePath).toExternalForm());
                 eventImage.setImage(image);
+
+                // Animation d’apparition (fade-in)
                 eventImage.setOpacity(0);
-                javafx.animation.FadeTransition fade = new javafx.animation.FadeTransition(Duration.millis(600), eventImage);
+                FadeTransition fade = new FadeTransition(Duration.millis(600), eventImage);
                 fade.setFromValue(0);
                 fade.setToValue(1);
                 fade.play();
             }
         } catch (Exception e) {
+            System.out.println("❌ Erreur lors du chargement de l’image : " + e.getMessage());
             e.printStackTrace();
         }
 
+        // ✅ Action sur le nom pour ouvrir les détails
         eventName.setOnMouseClicked(this::openDetails);
     }
 
-    private void openDetails(MouseEvent event) {
+    private void openDetails(MouseEvent mouseEvent) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/evenement-detail.fxml"));
             Parent root = loader.load();
+
             EvenementDetailController controller = loader.getController();
-            controller.setEvenement(evenement);
+            controller.setEvenement(event, "email@example.com");
+
+
             Stage stage = new Stage();
             stage.setTitle("Détails de l'événement");
             stage.setScene(new Scene(root));
@@ -63,6 +76,9 @@ public class EvenementCardController {
         }
     }
 
+    public VBox getRoot() {
+        return root;
+    }
     public void setPastelColors(String... colors) {
         String style = """
             -fx-background-color: rgba(255, 255, 255, 0.25);
@@ -75,4 +91,5 @@ public class EvenementCardController {
         """;
         eventCard.setStyle(style);
     }
+
 }

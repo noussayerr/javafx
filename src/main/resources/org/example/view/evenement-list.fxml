@@ -1,58 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.String?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.shape.Rectangle?>
-<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
 
-
-<StackPane fx:id="mainContainer"
-           prefWidth="1300.0"
-           prefHeight="800.0"
-           xmlns="http://javafx.com/javafx/23.0.1"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="org.example.controller.EvenementListController"
-           style="-fx-background-color: linear-gradient(to bottom, #f0f4ff, #e8eaf6)">
+<StackPane fx:id="mainContainer" prefHeight="800.0" prefWidth="1300.0" style="-fx-background-color: linear-gradient(to bottom, #f0f4ff, #e8eaf6)" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.EvenementListController">
 
     <children>
+        <!-- 📦 Organisation verticale -->
+        <VBox spacing="12" style="-fx-padding: 20;">
+
+            <!-- 🔝 Zone des boutons -->
+            <HBox alignment="TOP_RIGHT" spacing="10">
+                <Button fx:id="btnFavoris" onAction="#ouvrirMesFavoris" style="-fx-background-color: #f7e1ff;                                -fx-text-fill: #8e44ad;                                -fx-font-size: 13px;                                -fx-font-weight: bold;                                -fx-background-radius: 20;                                -fx-padding: 6 15;" text="💖 Mes favoris" />
+
+                <Button fx:id="btnScratch" onAction="#ouvrirScratchGame" style="-fx-background-color: #dcd6f7;                                -fx-text-fill: #5e60ce;                                -fx-font-size: 13px;                                -fx-font-weight: bold;                                -fx-background-radius: 20;                                -fx-padding: 6 15;" text="🎲 Jeu de cartes" />
+                <Button text="voir calendrier"
+                        onAction="#ouvrirCalendrier"
+                        styleClass="modern-button"/>
 
 
-        <!-- ✅ LISTE ÉVÉNEMENTS STYLE CARTE -->
-        <ScrollPane fx:id="scrollPane"
-                    fitToWidth="true"
-                    layoutY="140"
-                    style="-fx-background-color: transparent;
-                           -fx-padding: 30;
-                           -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0.2, 0, 2);
-                           -fx-border-color: transparent;
-                           -fx-border-radius: 20;"
-                    styleClass="themeable-scroll-pane">
-
-            <content>
-                <FlowPane fx:id="eventContainer"
-                          hgap="25" vgap="25"
-                          style="-fx-padding: 20; -fx-alignment: center;"
-                          styleClass="themeable-flow-pane">
+            </HBox>
 
 
-                </FlowPane>
-            </content>
-        </ScrollPane>
-
+            <!-- 📜 Scroll avec cartes -->
+            <ScrollPane fx:id="scrollPane" fitToWidth="true" style="-fx-background-color: transparent;                                -fx-padding: 10;">
+                <content>
+                    <FlowPane fx:id="eventContainer" hgap="25" style="-fx-padding: 20; -fx-alignment: center;" styleClass="themeable-flow-pane" vgap="25" />
+                </content>
+            </ScrollPane>
+        </VBox>
     </children>
 
-    <!-- ✅ Feuilles de style externes -->
+    <!-- ✅ Feuilles de style -->
     <stylesheets>
         <String fx:value="/styles/scrollPane.css" />
         <String fx:value="/styles/animations.css" />
         <String fx:value="/styles/advanced.css" />
         <String fx:value="/styles/modern-events.css" />
-
     </stylesheets>
 
 </StackPane>

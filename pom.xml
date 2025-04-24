@@ -98,10 +98,35 @@
             <version>0.4</version>
         </dependency>
         <dependency>
+            <groupId>com.calendarfx</groupId>
+            <artifactId>view</artifactId>
+            <version>11.12.7</version>
+        </dependency>
+            <!-- 📷 ZXing Core Library -->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>3.5.2</version>
+            </dependency>
+
+            <!-- 🖼 ZXing JavaSE pour l'écriture d'image -->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>javase</artifactId>
+                <version>3.5.2</version>
+            </dependency>
+
+
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
             <version>17.0.12</version>
             <classifier>win</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.9</version>
         </dependency>
 
     </dependencies>
