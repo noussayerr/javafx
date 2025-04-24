@@ -1,11 +1,35 @@
+/* Styling for buttons */
 .register-button:hover {
-    -fx-background-color: linear-gradient(to right, #2980b9, #1f618d);
+    -fx-background-color: linear-gradient(to right, #2980b9, #3498db);
     -fx-cursor: hand;
 }
-#register-button:hover {
-    -fx-background-color: linear-gradient(to right, #c0392b, #e74c3c);
+
+.back-button:hover {
+    -fx-background-color: #ecf0f1;
+    -fx-cursor: hand;
 }
-.register-button:pressed {
-    -fx-background-color: #1f618d;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 3, 0, 0, 1);
+
+/* Styling for text fields and combo boxes */
+.text-field, .password-field, .combo-box {
+    -fx-transition: all 0.3s ease;
+}
+
+.text-field:hover, .password-field:hover, .combo-box:hover {
+    -fx-border-color: #3498db;
+}
+
+.text-field:focused, .password-field:focused, .combo-box:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2;
+}
+
+/* Error label styling */
+.label.error {
+    -fx-opacity: 1;
+    -fx-transition: opacity 0.3s ease;
+}
+
+/* Form container animation */
+.vbox {
+    -fx-transition: all 0.5s ease;
 }

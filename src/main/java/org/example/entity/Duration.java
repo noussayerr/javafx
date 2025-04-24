@@ -1,8 +1,8 @@
 package org.example.entity;
 
 public enum Duration {
-    MONTHLY,
-    QUARTERLY,
-    ANNUAL,
-    LIFETIME
+    MENSUELLE,
+    TRIMESTRIELLE,
+    SEMESTRIELLE,
+    ANNUELLE,
 }

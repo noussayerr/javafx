@@ -1,5 +1,4 @@
 package org.example.controller;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,16 +12,20 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import org.example.entity.Apprenant;
 import org.example.entity.Enseignant;
+import org.example.services.PredictService;
 import org.example.services.ServiceApprenant;
 import org.example.services.ServiceEnseignant;
 import org.example.services.ServiceUser;
+import org.example.services.EmailService;
 import org.example.utils.SessionManager;
-import javafx.scene.layout.StackPane;
-
+import org.json.JSONObject;
+import javafx.collections.transformation.FilteredList;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public class AdminDashboardController {
 
@@ -65,11 +68,19 @@ public class AdminDashboardController {
     @FXML
     private TableColumn<Object, Void> actionColumn;
 
+    @FXML
+    private TextField searchField;
+
+    @FXML
+    private Button predictButton;
+
     private ObservableList<Object> usersList = FXCollections.observableArrayList();
+    private FilteredList<Object> filteredUsersList;
     private ServiceApprenant serviceApprenant = new ServiceApprenant();
     private ServiceEnseignant serviceEnseignant = new ServiceEnseignant();
     private ServiceUser serviceUser = new ServiceUser();
-
+    private PredictService predictService = new PredictService();
+    private EmailService emailService = new EmailService();
 
     @FXML
     public void initialize() {
@@ -222,6 +233,34 @@ public class AdminDashboardController {
             }
         });
 
+        // Initialize FilteredList for search
+        filteredUsersList = new FilteredList<>(usersList, p -> true);
+
+        // Configure search field listener
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredUsersList.setPredicate(user -> {
+                if (newValue == null || newValue.trim().isEmpty()) {
+                    return true; // Show all users if search is empty
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                if (user instanceof Apprenant) {
+                    Apprenant apprenant = (Apprenant) user;
+                    return apprenant.getNom().toLowerCase().contains(lowerCaseFilter) ||
+                            apprenant.getPrenom().toLowerCase().contains(lowerCaseFilter) ||
+                            apprenant.getEmail().toLowerCase().contains(lowerCaseFilter);
+                } else if (user instanceof Enseignant) {
+                    Enseignant enseignant = (Enseignant) user;
+                    return enseignant.getNom().toLowerCase().contains(lowerCaseFilter) ||
+                            enseignant.getPrenom().toLowerCase().contains(lowerCaseFilter) ||
+                            enseignant.getEmail().toLowerCase().contains(lowerCaseFilter);
+                }
+                return false;
+            });
+        });
+
+        // Set FilteredList to TableView
+        usersTable.setItems(filteredUsersList);
+
         // Load data
         loadUsersData();
     }
@@ -231,9 +270,55 @@ public class AdminDashboardController {
             usersList.clear();
             usersList.addAll(serviceApprenant.afficher());
             usersList.addAll(serviceEnseignant.afficher());
-            usersTable.setItems(usersList);
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement des utilisateurs", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handlePredictChurn() {
+        try {
+            for (Object user : usersList) {
+                // Traiter uniquement les Apprenants
+                if (!(user instanceof Apprenant)) {
+                    continue;
+                }
+
+                Apprenant apprenant = (Apprenant) user;
+                String email = apprenant.getEmail();
+                String name = apprenant.getPrenom();
+
+                // Retrieve actual data from user
+                int sessionCount = apprenant.getSessionsCount();
+                int interactionsCount = apprenant.getInteractionsCount();
+                LocalDateTime lastActivity = apprenant.getLastActivity();
+
+                // Calculate daysSinceLastActivity
+                int daysSinceLastActivity = lastActivity != null
+                        ? (int) ChronoUnit.DAYS.between(lastActivity, LocalDateTime.now())
+                        : 999; // Use a high value if lastActivity is null
+
+                try {
+                    String response = predictService.predictChurn(sessionCount, daysSinceLastActivity, interactionsCount);
+                    JSONObject jsonResponse = new JSONObject(response);
+                    int prediction = jsonResponse.getInt("prediction");
+
+                    if (prediction == 1) {
+                        emailService.sendChurnWarningEmail(email, name);
+                        showAlert(Alert.AlertType.INFORMATION, "Email envoyé", "Avertissement de churn envoyé",
+                                String.format("Un email a été envoyé à %s pour prévenir un risque de départ.", email));
+                    }
+                } catch (Exception e) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la prédiction ou de l'envoi d'email",
+                            String.format("Erreur pour %s : %s", email, e.getMessage()));
+                    e.printStackTrace();
+                }
+            }
+            showAlert(Alert.AlertType.INFORMATION, "Prédiction terminée", "Prédictions effectuées",
+                    "La prédiction de churn a été exécutée pour tous les apprenants.");
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la prédiction", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -263,11 +348,6 @@ public class AdminDashboardController {
         alert.showAndWait();
     }
 
-
-    public void afficherEvenements(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
-    }
-
     private void loadPage(ActionEvent event, String fxmlPath) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
@@ -279,5 +359,36 @@ public class AdminDashboardController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-        }}
+        }
+    }
+
+    public void goToMatiere(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
+    }
+
+    public void afficherEvenements(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
+    }
+
+    @FXML
+    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+    public void goToUtilisateurs(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
+    }
+
+    @FXML
+    public void afficherJeux(ActionEvent event) throws IOException {
+
+
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
 }

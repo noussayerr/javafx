@@ -3,12 +3,14 @@ package org.example.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.example.utils.SessionManager;
 
@@ -114,5 +116,48 @@ public class ApprenantDashboardController {
             e.printStackTrace();
         }
     }
+
+
+
+
+    @FXML
+    private void showGames(ActionEvent event) throws IOException {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/jeuxApprenant.fxml"));
+            AnchorPane listPane = loader.load();
+
+            // Get the stage from the event source
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show(); // Show the new scene
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void goMatiereF(ActionEvent actionEvent) {
+        System.out.println("Naviguer vers gestion des matières...");
+        loadPage(actionEvent, "/org/example/view/ListeMatiereF.fxml");
+    }
+
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            System.out.println("Chargement du fichier : " + fxmlPath);
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace(); // ← affiche l'erreur exacte dans la console
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger la page", e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace(); // ← attrape aussi toute autre erreur de controller
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Exception générale", e.getMessage());
+        }
+    }
+
 
 }

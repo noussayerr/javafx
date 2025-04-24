@@ -37,7 +37,7 @@
         <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-padding: 0 15 0 0;">
             <Button fx:id="dashboardButton" onAction="#loadDashboard" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';"
                     text="Tableau de bord" />
-            <Button style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';"
+            <Button onAction="#goMatiereF" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';"
                     text="Mes Cours" />
             <Button fx:id="profileButton" onAction="#handleProfile" style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';"
                     text="Profil" />

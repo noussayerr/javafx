@@ -18,8 +18,8 @@ public class User {
     private String verificationToken;
     private String photoProfil;
     private int interactionsCount = 0;
-    private Integer sessionsCount;
-    private LocalDateTime lastActivity;
+    private Integer sessionsCount=0;
+    private LocalDateTime lastActivity=LocalDateTime.now();
 
     // Constructeurs
     public User() {}
@@ -32,7 +32,11 @@ public class User {
         this.prenom = prenom;
         this.roles=new ArrayList<>();
     }
+    public User(int id, String nom) {
+        this.id = id;
+        this.nom = nom;
 
+    }
     // Getters et setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }

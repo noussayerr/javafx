@@ -199,6 +199,17 @@ public class ServiceApprenant implements IService<Apprenant> {
             connection.setAutoCommit(true);
         }
     }
+    public boolean emailExists(String email) throws SQLException {
+        String query = "SELECT COUNT(*) FROM user WHERE email = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1) > 0; // Returns true if email exists
+            }
+        }
+        return false; // Returns false if no matching email is found or an error occurs
+    }
 
     @Override
     public List<Apprenant> afficher() throws SQLException {

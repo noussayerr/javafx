@@ -19,7 +19,10 @@ public class Jeux {
         this.type = type;
         this.DoC = DoC;
     }
-
+    public Jeux(int id, String nom) {
+        this.id = id;
+        this.nom = nom;
+    }
     // Getters et setters
     public int getId() {
         return id;

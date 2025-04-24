@@ -1,8 +1,10 @@
 package org.example.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -97,5 +99,29 @@ public class EnseignantDashboardController implements Initializable {
         }
     }
 
+
+    public void goMatiereF(ActionEvent actionEvent) {
+        System.out.println("Naviguer vers gestion des matières...");
+        loadPage(actionEvent, "/org/example/view/ListeMatiereF.fxml");
+    }
+
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            System.out.println("Chargement du fichier : " + fxmlPath);
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace(); // ← affiche l'erreur exacte dans la console
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger la page", e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace(); // ← attrape aussi toute autre erreur de controller
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Exception générale", e.getMessage());
+        }
+    }
 
 }
