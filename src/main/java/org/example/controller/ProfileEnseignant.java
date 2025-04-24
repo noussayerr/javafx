@@ -18,48 +18,37 @@ import org.example.utils.SessionManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class ProfileEnseignant {
 
-    @FXML
-    private ImageView profileImageView;
-    @FXML
-    private TextField photoProfilField;
-    @FXML
-    private TextField nomField;
-    @FXML
-    private TextField prenomField;
-    @FXML
-    private TextField emailField;
-    @FXML
-    private TextField dateNaissanceField;
-    @FXML
-    private TextField telephoneField;
-    @FXML
-    private ComboBox<String> specialiteComboBox;
-    @FXML
-    private TextField experienceField;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
-    private Button saveButton;
-    @FXML
-    private Button dashboardButton;
-    @FXML
-    private Button profileButton;
-    @FXML
-    private Button logoutButton;
-
+    @FXML private ImageView profileImageView;
+    @FXML private TextField photoProfilField;
+    @FXML private TextField nomField;
+    @FXML private TextField prenomField;
+    @FXML private TextField emailField;
+    @FXML private TextField dateNaissanceField;
+    @FXML private TextField telephoneField;
+    @FXML private ComboBox<String> specialiteComboBox;
+    @FXML private TextField experienceField;
+    @FXML private PasswordField passwordField;
+    @FXML private Button saveButton;
+    @FXML private Button dashboardButton;
+    @FXML private Button profileButton;
+    @FXML private Button logoutButton;
 
     private ServiceEnseignant serviceEnseignant;
     private User currentUser;
+    private File selectedPhotoFile;
 
     public void initialize() {
         serviceEnseignant = new ServiceEnseignant();
         currentUser = SessionManager.getInstance().getCurrentUser();
 
         if (currentUser != null) {
-            // Remplir les champs avec les données de l'utilisateur
             nomField.setText(currentUser.getNom());
             prenomField.setText(currentUser.getPrenom());
             emailField.setText(currentUser.getEmail());
@@ -71,7 +60,6 @@ public class ProfileEnseignant {
 
             telephoneField.setText(String.valueOf(currentUser.getTelephone()));
 
-            // Initialiser la ComboBox des spécialités
             specialiteComboBox.getItems().addAll(
                     "Lecture et écriture",
                     "Mathématiques",
@@ -80,27 +68,31 @@ public class ProfileEnseignant {
                     "Technologies d'assistance"
             );
 
-            // Si c'est un enseignant, charger les données spécifiques
             if (currentUser instanceof Enseignant) {
                 Enseignant enseignant = (Enseignant) currentUser;
                 specialiteComboBox.setValue(enseignant.getSpecialite());
-                experienceField.setText(String.valueOf(enseignant.getExperience()));
+                experienceField.setText(enseignant.getExperience());
             }
 
-            // Charger la photo de profil
             if (currentUser.getPhotoProfil() != null && !currentUser.getPhotoProfil().isEmpty()) {
-                photoProfilField.setText(currentUser.getPhotoProfil());
-                try {
-                    Image image = new Image(new File(currentUser.getPhotoProfil()).toURI().toString());
-                    profileImageView.setImage(image);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                File imageFile = new File(currentUser.getPhotoProfil());
+                if (imageFile.exists()) {
+                    try {
+                        Image image = new Image(imageFile.toURI().toString());
+                        profileImageView.setImage(image);
+                        photoProfilField.setText(currentUser.getPhotoProfil());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        profileImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_profile.jpg")));
+                    }
+                } else {
+                    profileImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_profile.jpg")));
                 }
+            } else {
+                profileImageView.setImage(new Image(getClass().getResourceAsStream("/images/default_profile.jpg")));
             }
         }
-
     }
-
 
     @FXML
     private void handlePhotoUpload() {
@@ -110,62 +102,161 @@ public class ProfileEnseignant {
                 new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif")
         );
 
-        File selectedFile = fileChooser.showOpenDialog(profileImageView.getScene().getWindow());
-        if (selectedFile != null) {
-            photoProfilField.setText(selectedFile.getAbsolutePath());
+        File file = fileChooser.showOpenDialog(profileImageView.getScene().getWindow());
+        if (file != null) {
+            if (file.length() > 5 * 1024 * 1024) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Fichier trop grand", "La photo ne doit pas dépasser 5 Mo.");
+                return;
+            }
+            selectedPhotoFile = file;
+            photoProfilField.setText(file.getAbsolutePath());
             try {
-                Image image = new Image(selectedFile.toURI().toString());
+                Image image = new Image(file.toURI().toString());
                 profileImageView.setImage(image);
             } catch (Exception e) {
                 e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Chargement de l'image", "Impossible de charger l'image sélectionnée.");
             }
         }
     }
 
     @FXML
     private void handleSave() {
-        if (currentUser != null) {
-            try {
-                // Convertir User en Enseignant
-                Enseignant enseignant = convertUserToEnseignant(currentUser);
+        if (currentUser == null) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Utilisateur non connecté", "Aucun utilisateur n'est connecté.");
+            return;
+        }
 
-                // Mettre à jour les données
-                enseignant.setNom(nomField.getText());
-                enseignant.setPrenom(prenomField.getText());
-                enseignant.setEmail(emailField.getText());
-                enseignant.setDateNaissance(dateNaissanceField.getText());
-                enseignant.setTelephone(Integer.parseInt(telephoneField.getText()));
-                enseignant.setSpecialite(specialiteComboBox.getValue());
-                enseignant.setExperience(experienceField.getText());
+        try {
+            if (!validateFields()) {
+                return;
+            }
 
-                if (!passwordField.getText().isEmpty()) {
-                    enseignant.setPassword(passwordField.getText());
+            Enseignant enseignant = convertUserToEnseignant(currentUser);
+            enseignant.setNom(nomField.getText().trim());
+            enseignant.setPrenom(prenomField.getText().trim());
+            enseignant.setEmail(emailField.getText().trim());
+            enseignant.setDateNaissance(dateNaissanceField.getText().trim());
+            enseignant.setTelephone(Integer.parseInt(telephoneField.getText().trim()));
+            enseignant.setSpecialite(specialiteComboBox.getValue());
+            enseignant.setExperience(experienceField.getText().trim());
+
+            if (!passwordField.getText().isEmpty()) {
+                enseignant.setPassword(passwordField.getText());
+            }
+
+            if (selectedPhotoFile != null) {
+                if (!selectedPhotoFile.exists()) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Fichier introuvable", "La photo de profil sélectionnée n'existe pas.");
+                    return;
                 }
-
-                if (!photoProfilField.getText().isEmpty()) {
+                enseignant.setPhotoProfil(selectedPhotoFile.getAbsolutePath());
+            } else if (!photoProfilField.getText().isEmpty()) {
+                File existingPhoto = new File(photoProfilField.getText());
+                if (existingPhoto.exists()) {
                     enseignant.setPhotoProfil(photoProfilField.getText());
+                } else {
+                    showAlert(Alert.AlertType.WARNING, "Avertissement", "Photo introuvable", "La photo de profil spécifiée n'existe pas.");
+                    enseignant.setPhotoProfil(null);
                 }
+            }
 
-                // Sauvegarder les modifications
-                serviceEnseignant.modifier(enseignant);
+            serviceEnseignant.modifier(enseignant);
+            SessionManager.getInstance().setCurrentUser(enseignant);
+            currentUser = enseignant;
 
-                showAlert(Alert.AlertType.INFORMATION, "Succès",
-                        "Profil mis à jour avec succès!", "");
-            } catch (NumberFormatException e) {
-                showAlert(Alert.AlertType.ERROR, "Erreur",
-                        "Veuillez entrer une valeur numérique valide pour l'expérience et le téléphone", "");
-            } catch (Exception e) {
-                e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Erreur",
-                        "Une erreur est survenue lors de la mise à jour du profil", e.getMessage());
+            showAlert(Alert.AlertType.INFORMATION, "Succès", "Profil mis à jour", "Profil mis à jour avec succès !");
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Données invalides", "Veuillez entrer un numéro de téléphone valide.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de base de données", "Une erreur est survenue lors de la mise à jour du profil.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur inattendue", "Une erreur est survenue : " + e.getMessage());
+        }
+    }
+
+    private boolean validateFields() {
+        boolean isValid = true;
+
+        String nameRegex = "^[a-zA-Z\\s]{2,50}$";
+        String nom = nomField.getText().trim();
+        if (nom.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Nom requis", "Le nom est requis.");
+            isValid = false;
+        } else if (!nom.matches(nameRegex)) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Nom invalide", "Le nom doit contenir 2-50 lettres.");
+            isValid = false;
+        }
+
+        String prenom = prenomField.getText().trim();
+        if (prenom.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Prénom requis", "Le prénom est requis.");
+            isValid = false;
+        } else if (!prenom.matches(nameRegex)) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Prénom invalide", "Le prénom doit contenir 2-50 lettres.");
+            isValid = false;
+        }
+
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        String email = emailField.getText().trim();
+        if (email.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Email requis", "L'email est requis.");
+            isValid = false;
+        } else if (!email.matches(emailRegex)) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Email invalide", "L'email n'est pas valide.");
+            isValid = false;
+        }
+
+        String dateNaissance = dateNaissanceField.getText().trim();
+        if (!dateNaissance.isEmpty()) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate birthDate = LocalDate.parse(dateNaissance, formatter);
+                LocalDate now = LocalDate.now();
+                if (birthDate.isAfter(now.minusYears(18))) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Âge invalide", "L'âge minimum est 18 ans.");
+                    isValid = false;
+                }
+            } catch (DateTimeParseException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Date invalide", "Le format de la date doit être YYYY-MM-DD.");
+                isValid = false;
             }
         }
+
+        String phoneRegex = "^\\+?\\d{8,12}$";
+        String telephone = telephoneField.getText().trim();
+        if (telephone.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Téléphone requis", "Le numéro de téléphone est requis.");
+            isValid = false;
+        } else if (!telephone.matches(phoneRegex)) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Téléphone invalide", "Le numéro doit contenir 8-12 chiffres.");
+            isValid = false;
+        }
+
+        if (specialiteComboBox.getValue() == null) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Spécialité requise", "Veuillez sélectionner une spécialité.");
+            isValid = false;
+        }
+
+        String experience = experienceField.getText().trim();
+        if (experience.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Expérience requise", "L'expérience est requise.");
+            isValid = false;
+        }
+
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+        if (!passwordField.getText().isEmpty() && !passwordField.getText().matches(passwordRegex)) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Mot de passe invalide", "Le mot de passe doit contenir 8+ caractères, 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial.");
+            isValid = false;
+        }
+
+        return isValid;
     }
 
     private Enseignant convertUserToEnseignant(User user) {
         Enseignant enseignant = new Enseignant();
-
-        // Copier les propriétés communes
         enseignant.setId(user.getId());
         enseignant.setNom(user.getNom());
         enseignant.setPrenom(user.getPrenom());
@@ -176,7 +267,6 @@ public class ProfileEnseignant {
         enseignant.setPhotoProfil(user.getPhotoProfil());
         enseignant.setRoles(user.getRoles());
 
-        // Si c'est déjà un enseignant, copier les propriétés spécifiques
         if (user instanceof Enseignant) {
             Enseignant existing = (Enseignant) user;
             enseignant.setSpecialite(existing.getSpecialite());
@@ -197,8 +287,7 @@ public class ProfileEnseignant {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Erreur lors du chargement du tableau de bord", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement du tableau de bord", e.getMessage());
         }
     }
 
@@ -213,8 +302,7 @@ public class ProfileEnseignant {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Erreur lors du chargement du profil", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement du profil", e.getMessage());
         }
     }
 
@@ -227,21 +315,11 @@ public class ProfileEnseignant {
             stage.setScene(new Scene(root));
             stage.setTitle("Connexion");
             stage.centerOnScreen();
-            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie",
-                    "Vous avez été déconnecté avec succès.", "");
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Erreur lors de la déconnexion", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 
     public void goMatiereF(ActionEvent actionEvent) {
@@ -259,6 +337,15 @@ public class ProfileEnseignant {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement de la page", e.getMessage());
         }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

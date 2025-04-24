@@ -18,10 +18,6 @@ import org.slf4j.LoggerFactory;
 import jakarta.mail.MessagingException;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -98,7 +94,7 @@ public class RegisterEnseignant {
         File file = fileChooser.showOpenDialog(nomField.getScene().getWindow());
         if (file != null) {
             selectedPhotoFile = file;
-            photoProfilField.setText(file.getName());
+            photoProfilField.setText(file.getAbsolutePath());
         }
     }
 
@@ -209,7 +205,7 @@ public class RegisterEnseignant {
 
             String photoPath = null;
             if (selectedPhotoFile != null) {
-                photoPath = saveProfilePhoto(selectedPhotoFile, String.valueOf(generateNewId()));
+                photoPath = saveProfilePhoto(selectedPhotoFile);
                 enseignant.setPhotoProfil(photoPath);
             }
 
@@ -242,25 +238,11 @@ public class RegisterEnseignant {
         }
     }
 
-    private String saveProfilePhoto(File photoFile, String enseignantId) throws IOException {
-        String targetDir = System.getProperty("user.home") + "/enseignant_photos";
-        File directory = new File(targetDir);
-        if (!directory.exists() && !directory.mkdirs()) {
-            throw new IOException("Failed to create directory: " + targetDir);
+    private String saveProfilePhoto(File photoFile) throws IOException {
+        if (!photoFile.exists()) {
+            throw new IOException("Selected photo file does not exist: " + photoFile.getAbsolutePath());
         }
-
-        String extension = getFileExtension(photoFile.getName());
-        String newFileName = enseignantId + "_profile" + extension;
-        Path targetPath = Paths.get(targetDir, newFileName);
-
-        try {
-            Files.copy(photoFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            LOGGER.error("Failed to copy profile photo to {}", targetPath, e);
-            throw e;
-        }
-
-        return targetPath.toString();
+        return photoFile.getAbsolutePath();
     }
 
     private String getFileExtension(String fileName) {
