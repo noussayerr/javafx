@@ -8,18 +8,25 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 public class Home {
 
-    @FXML
-    private WebView chatbotWebView;
+
 
     @FXML
     public void initialize() {
+
+        // Chargez votre fichier JavaScript
+        String jsCode = loadJsFile("/org/example/view/chatbase.js");
+
+        // Exécutez le JavaScript
+
         // Charger directement le chatbot
         //String htmlContent = "<!DOCTYPE html>\n" +
         // "<html lang=\"fr\">\n" +
@@ -78,6 +85,19 @@ public class Home {
         } catch (IOException e) {
             e.printStackTrace();
             // Gérer l'erreur (peut-être afficher un message à l'utilisateur)
+        }
+    }
+
+
+
+
+    private String loadJsFile(String path) {
+        try {
+            return new Scanner(getClass().getResourceAsStream(path), "UTF-8")
+                    .useDelimiter("\\A").next();
+        } catch (Exception e) {
+            System.err.println("Error loading JS file: " + e.getMessage());
+            return "";
         }
     }
 }

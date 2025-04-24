@@ -114,6 +114,8 @@
                     <include>**/*.jpg</include>
                     <include>**/*.jpeg</include>
                     <include>**/*.html</include>
+                    <include>**/*.js</include>
+
                 </includes>
             </resource>
         </resources>

@@ -6,13 +6,28 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ServiceUser {
     private Connection connection;
+    // In-memory storage for reset codes: email -> {code, expiration timestamp}
+    private static final Map<String, ResetCodeData> resetCodes = new HashMap<>();
 
     public ServiceUser() {
         connection = MyDatabase.getInstance().getConnection();
+    }
+
+    // Data class to hold reset code and expiration
+    private static class ResetCodeData {
+        String code;
+        long expiresAt;
+
+        ResetCodeData(String code, long expiresAt) {
+            this.code = code;
+            this.expiresAt = expiresAt;
+        }
     }
 
     public User authenticate(String email, String password) throws SQLException {
@@ -36,6 +51,9 @@ public class ServiceUser {
                     user.setEmail(resultSet.getString("email"));
                     user.setNom(resultSet.getString("nom"));
                     user.setPrenom(resultSet.getString("prenom"));
+                    user.setTelephone(resultSet.getInt("telephone"));
+                    user.setDateNaissance(resultSet.getString("dateNaissance"));
+                    user.setPhotoProfil(resultSet.getString("photo_profil"));
 
                     String rolesJson = resultSet.getString("roles");
                     List<String> roles = convertJsonToRoles(rolesJson);
@@ -113,12 +131,45 @@ public class ServiceUser {
                 user.setPassword(resultSet.getString("password"));
                 user.setTelephone(resultSet.getInt("telephone"));
 
-
                 String rolesJson = resultSet.getString("roles");
                 List<String> roles = convertJsonToRoles(rolesJson);
                 user.setRoles(roles);
             }
         }
         return user;
+    }
+
+    public void updatePassword(String email, String newPassword) throws SQLException {
+        String sql = "UPDATE user SET password = ? WHERE email = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            // Hash the new password using BCrypt
+            String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+            stmt.setString(1, hashedPassword);
+            stmt.setString(2, email);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("No user found with email: " + email);
+            }
+        }
+    }
+
+    public void storePasswordResetCode(String email, String resetCode) {
+        // Store the reset code with a 30-minute expiration
+        long expiresAt = System.currentTimeMillis() + 30 * 60 * 1000; // 30 minutes
+        resetCodes.put(email, new ResetCodeData(resetCode, expiresAt));
+    }
+
+    public boolean verifyResetCode(String email, String resetCode) {
+        ResetCodeData data = resetCodes.get(email);
+        if (data == null) {
+            return false;
+        }
+        // Check if code matches and is not expired
+        boolean isValid = data.code.equals(resetCode) && data.expiresAt > System.currentTimeMillis();
+        if (isValid) {
+            // Clear the code after successful verification
+            resetCodes.remove(email);
+        }
+        return isValid;
     }
 }

@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import org.example.entity.User;
+import org.example.services.EmailService;
 import org.example.services.FaceVerificationService;
 import org.example.services.ServiceUser;
 import org.example.utils.SessionManager;
@@ -28,6 +29,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 public class Login {
 
@@ -39,6 +41,7 @@ public class Login {
     @FXML private Label emailError;
     @FXML private Label passwordError;
     @FXML private Label captchaError;
+    private final EmailService emailService = new EmailService();
 
     private final ServiceUser serviceUser = new ServiceUser();
     private final FaceVerificationService faceVerificationService = new FaceVerificationService();
@@ -139,9 +142,92 @@ public class Login {
             return false;
         }
     }
+
     @FXML
     private void handleForgotPassword(ActionEvent event) {
+        // Clear previous errors
+        clearErrors();
 
+        String email = emailField.getText().trim();
+
+        // Validate email
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        if (email.isEmpty()) {
+            emailError.setText("Email requis");
+            return;
+        } else if (!email.matches(emailRegex)) {
+            emailError.setText("Email invalide");
+            return;
+        }
+
+        // Verify CAPTCHA
+        String captchaAnswer = captchaAnswerField.getText();
+        if (!BYPASS_CAPTCHA_FOR_TESTING) {
+            if (captchaAnswer == null || captchaAnswer.trim().isEmpty()) {
+                captchaError.setText("Veuillez répondre au CAPTCHA pour continuer");
+                return;
+            }
+            if (!verifyCaptcha(captchaAnswer)) {
+                captchaError.setText("Réponse CAPTCHA incorrecte. Réessayez.");
+                generateCaptchaQuestion(); // Generate new question
+                return;
+            }
+        } else {
+            System.out.println("CAPTCHA bypassed for testing");
+        }
+
+        try {
+            // Check if user exists
+            User user = serviceUser.findByEmail(email);
+            if (user == null) {
+                emailError.setText("Aucun utilisateur trouvé avec cet email");
+                generateCaptchaQuestion(); // Generate new CAPTCHA
+                return;
+            }
+
+            // Generate a 6-digit reset code
+            String resetCode = String.format("%06d", random.nextInt(999999));
+
+            // Store the reset code (assumes ServiceUser has a method to handle this)
+            serviceUser.storePasswordResetCode(email, resetCode);
+
+            emailService.sendResetCodeEmail(email, resetCode);
+
+            // Open the reset password window and pass the email and reset code
+            openResetPasswordWindow(email, resetCode);
+
+            // Provide feedback to the user
+            emailError.setText("Vérifiez le code affiché et entrez-le dans la fenêtre de réinitialisation");
+            emailError.setStyle("-fx-text-fill: #2ecc71;"); // Green color for success
+
+            // Generate new CAPTCHA
+            generateCaptchaQuestion();
+        } catch (SQLException e) {
+            emailError.setText("Erreur base de données");
+            e.printStackTrace();
+        } catch (IOException e) {
+            emailError.setText("Erreur ouverture fenêtre réinitialisation");
+            e.printStackTrace();
+        } catch (Exception e) {
+            emailError.setText("Erreur: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // Open a new window for resetting the password
+    private void openResetPasswordWindow(String email, String resetCode) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ResetPassword.fxml"));
+        Parent root = loader.load();
+
+        // Get the controller and pass the email and reset code
+        ResetPasswordController controller = loader.getController();
+        controller.setResetData(email);
+
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Réinitialiser le mot de passe");
+        stage.setResizable(false);
+        stage.show();
     }
 
     @FXML
