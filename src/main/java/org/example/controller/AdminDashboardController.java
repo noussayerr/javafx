@@ -358,9 +358,14 @@ public class AdminDashboardController {
             stage.setMaximized(true);
             stage.show();
         } catch (IOException e) {
+            System.out.println("❌ Erreur de chargement de la page : " + fxmlPath);
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("❌ Autre erreur inconnue !");
             e.printStackTrace();
         }
     }
+
 
     public void goToMatiere(ActionEvent actionEvent) {
         loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");

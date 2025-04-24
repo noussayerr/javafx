@@ -9,7 +9,7 @@ public class Comment {
     private String content;
 
     // ✅ Constructeur personnalisé
-    public Comment(int eventId, int userId, String content , String nomUtilisateur) {
+    public Comment(int eventId, int userId, String content, String nomUtilisateur) {
         this.eventId = eventId;
         this.userId = userId;
         this.content = content;

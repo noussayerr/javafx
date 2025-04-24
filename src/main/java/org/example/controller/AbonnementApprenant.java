@@ -123,4 +123,5 @@ public class AbonnementApprenant {
             showAlert("Erreur", "Impossible de charger la page des abonnements.", Alert.AlertType.ERROR);
         }
     }
+
 }

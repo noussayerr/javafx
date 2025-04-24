@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.TextArea?>
 <StackPane fx:id="mainContainer" prefHeight="800.0" prefWidth="1300.0" style="-fx-background-color: linear-gradient(to bottom, #f0f4ff, #e8eaf6)" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.EvenementListController">
 
     <children>
@@ -33,6 +34,13 @@
                     <FlowPane fx:id="eventContainer" hgap="25" style="-fx-padding: 20; -fx-alignment: center;" styleClass="themeable-flow-pane" vgap="25" />
                 </content>
             </ScrollPane>
+            <!-- 💬 Zone de commentaire -->
+            <VBox fx:id="commentSection" spacing="10" style="-fx-padding: 20; -fx-background-color: white; -fx-background-radius: 15;">
+                <!-- 🔁 Liste des commentaires -->
+                <VBox fx:id="commentList" spacing="8" />
+
+            </VBox>
+
         </VBox>
     </children>
 

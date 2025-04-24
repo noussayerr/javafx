@@ -45,10 +45,11 @@ public class MesFavorisController {
         for (int id : favorisIds) {
             Evenement event = evenementDAO.findById(id);
 
+
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/evenement-card.fxml"));
-                Node card = loader.load();
-                EvenementCardController controller = loader.getController();
+                Node card = loader.load(); // ✅ d’abord charger le FXML
+                EvenementCardController controller = loader.getController(); // ✅ ensuite récupérer le controller
                 controller.setData(event);
                 controller.setPastelColors("#D9B3FF", "#B3D9FF", "#FFB3E6");
                 favorisContainer.getChildren().add(card);
@@ -62,7 +63,7 @@ public class MesFavorisController {
                 slideCard.setToY(0);
 
                 ParallelTransition cardAppear = new ParallelTransition(fadeCard, slideCard);
-                cardAppear.setDelay(Duration.millis(150 * favorisContainer.getChildren().size())); // effet cascade
+                cardAppear.setDelay(Duration.millis(150 * favorisContainer.getChildren().size()));
                 cardAppear.play();
 
             } catch (IOException e) {

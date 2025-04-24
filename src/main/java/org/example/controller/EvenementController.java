@@ -381,77 +381,6 @@ public class EvenementController {
             Toast.show((Stage) scene.getWindow(), "☀️ Thème clair activé !");
         }
     }
-    @FXML
-    private void exporterPDF(ActionEvent event) {
-        Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            try {
-                String chemin = "Evenement_" + selected.getId() + ".pdf";
-                ServicePDF.generateEvenementPDF(chemin, selected);
-                Toast.show((Stage) tableEvenements.getScene().getWindow(), "✅ PDF généré !");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @FXML
-    private void exporterEtEnvoyerPDF() {
-        Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
-        String email = txtEmail.getText();
-
-        if (selected != null && email != null && !email.isEmpty()) {
-            try {
-                String chemin = "Evenement_" + selected.getId() + ".pdf";
-                ServicePDF.generateEvenementPDF(chemin, selected);
-
-                String sujet = "📎 Détails de votre événement : " + selected.getNom();
-                String corps = "Bonjour,\n\nVeuillez trouver ci-joint les détails de l’événement : \"" +
-                        selected.getNom() + "\".\n\nCordialement,\nL'équipe.";
-
-                MailService.envoyerPDFParMail(email, sujet, corps, chemin);
-                Toast.show((Stage) tableEvenements.getScene().getWindow(), "📧 PDF envoyé à " + email);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.show((Stage) tableEvenements.getScene().getWindow(), "❌ Erreur lors de l’envoi !");
-            }
-        } else {
-            Toast.show((Stage) tableEvenements.getScene().getWindow(), "❌ Sélectionnez un événement et entrez un email !");
-        }
-    }
-
-    @FXML
-    private void envoyerPDFParMail() {
-        Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
-        String email = txtEmail.getText();
-
-        if (selected != null && email != null && !email.isEmpty()) {
-            try {
-                // ✅ Génération du PDF
-                String chemin = "Evenement_" + selected.getId() + ".pdf";
-                ServicePDF.generateEvenementPDF(chemin, selected);
-
-                // ✅ Sujet et corps personnalisés
-                String sujet = "📎 Détails de votre événement : " + selected.getNom();
-                String corps = "Bonjour,\n\nVeuillez trouver ci-joint le PDF contenant les détails de l'événement : \""
-                        + selected.getNom() + "\".\n\nCordialement,\nL'équipe.";
-
-                // ✅ Envoi par mail
-                MailService.envoyerPDFParMail(email, sujet, corps, chemin);
-
-                // ✅ Confirmation visuelle
-                Toast.show((Stage) tableEvenements.getScene().getWindow(),
-                        "✅ PDF envoyé à " + email + " avec succès !");
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.show((Stage) tableEvenements.getScene().getWindow(),
-                        "❌ Une erreur est survenue lors de l'envoi du mail !");
-            }
-        } else {
-            Toast.show((Stage) tableEvenements.getScene().getWindow(),
-                    "❌ Veuillez sélectionner un événement et entrer un email !");
-        }
-    }
 
     @FXML
     private void handleLogout() {
@@ -519,6 +448,89 @@ public class EvenementController {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("❌ Erreur ouverture statistiques : " + e.getMessage());
+        }
+    }
+    @FXML
+    public void goToUtilisateurs(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AdminDashboard.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Dashboard Admin");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Erreur d'ouverture du tableau admin").showAndWait();
+        }
+    }
+    @FXML
+    private void exporterPDF(ActionEvent event) {
+        Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            try {
+                String chemin = "Evenement_" + selected.getId() + ".pdf";
+                ServicePDF.generateEvenementPDF(chemin, selected);
+                Toast.show((Stage) tableEvenements.getScene().getWindow(), "✅ PDF généré !");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    @FXML
+    private void exporterEtEnvoyerPDF() {
+        Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
+        String email = txtEmail.getText();
+
+        if (selected != null && email != null && !email.isEmpty()) {
+            try {
+                String chemin = "Evenement_" + selected.getId() + ".pdf";
+                ServicePDF.generateEvenementPDF(chemin, selected);
+
+                String sujet = "📎 Détails de votre événement : " + selected.getNom();
+                String corps = "Bonjour,\n\nVeuillez trouver ci-joint les détails de l’événement : \"" +
+                        selected.getNom() + "\".\n\nCordialement,\nL'équipe.";
+
+                MailService.envoyerPDFParMail(email, sujet, corps, chemin);
+                Toast.show((Stage) tableEvenements.getScene().getWindow(), "📧 PDF envoyé à " + email);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.show((Stage) tableEvenements.getScene().getWindow(), "❌ Erreur lors de l’envoi !");
+            }
+        } else {
+            Toast.show((Stage) tableEvenements.getScene().getWindow(), "❌ Sélectionnez un événement et entrez un email !");
+        }
+    }
+    @FXML
+    private void envoyerPDFParMail() {
+        Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
+        String email = txtEmail.getText();
+
+        if (selected != null && email != null && !email.isEmpty()) {
+            try {
+                // ✅ Génération du PDF
+                String chemin = "Evenement_" + selected.getId() + ".pdf";
+                ServicePDF.generateEvenementPDF(chemin, selected);
+
+                // ✅ Sujet et corps personnalisés
+                String sujet = "📎 Détails de votre événement : " + selected.getNom();
+                String corps = "Bonjour,\n\nVeuillez trouver ci-joint le PDF contenant les détails de l'événement : \""
+                        + selected.getNom() + "\".\n\nCordialement,\nL'équipe.";
+
+                // ✅ Envoi par mail
+                MailService.envoyerPDFParMail(email, sujet, corps, chemin);
+
+                // ✅ Confirmation visuelle
+                Toast.show((Stage) tableEvenements.getScene().getWindow(),
+                        "✅ PDF envoyé à " + email + " avec succès !");
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.show((Stage) tableEvenements.getScene().getWindow(),
+                        "❌ Une erreur est survenue lors de l'envoi du mail !");
+            }
+        } else {
+            Toast.show((Stage) tableEvenements.getScene().getWindow(),
+                    "❌ Veuillez sélectionner un événement et entrer un email !");
         }
     }
 }
