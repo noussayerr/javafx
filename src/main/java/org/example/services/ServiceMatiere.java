@@ -44,28 +44,72 @@ public class ServiceMatiere implements IService<Matiere> {
 
     @Override
     public void supprimer(int id) throws SQLException {
-        try (PreparedStatement psCours = connection.prepareStatement("DELETE FROM cours WHERE matiere_id = ?");
-             PreparedStatement psCommentaire = connection.prepareStatement("DELETE FROM commentaire WHERE matiere_id = ?");
-             PreparedStatement psEvalu = connection.prepareStatement("DELETE FROM evalu WHERE matiere_id = ?");
-             PreparedStatement psMatiere = connection.prepareStatement("DELETE FROM matiere WHERE id = ?")) {
+        // 1. Démarrer une transaction
+        connection.setAutoCommit(false);
 
-            psCours.setInt(1, id);
-            psCours.executeUpdate();
-
-            psCommentaire.setInt(1, id);
-            psCommentaire.executeUpdate();
-
-            psEvalu.setInt(1, id);
-            psEvalu.executeUpdate();
-
-            psMatiere.setInt(1, id);
-            int rowsAffected = psMatiere.executeUpdate();
-
-            if (rowsAffected == 0) {
-                throw new SQLException("Aucune matière supprimée, ID introuvable : " + id);
-            } else {
-                System.out.println("Matière supprimée avec succès, ID : " + id);
+        try {
+            // 2. Récupérer tous les cours de cette matière
+            List<Integer> coursIds = new ArrayList<>();
+            String selectCoursSql = "SELECT id FROM cours WHERE matiere_id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(selectCoursSql)) {
+                ps.setInt(1, id);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    coursIds.add(rs.getInt("id"));
+                }
             }
+
+            // 3. Pour chaque cours, supprimer d'abord les fichiers associés
+            String deleteFichiersSql = "DELETE FROM fichier WHERE cours_id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(deleteFichiersSql)) {
+                for (int coursId : coursIds) {
+                    ps.setInt(1, coursId);
+                    ps.executeUpdate();
+                }
+            }
+
+            // 4. Maintenant supprimer les dépendances de la matière
+            // a. Supprimer les cours
+            String deleteCoursSql = "DELETE FROM cours WHERE matiere_id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(deleteCoursSql)) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // b. Supprimer les commentaires
+            String deleteCommentaireSql = "DELETE FROM commentaire WHERE matiere_id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(deleteCommentaireSql)) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // c. Supprimer les evaluations
+            String deleteEvaluSql = "DELETE FROM evalu WHERE matiere_id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(deleteEvaluSql)) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+
+            // 5. Enfin supprimer la matière elle-même
+            String deleteMatiereSql = "DELETE FROM matiere WHERE id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(deleteMatiereSql)) {
+                ps.setInt(1, id);
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new SQLException("Aucune matière supprimée, ID introuvable : " + id);
+                }
+            }
+
+            // 6. Valider la transaction
+            connection.commit();
+            System.out.println("Matière et toutes ses dépendances supprimées avec succès, ID : " + id);
+        } catch (SQLException e) {
+            // 7. En cas d'erreur, annuler la transaction
+            connection.rollback();
+            throw e;
+        } finally {
+            // 8. Rétablir le mode auto-commit
+            connection.setAutoCommit(true);
         }
     }
 

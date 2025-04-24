@@ -63,19 +63,41 @@ public class ServiceCours implements IService<Cours> {
 
     @Override
     public void supprimer(int id) throws SQLException {
-        String deleteFichiersSql = "DELETE FROM fichier WHERE cours_id=?";
-        try (PreparedStatement ps = connection.prepareStatement(deleteFichiersSql)) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        }
+        // 1. Démarrer une transaction
+        connection.setAutoCommit(false);
 
-        String deleteCoursSql = "DELETE FROM cours WHERE id=?";
-        try (PreparedStatement ps = connection.prepareStatement(deleteCoursSql)) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
+        try {
+            // 2. Supprimer toutes les dépendances dans le bon ordre
+            // a. Supprimer d'abord les fichiers associés
+            String deleteFichiersSql = "DELETE FROM fichier WHERE cours_id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(deleteFichiersSql)) {
+                ps.setInt(1, id);
+                int fichiersDeleted = ps.executeUpdate();
+                System.out.println(fichiersDeleted + " fichiers supprimés");
+            }
+
+            // c. Maintenant supprimer le cours
+            String deleteCoursSql = "DELETE FROM cours WHERE id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(deleteCoursSql)) {
+                ps.setInt(1, id);
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new SQLException("Aucun cours trouvé avec l'ID: " + id);
+                }
+                System.out.println("Cours supprimé avec succès");
+            }
+
+            // 3. Valider la transaction
+            connection.commit();
+        } catch (SQLException e) {
+            // 4. En cas d'erreur, annuler la transaction
+            connection.rollback();
+            throw e;
+        } finally {
+            // 5. Rétablir le mode auto-commit
+            connection.setAutoCommit(true);
         }
     }
-
     @Override
     public List<Cours> afficher() throws SQLException {
         List<Cours> coursList = new ArrayList<>();

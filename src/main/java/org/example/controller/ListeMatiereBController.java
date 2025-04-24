@@ -14,6 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import org.example.entity.Matiere;
 import org.example.services.ServiceMatiere;
@@ -183,8 +184,8 @@ public class ListeMatiereBController {
             });
 
             // Cours column
-            coursColumn.setCellFactory(param -> new javafx.scene.control.TableCell<>() {
-                private final Button coursButton = new Button("Voir cOURS");
+            coursColumn.setCellFactory(param -> new TableCell<>() {
+                private final Button coursButton = new Button("Voir Liste Cours");
                 private final HBox container = new HBox(coursButton);
 
                 {
@@ -193,13 +194,22 @@ public class ListeMatiereBController {
                         Matiere matiere = getTableView().getItems().get(getIndex());
                         afficherCours(matiere);
                     });
+
+                    // Centrer dans la HBox
                     container.setAlignment(Pos.CENTER);
+
+
                 }
 
                 @Override
                 protected void updateItem(Void item, boolean empty) {
                     super.updateItem(item, empty);
-                    setGraphic(empty ? null : coursButton);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        container.prefWidthProperty().bind(widthProperty());
+                        setGraphic(container);
+                    }
                 }
             });
 
