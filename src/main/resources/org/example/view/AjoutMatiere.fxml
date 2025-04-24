@@ -38,6 +38,7 @@
             <Label text="NAVIGATION" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold; -fx-padding: 0 0 10 5;"/>
 
             <Button text="Utilisateurs"
+                    onAction="#goToUtilisateurs"
                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">
@@ -46,28 +47,9 @@
                 </graphic>
             </Button>
 
-            <Button text="Statistiques"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/stats-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-
-            <Button text="Paramètres"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/settings-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-
-            <!-- Added "Matières" Button -->
-            <Button text="Matières"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;"
-                    onAction="#goToMatiere">
+            <Button  text="Matières"
+                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;"
+                     onAction="#goToMatiere">
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">
                         <Image url="@/images/matiere-icon.png"/>
@@ -95,12 +77,32 @@
                     </ImageView>
                 </graphic>
             </Button>
+
             <Button text="Jeux"
                     onAction="#afficherJeux"
                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">
                         <Image url="@/images/events-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+
+            <Button text="Statistiques"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/stats-icon.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button text="Paramètres"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/settings-icon.png"/>
                     </ImageView>
                 </graphic>
             </Button>

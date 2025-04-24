@@ -1,28 +1,21 @@
 package org.example.controller;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.example.entity.Cours;
 import org.example.entity.Matiere;
 import org.example.services.ServiceCours;
 import org.example.services.ServiceMatiere;
@@ -31,11 +24,8 @@ import org.example.utils.SessionManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class ListeMatiereFController{
 
@@ -48,6 +38,20 @@ public class ListeMatiereFController{
 
     @FXML private TilePane matiereContainer;
 
+
+    //Ajoutez cette méthode helper pour charger l'image par défaut
+    private void loadDefaultImage(ImageView imageView) {
+        try {
+            InputStream defaultStream = getClass().getResourceAsStream("/images/default-subject.png");
+            if (defaultStream != null) {
+                imageView.setImage(new Image(defaultStream));
+            } else {
+                System.err.println("Default image not found in resources");
+            }
+        } catch (Exception ex) {
+            System.err.println("Failed to load default image: " + ex.getMessage());
+        }
+    }
 
     @FXML
     public void initialize() {
@@ -67,36 +71,32 @@ public class ListeMatiereFController{
                 imageView.setFitHeight(100);
                 imageView.setPreserveRatio(true);
 
+                // Dans la méthode initialize(), remplacez le bloc try-catch d'image par ceci :
                 try {
                     // Try to load the subject image
                     if (matiere.getImgM() != null && !matiere.getImgM().isEmpty()) {
-                        // First try as resource
-                        InputStream resourceStream = getClass().getResourceAsStream(matiere.getImgM());
-                        if (resourceStream != null) {
-                            imageView.setImage(new Image(resourceStream));
-                        } else {
-                            // Then try as file path
-                            try {
-                                imageView.setImage(new Image(new File(matiere.getImgM()).toURI().toString()));
-                            } catch (Exception e) {
-                                throw new RuntimeException("Couldn't load image from path");
+                        // Solution 1: Chemin absolu depuis le système de fichiers
+                        File file = new File("src/main/resources/matiere/" + matiere.getImgM());
+                        if (file.exists()) {
+                            imageView.setImage(new Image(file.toURI().toString()));
+                        }
+                        // Solution 2: Chemin relatif depuis les ressources
+                        else {
+                            String imagePath = "/matiere/" + matiere.getImgM();
+                            InputStream is = getClass().getResourceAsStream(imagePath);
+                            if (is != null) {
+                                imageView.setImage(new Image(is));
+                            } else {
+                                // Solution 3: Image par défaut si les autres échouent
+                                loadDefaultImage(imageView);
                             }
                         }
                     } else {
-                        throw new RuntimeException("No image path specified");
+                        loadDefaultImage(imageView);
                     }
                 } catch (Exception e) {
-                    // Load default image if anything fails
-                    try {
-                        InputStream defaultStream = getClass().getResourceAsStream("/images/default-subject.png");
-                        if (defaultStream != null) {
-                            imageView.setImage(new Image(defaultStream));
-                        } else {
-                            System.err.println("Default image not found in resources");
-                        }
-                    } catch (Exception ex) {
-                        System.err.println("Failed to load default image: " + ex.getMessage());
-                    }
+                    System.err.println("Error loading image for " + matiere.getNomM() + ": " + e.getMessage());
+                    loadDefaultImage(imageView);
                 }
 
                 Label nom = new Label(matiere.getNomM());

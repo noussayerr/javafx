@@ -101,7 +101,7 @@ public class ListeMatiereBController {
             });
 
             // Action column (Modifier + Supprimer)
-            actionColumn.setCellFactory(param -> new javafx.scene.control.TableCell<>() {
+            actionColumn.setCellFactory(param -> new TableCell<>() {
                 private final Button editButton = new Button("Modifier");
                 private final Button deleteButton = new Button("Supprimer");
                 private final HBox buttonsContainer = new HBox(10, editButton, deleteButton);
@@ -183,8 +183,8 @@ public class ListeMatiereBController {
             });
 
             // Cours column
-            coursColumn.setCellFactory(param -> new javafx.scene.control.TableCell<>() {
-                private final Button coursButton = new Button("Voir");
+            coursColumn.setCellFactory(param -> new TableCell<>() {
+                private final Button coursButton = new Button("Voir Liste Cours");
                 private final HBox container = new HBox(coursButton);
 
                 {
@@ -193,13 +193,22 @@ public class ListeMatiereBController {
                         Matiere matiere = getTableView().getItems().get(getIndex());
                         afficherCours(matiere);
                     });
+
+                    // Centrer dans la HBox
                     container.setAlignment(Pos.CENTER);
+
+
                 }
 
                 @Override
                 protected void updateItem(Void item, boolean empty) {
                     super.updateItem(item, empty);
-                    setGraphic(empty ? null : coursButton);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        container.prefWidthProperty().bind(widthProperty());
+                        setGraphic(container);
+                    }
                 }
             });
 

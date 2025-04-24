@@ -1,70 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Pagination?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.Insets?>
 
-<BorderPane prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: linear-gradient(to bottom right, #f4f3fe, #eaeafc); -fx-border-color: #b0bec5; -fx-border-radius: 10; -fx-background-radius: 10;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.CategorieController">
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controller.CategorieController"
+            prefWidth="1200.0" prefHeight="800.0"
+            style="-fx-background-color: linear-gradient(to bottom right, #f4f3fe, #eaeafc); -fx-border-color: #b0bec5; -fx-border-radius: 10; -fx-background-radius: 10;">
 
     <!-- TOP BAR -->
     <top>
-        <HBox alignment="CENTER_LEFT" style="-fx-background-color: #34495e; -fx-padding: 15px;">
+        <HBox style="-fx-background-color: #34495e; -fx-padding: 15px;" alignment="CENTER_LEFT">
             <ImageView fitHeight="40" fitWidth="40">
-                <Image url="@/images/admin-icon.png" />
+                <Image url="@/images/admin-icon.png"/>
             </ImageView>
-            <Label style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 0 0 0 10;" text="Tableau de bord Administrateur" />
-            <Region HBox.hgrow="ALWAYS" />
-            <HBox alignment="CENTER_RIGHT" spacing="10">
-                <Button fx:id="logoutButton" onAction="#handleLogout" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" text="Déconnexion" />
-                <Circle fill="#3498db" radius="20" stroke="#ecf0f1" strokeWidth="1" />
+            <Label text="Tableau de bord Administrateur"
+                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 0 0 0 10;" />
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="logoutButton" text="Déconnexion"
+                        onAction="#handleLogout"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" />
+                <Circle radius="20" fill="#3498db" stroke="#ecf0f1" strokeWidth="1"/>
             </HBox>
         </HBox>
     </top>
 
     <!-- MENU GAUCHE -->
     <left>
-        <VBox prefWidth="200" spacing="15" style="-fx-background-color: #2c3e50; -fx-padding: 20px 10px;">
-            <Label style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold; -fx-padding: 0 0 10 5;" text="NAVIGATION" />
+        <VBox style="-fx-background-color: #2c3e50; -fx-padding: 20px 10px;"
+              spacing="15" prefWidth="200">
+            <Label text="NAVIGATION" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold; -fx-padding: 0 0 10 5;"/>
 
-            <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Utilisateurs">
+            <Button text="Utilisateurs"
+                    onAction="#goToUtilisateurs"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/users-icon.png" />
+                        <Image url="@/images/users-icon.png"/>
                     </ImageView>
                 </graphic>
             </Button>
 
-            <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Statistiques">
+            <Button  text="Matières"
+                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;"
+                     onAction="#goToMatiere">
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/stats-icon.png" />
+                        <Image url="@/images/matiere-icon.png"/>
                     </ImageView>
                 </graphic>
             </Button>
 
-            <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Paramètres">
+            <Button text="Abonnements"
+                    onAction="#handleAbonnementsNavigation"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/settings-icon.png" />
+                        <Image url="@/images/stats-icon.png"/>
                     </ImageView>
                 </graphic>
             </Button>
 
-            <Button fx:id="btnEvenements" onAction="#afficherEvenements" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Événements">
+            <Button text="Événements"
+                    fx:id="btnEvenements"
+                    onAction="#afficherEvenements"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/events-icon.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button text="Jeux"
+                    onAction="#afficherJeux"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">
                         <Image url="@/images/events-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+
+            <Button text="Statistiques"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/stats-icon.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button text="Paramètres"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/settings-icon.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Button text="Aide"
+                    style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-font-size: 12px; -fx-alignment: CENTER_LEFT;">
+                <graphic>
+                    <ImageView fitHeight="16" fitWidth="16">
+                        <Image url="@/images/help-icon.png"/>
                     </ImageView>
                 </graphic>
             </Button>
@@ -76,17 +125,26 @@
     <!-- CONTENU CENTRAL -->
     <center>
         <VBox alignment="CENTER" spacing="15">
-            <padding><Insets bottom="20" left="30" right="30" top="20" /></padding>
+            <padding><Insets top="20" right="30" bottom="20" left="30"/></padding>
 
-            <Label style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #8e44ad;                           -fx-effect: dropshadow(gaussian, #dcd6f7, 2, 0.3, 0, 1); -fx-underline: true;" text="📁 Liste des catégories" />
+            <Label text="📁 Liste des catégories"
+                   style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #8e44ad;
+                          -fx-effect: dropshadow(gaussian, #dcd6f7, 2, 0.3, 0, 1); -fx-underline: true;" />
 
             <!-- Recherche -->
             <HBox alignment="CENTER_RIGHT" spacing="10">
-                <TextField fx:id="txtRecherche" prefWidth="300" promptText="🔍 Rechercher une catégorie..." style="-fx-background-color: #f9f9f9; -fx-border-color: #ced4da;                                   -fx-border-radius: 8; -fx-background-radius: 8;                                   -fx-padding: 8 12; -fx-font-size: 14px;" />
-                <Button onAction="#effacerRecherche" style="-fx-background-color: linear-gradient(to right, #00c6ff, #0072ff);                                -fx-text-fill: white; -fx-font-weight: bold;                                -fx-background-radius: 25; -fx-padding: 8 16; -fx-cursor: hand;" text="❌" />
+                <TextField fx:id="txtRecherche" prefWidth="300" promptText="🔍 Rechercher une catégorie..."
+                           style="-fx-background-color: #f9f9f9; -fx-border-color: #ced4da;
+                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                  -fx-padding: 8 12; -fx-font-size: 14px;" />
+                <Button text="❌" onAction="#effacerRecherche"
+                        style="-fx-background-color: linear-gradient(to right, #00c6ff, #0072ff);
+                               -fx-text-fill: white; -fx-font-weight: bold;
+                               -fx-background-radius: 25; -fx-padding: 8 16; -fx-cursor: hand;" />
             </HBox>
 
-            <Label fx:id="loadingIcon" style="-fx-font-size: 20px; -fx-text-fill: #3498db;" text="⏳" visible="false" />
+            <Label fx:id="loadingIcon" text="⏳" visible="false"
+                   style="-fx-font-size: 20px; -fx-text-fill: #3498db;" />
 
             <!-- Table -->
             <TableView fx:id="tableCategories" prefHeight="400" prefWidth="900" style="-fx-border-color: #dcdde1;">
@@ -95,17 +153,35 @@
                     <TableColumn fx:id="colNom" prefWidth="150" text="Nom" />
                     <TableColumn fx:id="colDescription" prefWidth="300" text="Description" />
                     <TableColumn fx:id="colImage" prefWidth="150" text="Image" />
-                    <TableColumn fx:id="colActions" prefWidth="180" text="Actions" />
                 </columns>
             </TableView>
 
             <!-- Boutons -->
             <HBox alignment="CENTER" spacing="12">
-                <Button onAction="#ouvrirFormulaireAjout" style="-fx-background-color: linear-gradient(to right, #74ebd5, #acb6e5); -fx-text-fill: #2c3e50;                                -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 8 20; -fx-cursor: hand;" text="➕ Ajouter" />
+                <Button onAction="#ouvrirFormulaireAjout"
+                        text="➕ Ajouter"
+                        style="-fx-background-color: linear-gradient(to right, #74ebd5, #acb6e5); -fx-text-fill: #2c3e50;
+                               -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 8 20; -fx-cursor: hand;" />
 
-                <Button onAction="#trierParNom" style="-fx-background-color: linear-gradient(to right, #a29bfe, #6c5ce7); -fx-text-fill: white;                                -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 8 20; -fx-cursor: hand;" text="🔄 Réinitialiser (A → Z)" />
+                <Button onAction="#modifierCategorie"
+                        text="📝 Modifier"
+                        style="-fx-background-color: linear-gradient(to right, #8e44ad, #9b59b6); -fx-text-fill: white;
+                               -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 8 20; -fx-cursor: hand;" />
 
-                <Button onAction="#trierParNomDesc" style="-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-text-fill: white;                                -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 8 20; -fx-cursor: hand;" text="⬇️ Trier Z → A" />
+                <Button onAction="#supprimerCategorie"
+                        text="🗑️ Supprimer"
+                        style="-fx-background-color: linear-gradient(to right, #74ebd5, #acb6e5); -fx-text-fill: white;
+                               -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 8 20; -fx-cursor: hand;" />
+
+                <Button onAction="#trierParNom"
+                        text="🔄 Réinitialiser (A → Z)"
+                        style="-fx-background-color: linear-gradient(to right, #a29bfe, #6c5ce7); -fx-text-fill: white;
+                               -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 8 20; -fx-cursor: hand;" />
+
+                <Button onAction="#trierParNomDesc"
+                        text="⬇️ Trier Z → A"
+                        style="-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-text-fill: white;
+                               -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 8 20; -fx-cursor: hand;" />
             </HBox>
 
             <Pagination fx:id="pagination" layoutX="20" layoutY="600" />
@@ -114,8 +190,9 @@
 
     <!-- FOOTER -->
     <bottom>
-        <HBox alignment="CENTER" style="-fx-background-color: #ecf0f1; -fx-padding: 10px;">
-            <Label style="-fx-text-fill: #7f8c8d; -fx-font-size: 12px;" text="© 2023 Système de Gestion Admin - Tous droits réservés" />
+        <HBox style="-fx-background-color: #ecf0f1; -fx-padding: 10px;" alignment="CENTER">
+            <Label text="© 2023 Système de Gestion Admin - Tous droits réservés"
+                   style="-fx-text-fill: #7f8c8d; -fx-font-size: 12px;" />
         </HBox>
     </bottom>
 </BorderPane>
