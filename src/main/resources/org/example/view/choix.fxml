@@ -1,57 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.geometry.Insets?>
 
-<?import java.lang.String?>
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.171"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.example.controller.ChoiceController"
-            style="-fx-background-color: linear-gradient(to bottom right, #e9ecef, #f4f4f4);"
-            prefHeight="600.0" prefWidth="800.0">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: linear-gradient(to bottom right, #e9ecef, #f4f4f4);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.ChoiceController">
 
     <!-- Conteneur principal centré -->
     <StackPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
-        <VBox alignment="CENTER" spacing="25.0"
-              style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 40; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);"
-              maxWidth="600" maxHeight="500">
+        <VBox alignment="CENTER" maxHeight="573.0" maxWidth="714.0" prefHeight="573.0" prefWidth="714.0" spacing="25.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 40; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);">
 
             <!-- Title -->
-            <Label text="Commancer"
-                   style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 20 0;"/>
+            <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 20 0;" text="Commancer" />
 
             <!-- Description -->
-            <Label text="Veuillez sélectionner votre rôle pour continuer l'inscription:"
-                   style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d; -fx-wrap-text: true; -fx-alignment: center;"
-                   maxWidth="400"/>
+            <Label maxWidth="400" style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d; -fx-wrap-text: true; -fx-alignment: center;" text="Veuillez sélectionner votre rôle pour continuer l'inscription:" />
 
             <!-- Choice Boxes -->
-            <VBox spacing="15" alignment="CENTER" prefWidth="300">
+            <VBox alignment="CENTER" prefWidth="300" spacing="15">
                 <!-- Enseignant Option -->
-                <Button text="Enseignant" onAction="#redirectToTeacherRegister"
-                        style="-fx-background-color: linear-gradient(to right, #3498db, #2980b9); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 15 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);"
-                        maxWidth="300" minWidth="250">
+                <Button maxWidth="300" minWidth="250" onAction="#redirectToTeacherRegister" style="-fx-background-color: linear-gradient(to right, #3498db, #2980b9); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 15 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);" text="Enseignant">
                     <styleClass>
-                        <String fx:value="teacher-button"/>
+                        <String fx:value="teacher-button" />
                     </styleClass>
                 </Button>
 
                 <!-- Apprenant Option -->
-                <Button text="Apprenant" onAction="#redirectToStudentRegister"
-                        style="-fx-background-color: linear-gradient(to right, #f39c12, #e67e22); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 15 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);"
-                        maxWidth="300" minWidth="250">
+                <Button maxWidth="300" minWidth="250" onAction="#redirectToStudentRegister" style="-fx-background-color: linear-gradient(to right, #f39c12, #e67e22); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 15 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);" text="Apprenant">
                     <styleClass>
-                        <String fx:value="student-button"/>
+                        <String fx:value="student-button" />
                     </styleClass>
                 </Button>
             </VBox>
 
             <!-- Back Button -->
-            <Button text="Retour" onAction="#goBack"
-                    style="-fx-background-color: transparent; -fx-text-fill: #3498db; -fx-font-size: 12px; -fx-padding: 5 10; -fx-cursor: hand;"
-                    minWidth="80">
+            <Button minWidth="80" onAction="#goBack" style="-fx-background-color: transparent; -fx-text-fill: #3498db; -fx-font-size: 12px; -fx-padding: 5 10; -fx-cursor: hand;" text="Retour">
             </Button>
         </VBox>
     </StackPane>

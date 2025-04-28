@@ -238,7 +238,7 @@ public class RegisterApprenant {
     @FXML
     private void handleBack(ActionEvent event) {
         try {
-            Parent loginParent = FXMLLoader.load(getClass().getResource("/path/to/login.fxml"));
+            Parent loginParent = FXMLLoader.load(getClass().getResource("/org/example/view/choix.fxml"));
             Scene loginScene = new Scene(loginParent);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(loginScene);

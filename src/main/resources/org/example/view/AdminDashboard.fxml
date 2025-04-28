@@ -173,7 +173,7 @@
                             <TableColumn fx:id="specialiteColumn" text="Spécialité (Enseignant)" prefWidth="120"/>
                             <TableColumn fx:id="experienceColumn" text="Expérience (Enseignant)" prefWidth="100"/>
                             <TableColumn fx:id="lastActivityColumn" text="Dernière Activité" prefWidth="150"/>
-                            <TableColumn fx:id="actionColumn" text="Action" prefWidth="200"/>
+                            <TableColumn fx:id="actionColumn" text="Action" prefWidth="250"/>
                         </columns>
                     </TableView>
                 </VBox>
