@@ -89,9 +89,6 @@ public class ServicePDF {
         table.addCell(getStyledCell("Heure de fin", true));
         table.addCell(getStyledCell(event.getHeureFin().toString(), false));
 
-        table.addCell(getStyledCell("Prix", true));
-        table.addCell(getStyledCell(String.format("%.2f DT", event.getPrix()), false));
-
         doc.add(table);
 
         // Dashed separator

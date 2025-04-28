@@ -45,6 +45,7 @@ public class MailService {
                             "  <p style='margin-top:20px;'>📎 Le document PDF est attaché à ce mail.</p>" +
                             "  <p style='margin-top:30px;font-size:12px;color:#777;'>Ceci est un email automatique. Merci de ne pas y répondre.</p>" +
                             "</div>";
+
             htmlPart.setContent(htmlContent, "text/html; charset=utf-8");
 
             // ✅ Pièce jointe PDF
@@ -58,6 +59,11 @@ public class MailService {
             multipart.addBodyPart(pdfPart);
 
             msg.setContent(multipart);
+            msg.setHeader("X-Mailin-track", "1");
+            msg.setHeader("X-Mailin-track-click", "1");
+            msg.setHeader("X-Mailin-track-open", "1");
+            msg.setHeader("X-Mailin-client", "JavaApp");
+
 
             Transport.send(msg);
             System.out.println("✅ Email HTML avec PDF envoyé avec succès via Brevo !");
@@ -66,4 +72,53 @@ public class MailService {
             e.printStackTrace();
         }
     }
+    public static void envoyerQRCodeParMail(String destinataire, String sujet, String messageTexte, String cheminQRCode) {
+        System.out.println("📤 Tentative d'envoi du QR code...");
+
+        final String expediteur = "nourbrahem275@gmail.com";
+        final String username = "89b929001@smtp-brevo.com";
+        final String password = "aFOLZTUq7fSVQhXk";
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp-relay.brevo.com");
+        props.put("mail.smtp.port", "587");
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+
+        try {
+            Message msg = new MimeMessage(session);
+            msg.setFrom(new InternetAddress(expediteur));
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinataire));
+            msg.setSubject(sujet);
+
+            // ✅ Texte brut
+            MimeBodyPart textPart = new MimeBodyPart();
+            textPart.setText(messageTexte);
+
+            // ✅ QR code en pièce jointe
+            MimeBodyPart qrPart = new MimeBodyPart();
+            qrPart.attachFile(new File(cheminQRCode));
+            qrPart.setFileName("qr-code-ticket.png");
+
+            // ✅ Structure de l'e-mail
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(textPart);
+            multipart.addBodyPart(qrPart);
+
+            msg.setContent(multipart);
+            Transport.send(msg);
+
+            System.out.println("✅ QR code envoyé avec succès à " + destinataire + " !");
+        } catch (Exception e) {
+            System.out.println("❌ Erreur d'envoi du QR code : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 }

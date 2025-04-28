@@ -109,10 +109,6 @@
                                    -fx-background-radius: 25; -fx-cursor: hand;" />
                 </HBox>
 
-                <!-- Prix -->
-                <Label text="Prix (DT)" GridPane.rowIndex="15" GridPane.columnIndex="0" />
-                <TextField fx:id="txtPrix" promptText="Ex: 50.0" GridPane.rowIndex="15" GridPane.columnIndex="1" />
-                <Label fx:id="lblErreurPrix" textFill="red" GridPane.rowIndex="16" GridPane.columnIndex="1" />
             </GridPane>
 
             <!-- ✅ BOUTONS -->

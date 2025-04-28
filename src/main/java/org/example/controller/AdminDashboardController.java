@@ -1,5 +1,4 @@
 package org.example.controller;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,17 +17,11 @@ import org.example.services.ServiceApprenant;
 import org.example.services.ServiceEnseignant;
 import org.example.services.ServiceUser;
 import org.example.services.EmailService;
-import org.example.services.GeminiRapport;
-import org.example.services.ServicePDF;
 import org.example.utils.SessionManager;
 import org.json.JSONObject;
 import javafx.collections.transformation.FilteredList;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.http.HttpClient;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,21 +29,50 @@ import java.time.temporal.ChronoUnit;
 
 public class AdminDashboardController {
 
-    @FXML private Button logoutButton;
-    @FXML private TableView<Object> usersTable;
-    @FXML private TableColumn<Object, String> nomColumn;
-    @FXML private TableColumn<Object, String> prenomColumn;
-    @FXML private TableColumn<Object, String> emailColumn;
-    @FXML private TableColumn<Object, String> rolesColumn;
-    @FXML private TableColumn<Object, String> etatColumn;
-    @FXML private TableColumn<Object, String> dateNaissanceColumn;
-    @FXML private TableColumn<Object, String> niveauColumn;
-    @FXML private TableColumn<Object, String> specialiteColumn;
-    @FXML private TableColumn<Object, String> experienceColumn;
-    @FXML private TableColumn<Object, String> lastActivityColumn;
-    @FXML private TableColumn<Object, Void> actionColumn;
-    @FXML private TextField searchField;
-    @FXML private Button predictButton;
+    @FXML
+    private Button logoutButton;
+
+    @FXML
+    private TableView<Object> usersTable;
+
+    @FXML
+    private TableColumn<Object, String> nomColumn;
+
+    @FXML
+    private TableColumn<Object, String> prenomColumn;
+
+    @FXML
+    private TableColumn<Object, String> emailColumn;
+
+    @FXML
+    private TableColumn<Object, String> rolesColumn;
+
+    @FXML
+    private TableColumn<Object, String> etatColumn;
+
+    @FXML
+    private TableColumn<Object, String> dateNaissanceColumn;
+
+    @FXML
+    private TableColumn<Object, String> niveauColumn;
+
+    @FXML
+    private TableColumn<Object, String> specialiteColumn;
+
+    @FXML
+    private TableColumn<Object, String> experienceColumn;
+
+    @FXML
+    private TableColumn<Object, String> lastActivityColumn;
+
+    @FXML
+    private TableColumn<Object, Void> actionColumn;
+
+    @FXML
+    private TextField searchField;
+
+    @FXML
+    private Button predictButton;
 
     private ObservableList<Object> usersList = FXCollections.observableArrayList();
     private FilteredList<Object> filteredUsersList;
@@ -59,7 +81,6 @@ public class AdminDashboardController {
     private ServiceUser serviceUser = new ServiceUser();
     private PredictService predictService = new PredictService();
     private EmailService emailService = new EmailService();
-    private GeminiRapport geminiRapport = new GeminiRapport(HttpClient.newHttpClient(), null);
 
     @FXML
     public void initialize() {
@@ -129,18 +150,17 @@ public class AdminDashboardController {
             return new javafx.beans.property.SimpleStringProperty(lastActivity);
         });
 
-        // Configure Action column with Toggle, Delete, and Rapport buttons
+        // Configure Action column with Toggle and Delete buttons
         actionColumn.setCellFactory(param -> new TableCell<>() {
             private final Button toggleButton = new Button("Toggle Status");
             private final Button deleteButton = new Button("Supprimer");
-            private final Button rapportButton = new Button("Rapport");
-            private final HBox buttonsContainer = new HBox(5);
+            private final HBox buttonsContainer = new HBox(5); // Spacing between buttons
 
             {
                 toggleButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white;");
                 deleteButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
-                rapportButton.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white;");
 
+                // Toggle Status button action
                 toggleButton.setOnAction(event -> {
                     Object user = getTableRow().getItem();
                     if (user != null) {
@@ -168,9 +188,11 @@ public class AdminDashboardController {
                     }
                 });
 
+                // Delete button action
                 deleteButton.setOnAction(event -> {
                     Object user = getTableRow().getItem();
                     if (user != null) {
+                        // Show confirmation dialog
                         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
                         confirmation.setTitle("Confirmation de suppression");
                         confirmation.setHeaderText("Voulez-vous vraiment supprimer cet utilisateur ?");
@@ -184,6 +206,7 @@ public class AdminDashboardController {
                                     } else {
                                         serviceEnseignant.supprimer(userId);
                                     }
+                                    // Remove user from the list and refresh the table
                                     usersList.remove(user);
                                     usersTable.refresh();
                                     showAlert(Alert.AlertType.INFORMATION, "Succès", "Utilisateur supprimé", "L'utilisateur a été supprimé avec succès.");
@@ -196,40 +219,7 @@ public class AdminDashboardController {
                     }
                 });
 
-                rapportButton.setOnAction(event -> {
-                    Object user = getTableRow().getItem();
-                    if (user != null) {
-                        try {
-                            String name = user instanceof Apprenant
-                                    ? ((Apprenant) user).getPrenom() + " " + ((Apprenant) user).getNom()
-                                    : ((Enseignant) user).getPrenom() + " " + ((Enseignant) user).getNom();
-                            int sessionCount = user instanceof Apprenant ? ((Apprenant) user).getSessionsCount() : 0;
-                            int interactionCount = user instanceof Apprenant ? ((Apprenant) user).getInteractionsCount() : 0;
-                            LocalDateTime lastActivity = user instanceof Apprenant ? ((Apprenant) user).getLastActivity() : null;
-                            if (lastActivity == null) {
-                                lastActivity = LocalDateTime.now();
-                            }
-
-                            String reportBody = geminiRapport.analyzeUserConnectivity(name, sessionCount, interactionCount, lastActivity);
-
-                            String reportsDir = "reports";
-                            Files.createDirectories(Paths.get(reportsDir));
-
-                            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-                            String safeFileName = name.replaceAll("[^a-zA-Z0-9_-]", "_");
-                            String pdfPath = reportsDir + File.separator + safeFileName + "_" + timestamp + ".pdf";
-                            ServicePDF.generateRapportPDF(pdfPath, reportBody);
-
-                            showAlert(Alert.AlertType.INFORMATION, "Succès", "Rapport généré",
-                                    "Le rapport de connectivité a été généré avec succès à : " + pdfPath);
-                        } catch (Exception e) {
-                            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la génération du rapport", e.getMessage());
-                            e.printStackTrace();
-                        }
-                    }
-                });
-
-                buttonsContainer.getChildren().addAll(toggleButton, deleteButton, rapportButton);
+                buttonsContainer.getChildren().addAll(toggleButton, deleteButton);
             }
 
             @Override
@@ -250,7 +240,7 @@ public class AdminDashboardController {
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredUsersList.setPredicate(user -> {
                 if (newValue == null || newValue.trim().isEmpty()) {
-                    return true;
+                    return true; // Show all users if search is empty
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
                 if (user instanceof Apprenant) {
@@ -290,6 +280,7 @@ public class AdminDashboardController {
     private void handlePredictChurn() {
         try {
             for (Object user : usersList) {
+                // Traiter uniquement les Apprenants
                 if (!(user instanceof Apprenant)) {
                     continue;
                 }
@@ -298,13 +289,15 @@ public class AdminDashboardController {
                 String email = apprenant.getEmail();
                 String name = apprenant.getPrenom();
 
+                // Retrieve actual data from user
                 int sessionCount = apprenant.getSessionsCount();
                 int interactionsCount = apprenant.getInteractionsCount();
                 LocalDateTime lastActivity = apprenant.getLastActivity();
 
+                // Calculate daysSinceLastActivity
                 int daysSinceLastActivity = lastActivity != null
                         ? (int) ChronoUnit.DAYS.between(lastActivity, LocalDateTime.now())
-                        : 999;
+                        : 999; // Use a high value if lastActivity is null
 
                 try {
                     String response = predictService.predictChurn(sessionCount, daysSinceLastActivity, interactionsCount);
@@ -333,24 +326,16 @@ public class AdminDashboardController {
     @FXML
     private void handleLogout() {
         try {
-            // Clear the session
             SessionManager.getInstance().logout();
-
-            // Load the login screen
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Home.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) logoutButton.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
+            stage.setScene(new Scene(root));
             stage.setTitle("Connexion");
             stage.centerOnScreen();
-            stage.setMaximized(true);
-            stage.show();
-
-            // Show logout confirmation
             showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", "Impossible de charger l'écran de connexion: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -373,10 +358,14 @@ public class AdminDashboardController {
             stage.setMaximized(true);
             stage.show();
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement de la page", e.getMessage());
+            System.out.println("❌ Erreur de chargement de la page : " + fxmlPath);
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("❌ Autre erreur inconnue !");
             e.printStackTrace();
         }
     }
+
 
     public void goToMatiere(ActionEvent actionEvent) {
         loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
@@ -387,8 +376,11 @@ public class AdminDashboardController {
     }
 
     @FXML
-    private void handleAbonnementsNavigation(ActionEvent event) {
-        loadPage(event, "/org/example/view/ListAbonnement.fxml");
+    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
     }
 
     public void goToUtilisateurs(ActionEvent actionEvent) {
@@ -396,7 +388,12 @@ public class AdminDashboardController {
     }
 
     @FXML
-    public void afficherJeux(ActionEvent event) {
-        loadPage(event, "/org/example/view/jeuxIndex.fxml");
+    public void afficherJeux(ActionEvent event) throws IOException {
+
+
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
     }
 }

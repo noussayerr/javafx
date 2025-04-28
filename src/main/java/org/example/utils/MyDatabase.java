@@ -1,6 +1,15 @@
 package org.example.utils;
 
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -8,7 +17,7 @@ import java.sql.SQLException;
 public class MyDatabase {
 
 
-    private final String URL = "jdbc:mysql://localhost:3307/integrationpidev";
+    private final String URL = "jdbc:mysql://localhost:3306/integrationpidev";
     private final String USERNAME = "root";
     private final String PASSWORD = "";
 
@@ -51,5 +60,14 @@ public class MyDatabase {
             System.err.println("❌ Erreur lors de la vérification de la connexion : " + e.getMessage());
         }
         return connection;
+    }
+
+    public static class QRCodeGenerator {
+        public static void generateQRCode(String data, String filePath) throws WriterException, IOException {
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, 300, 300);
+            Path path = Paths.get(filePath);
+            MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+        }
     }
 }

@@ -237,8 +237,7 @@ public class AjouterEvenementController {
                 heureDebut,
                 heureFin,
                 lieu,
-                txtImage.getText(),
-                prix
+                txtImage.getText()
         );
 
         EvenementDAO dao = new EvenementDAO();

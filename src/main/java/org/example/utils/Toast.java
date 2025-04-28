@@ -68,4 +68,45 @@ public class Toast {
             sound.play();
         }
     }
+    // Toast visuel intégré dans un StackPane (comme mainContainer)
+    public static void showSuccess(StackPane root, String message) {
+        showFromPane(root, message, Color.web("#00b894")); // vert clair
+    }
+
+    public static void showError(StackPane root, String message) {
+        showFromPane(root, message, Color.web("#d63031")); // rouge clair
+    }
+
+    private static void showFromPane(StackPane root, String message, Color bgColor) {
+        Label label = new Label(message);
+        label.setStyle("""
+            -fx-text-fill: white;
+            -fx-padding: 10px 20px;
+            -fx-font-size: 14px;
+            -fx-background-radius: 15px;
+            -fx-font-weight: bold;
+            """);
+        label.setBackground(new javafx.scene.layout.Background(
+                new javafx.scene.layout.BackgroundFill(bgColor, new javafx.scene.layout.CornerRadii(15), null)));
+
+        StackPane toastContainer = new StackPane(label);
+        toastContainer.setOpacity(0);
+        StackPane.setMargin(toastContainer, new javafx.geometry.Insets(10));
+        root.getChildren().add(toastContainer);
+
+        // Animation
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), toastContainer);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        PauseTransition pause = new PauseTransition(Duration.seconds(2.5));
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(300), toastContainer);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+        fadeOut.setOnFinished(e -> root.getChildren().remove(toastContainer));
+
+        new javafx.animation.SequentialTransition(fadeIn, pause, fadeOut).play();
+    }
+
 }
