@@ -116,6 +116,7 @@
                     <include>**/*.png</include>
                     <include>**/*.jpg</include>
                     <include>**/*.jpeg</include>
+                    <include>**/*.json</include>  <!-- Add this line -->
                 </includes>
             </resource>
         </resources>

@@ -1,0 +1,20 @@
+{
+  "easy": [
+    "winter", "castle", "planet", "flower", "apple", "river", "table", "happy",
+    "sunny", "music", "pizza", "water", "smile", "beach", "cloud", "dream",
+    "light", "party", "quiet", "sweet"
+  ],
+  "medium": [
+    "adventure", "beautiful", "mountain", "elephant", "sunshine",
+    "butterfly", "hospital", "keyboard", "notebook", "rainbow",
+    "sandwich", "umbrella", "volcano", "wonderful", "birthday",
+    "dinosaur", "football", "giraffe", "homework", "jacket"
+  ],
+  "hard": [
+    "extravaganza", "hippopotamus", "kaleidoscope", "magnificent",
+    "neighborhood", "opportunity", "parallelogram", "questionnaire",
+    "revolutionary", "strawberries", "thermometer", "uncomfortable",
+    "vegetarian", "waterfall", "xylophone", "yellowish",
+    "zoological", "architecture", "basketball", "chocolate"
+  ]
+}

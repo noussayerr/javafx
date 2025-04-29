@@ -14,6 +14,10 @@ public class Score {
         this.jeux = jeux;
     }
 
+    public Score() {
+
+    }
+
     // Getters et Setters
     public int getId() {
         return id;

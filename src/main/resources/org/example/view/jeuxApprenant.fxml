@@ -5,11 +5,11 @@
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane prefHeight="600.0" prefWidth="1000.0" style="-fx-background-color: linear-gradient(to bottom right, #f5f7fa, #c3cfe2);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.JeuxController">
 
-    <!-- Same header as dashboard -->
+    <!-- Header -->
     <HBox style="-fx-background-color: rgba(255,255,255,0.3); -fx-background-radius: 15;" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
         <effect>
             <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
@@ -29,7 +29,7 @@
             <Button style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="les Événements" onAction="#ouvrirListeEvenements" />
             <Button style="-fx-background-color: #4a6baf; -fx-text-fill: white; -fx-font-weight: bold;" text="Jeux"  />
             <Button style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Profil" onAction="#handleProfile" />
-            <Button onAction="#handleLogout" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Déconnexion">
+            <Button fx:id="logoutButton" onAction="#handleLogout" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Déconnexion">
                 <HBox.margin>
                     <Insets left="200.0" />
                 </HBox.margin>
@@ -37,35 +37,30 @@
         </HBox>
     </HBox>
 
-    <!-- Games content -->
-    <VBox alignment="TOP_CENTER" spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="100.0">
-        <!-- Title -->
-        <Label style="-fx-font-size: 24px; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Jeux Éducatifs" />
+    <!-- Search and Filter Bar -->
+    <HBox spacing="15" style="-fx-padding: 15;" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="100.0">
+        <TextField fx:id="searchField" promptText="Rechercher un jeu..." style="-fx-background-radius: 20; -fx-padding: 8 15;" HBox.hgrow="ALWAYS">
+            <effect>
+                <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="5" radius="5" width="5" />
+            </effect>
+        </TextField>
+        <ComboBox fx:id="typeFilter" promptText="Filtrer par type" style="-fx-background-radius: 20;">
+            <effect>
+                <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="5" radius="5" width="5" />
+            </effect>
+        </ComboBox>
+    </HBox>
 
-        <!-- Games Table -->
-        <HBox spacing="10" alignment="CENTER_LEFT">
-
-            <Button fx:id="launchButton" text="Lancer le jeu" onAction="#launchGame" disable="true"
-                    style="-fx-background-color: #9b59b6; -fx-text-fill: white;"/>
-        </HBox>
-
-        <TableView fx:id="jeuxTable" style="-fx-background-color: white; -fx-background-radius: 15;" prefHeight="400.0">
+    <!-- Games Cards Display -->
+    <ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="160.0">
+        <FlowPane fx:id="gamesContainer" hgap="20" vgap="20" alignment="TOP_CENTER" style="-fx-padding: 20;">
             <effect>
                 <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
             </effect>
+        </FlowPane>
+    </ScrollPane>
 
-            <columns>
-                <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
-                <TableColumn fx:id="nomColumn" text="Nom du Jeu" prefWidth="200" />
-                <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="300" />
-                <TableColumn fx:id="typeColumn" text="Catégorie" prefWidth="150" />
-                <TableColumn fx:id="docColumn" text="Date de Création" prefWidth="120"/>
-
-            </columns>
-        </TableView>
-    </VBox>
-
-    <!-- Same footer as dashboard -->
+    <!-- Footer -->
     <HBox alignment="CENTER" style="-fx-background-color: rgba(255,255,255,0.5); -fx-background-radius: 10; -fx-padding: 10;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
         <Label style="-fx-text-fill: #3a4a6d;" text="© 2023 Learning Platform - Tous droits réservés" />
     </HBox>

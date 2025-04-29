@@ -69,4 +69,48 @@ public class ServiceJeux implements IService<Jeux> {
         }
         return list;
     }
+    public boolean jeuExiste(String nom) {
+        String sql = "SELECT COUNT(*) FROM jeux WHERE nom = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, nom);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public Jeux getByNom(String nom) throws SQLException {
+        String sql = "SELECT * FROM jeux WHERE nom = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setString(1, nom);
+
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Jeux jeu = new Jeux();
+            jeu.setId(rs.getInt("id"));
+            jeu.setNom(rs.getString("nom"));
+            jeu.setDescription(rs.getString("description"));
+            jeu.setType(rs.getString("type"));
+            jeu.setDoC(rs.getDate("do_c").toLocalDate()); // If you use LocalDate
+            return jeu;
+        }
+        return null; // No game found
+    }
+    public List<String> getDistinctGameTypes() throws SQLException {
+        List<String> types = new ArrayList<>();
+        String query = "SELECT DISTINCT type FROM jeux";
+
+        try (
+             PreparedStatement pst = connection.prepareStatement(query);
+             ResultSet rs = pst.executeQuery()) {
+
+            while (rs.next()) {
+                types.add(rs.getString("type"));
+            }
+        }
+        return types;
+    }
 }

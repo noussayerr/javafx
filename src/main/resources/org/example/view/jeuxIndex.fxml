@@ -115,6 +115,8 @@
                             style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
                     <Button fx:id="launchButton" text="Lancer le jeu" onAction="#launchGame" disable="true"
                             style="-fx-background-color: #9b59b6; -fx-text-fill: white;"/>
+                    <Button fx:id="scoreButton" text="LeaderBoard" onAction="#goToLeaderboard"
+                            style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
                 </HBox>
             </HBox>
 
