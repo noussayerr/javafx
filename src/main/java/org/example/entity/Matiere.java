@@ -12,8 +12,8 @@ public class Matiere {
     private String imgM;
 
     private List<Cours> cours;
-    private List<Commentaire> commentaires;
-    private List<Evalu> evalus;
+    private List<Commentaire> commentaires = new ArrayList<>();
+    private List<Evalu> evalus = new ArrayList<>() ;
 
     // Constructeur par défaut
     public Matiere() {
@@ -100,6 +100,9 @@ public class Matiere {
     }
 
     public List<Commentaire> getCommentaires() {
+        if (commentaires == null) {
+            commentaires = new ArrayList<>();
+        }
         return commentaires;
     }
 
@@ -108,6 +111,9 @@ public class Matiere {
     }
 
     public List<Evalu> getEvalus() {
+        if (evalus == null) {
+            evalus = new ArrayList<>();
+        }
         return evalus;
     }
 
@@ -126,5 +132,15 @@ public class Matiere {
 
     public void addEvalu(Evalu evalu) {
         this.evalus.add(evalu);
+    }
+
+    private boolean active; // Ajoutez cet attribut
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

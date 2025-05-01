@@ -1,5 +1,7 @@
 package org.example.entity;
 
+import java.util.List;
+
 public class Evalu {
     private int id;
     private int note;
@@ -36,14 +38,28 @@ public class Evalu {
     }
 
     public void setMatiere(Matiere matiere) {
-        // Gestion de la relation bidirectionnelle
+        // Handle the current matiere
         if (this.matiere != null) {
-            this.matiere.getEvalus().remove(this);
+            List<Evalu> currentEvalus = this.matiere.getEvalus();
+            if (currentEvalus != null) {
+                currentEvalus.remove(this);
+            }
         }
+
+        // Set the new matiere
         this.matiere = matiere;
-        if (matiere != null && !matiere.getEvalus().contains(this)) {
-            matiere.getEvalus().add(this);
+
+        // Handle the new matiere
+        if (matiere != null) {
+            List<Evalu> newEvalus = matiere.getEvalus();
+            if (newEvalus != null && !newEvalus.contains(this)) {
+                newEvalus.add(this);
+            }
         }
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public User getUser() {

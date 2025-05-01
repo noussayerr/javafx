@@ -1,9 +1,15 @@
 package org.example.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class Commentaire {
     private int id;
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     private String contenu;
     private LocalDateTime date;
     private Matiere matiere; // nullable
@@ -50,13 +56,21 @@ public class Commentaire {
     }
 
     public void setMatiere(Matiere matiere) {
-        // Gestion de la relation bidirectionnelle
-        if (this.matiere != null) {
+        // Handle null case for current matiere
+        if (this.matiere != null && this.matiere.getCommentaires() != null) {
             this.matiere.getCommentaires().remove(this);
         }
+
         this.matiere = matiere;
-        if (matiere != null && !matiere.getCommentaires().contains(this)) {
-            matiere.getCommentaires().add(this);
+
+        // Handle null case for new matiere
+        if (matiere != null) {
+            if (matiere.getCommentaires() == null) {
+                matiere.setCommentaires(new ArrayList<>());
+            }
+            if (!matiere.getCommentaires().contains(this)) {
+                matiere.getCommentaires().add(this);
+            }
         }
     }
 

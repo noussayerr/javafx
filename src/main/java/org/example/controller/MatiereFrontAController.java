@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
@@ -24,8 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ListeMatiereFController {
-
+public class MatiereFrontAController {
     @FXML private TilePane matiereContainer;
     @FXML private TextField searchField;
     @FXML private HBox pageButtons;
@@ -54,7 +54,6 @@ public class ListeMatiereFController {
     @FXML
     public void initialize() {
         try {
-            // Load all matieres
             allMatieres = serviceMatiere.afficher();
             if (allMatieres == null) {
                 allMatieres = new ArrayList<>();
@@ -62,19 +61,16 @@ public class ListeMatiereFController {
             filteredMatieres = new ArrayList<>(allMatieres);
             updatePagination();
 
-            // Populate sidebar
             populateCategories();
             populateFilterCounts();
 
-            // Add dynamic search listener
             searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-                currentPage = 1; // Reset to first page on search
+                currentPage = 1;
                 filterMatieres(newValue.trim().toLowerCase());
                 updatePagination();
             });
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "SQL Error", "Problème lors du chargement des matières", e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -91,16 +87,14 @@ public class ListeMatiereFController {
 
     private void updatePagination() {
         totalPages = (int) Math.ceil((double) filteredMatieres.size() / itemsPerPage);
-        if (totalPages == 0) totalPages = 1; // Ensure at least one page
+        if (totalPages == 0) totalPages = 1;
         if (currentPage > totalPages) currentPage = totalPages;
         if (currentPage < 1) currentPage = 1;
 
-        // Update display info
         int start = (currentPage - 1) * itemsPerPage + 1;
         int end = Math.min(currentPage * itemsPerPage, filteredMatieres.size());
         displayInfoLabel.setText(String.format("Affichage de %d à %d sur %d", start, end, filteredMatieres.size()));
 
-        // Update page buttons
         pageButtons.getChildren().clear();
         for (int i = 1; i <= totalPages; i++) {
             Button pageButton = new Button(String.valueOf(i));
@@ -113,11 +107,9 @@ public class ListeMatiereFController {
             pageButtons.getChildren().add(pageButton);
         }
 
-        // Update prev/next buttons
         prevButton.setDisable(currentPage == 1);
         nextButton.setDisable(currentPage == totalPages);
 
-        // Display current page of matieres
         displayMatieres();
     }
 
@@ -160,9 +152,9 @@ public class ListeMatiereFController {
 
     private void navigateToCourses(Matiere matiere) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AfficherCoursFront.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AffichCoursApp.fxml"));
             Parent root = loader.load();
-            AfficherCoursFrontController controller = loader.getController();
+            AffichCoursAppController controller = loader.getController();
             controller.setMatiere(matiere);
             Stage stage = (Stage) matiereContainer.getScene().getWindow();
             stage.setScene(new Scene(root));
@@ -170,16 +162,13 @@ public class ListeMatiereFController {
             stage.show();
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger la page des cours", e.getMessage());
-            e.printStackTrace();
         }
     }
 
     private void populateCategories() {
         categoriesContainer.getChildren().clear();
-        // Create a copy of allMatieres and shuffle it
         List<Matiere> shuffledMatieres = new ArrayList<>(allMatieres);
         Collections.shuffle(shuffledMatieres);
-        // Select up to 5 matieres
         int maxCategories = Math.min(6, shuffledMatieres.size());
         for (int i = 0; i < maxCategories; i++) {
             Matiere matiere = shuffledMatieres.get(i);
@@ -201,7 +190,6 @@ public class ListeMatiereFController {
             List<Cours> courses = serviceCours.getCoursParMatiere(matiere.getId());
             return courses != null ? courses.size() : 0;
         } catch (SQLException e) {
-            e.printStackTrace();
             return 0;
         }
     }
@@ -210,7 +198,6 @@ public class ListeMatiereFController {
         int totalCount = allMatieres.stream().mapToInt(this::getCourseCount).sum();
         totalCountLabel.setText("Tous (" + totalCount + ")");
 
-        // Calculate counts based on course type and level
         int freeCount = 0;
         int premiumCount = 0;
         int beginnerCount = 0;
@@ -260,7 +247,7 @@ public class ListeMatiereFController {
 
     @FXML
     public void goMatiereF(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/ListeMatiereF.fxml");
+        loadPage(actionEvent, "/org/example/view/MatiereFrontA.fxml");
     }
 
     private void loadPage(ActionEvent event, String fxmlPath) {
@@ -274,14 +261,13 @@ public class ListeMatiereFController {
             stage.show();
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement de la page", e.getMessage());
-            e.printStackTrace();
         }
     }
 
     @FXML
     private void handleProfile() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ProfileEnseignant.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ProfileApprenant.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) profileButton.getScene().getWindow();
             stage.setScene(new Scene(root));
@@ -290,7 +276,6 @@ public class ListeMatiereFController {
             stage.setMaximized(true);
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement de la page de profil", e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -307,11 +292,39 @@ public class ListeMatiereFController {
             showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
-            e.printStackTrace();
         }
     }
 
     public void effacerRecherche(ActionEvent actionEvent) {
         searchField.clear();
+    }
+
+    @FXML
+    private void showGames(ActionEvent event) throws IOException {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/jeuxApprenant.fxml"));
+            AnchorPane listPane = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void ouvrirListeEvenements() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/evenement-list.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("📅 Liste des Événements");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

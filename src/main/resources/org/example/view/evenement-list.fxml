@@ -29,7 +29,7 @@
 
 
             <!-- 📜 Scroll avec cartes -->
-            <ScrollPane fx:id="scrollPane" fitToWidth="true" style="-fx-background-color: transparent;                                -fx-padding: 10;">
+            <ScrollPane fx:id="scrollPane" fitToWidth="true" style="-fx-background-color: transparent;-fx-padding: 10;">
                 <content>
                     <FlowPane fx:id="eventContainer" hgap="25" style="-fx-padding: 20; -fx-alignment: center;" styleClass="themeable-flow-pane" vgap="25" />
                 </content>

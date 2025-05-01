@@ -7,6 +7,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.entity.Matiere;
@@ -28,7 +31,6 @@ public class AjoutMatiereController {
     @FXML private TextArea objMField;
     @FXML private TextField imgMField;
 
-    // Labels d'erreur sous les champs
     @FXML private Label nomErrorLabel;
     @FXML private Label titreErrorLabel;
     @FXML private Label descErrorLabel;
@@ -38,20 +40,24 @@ public class AjoutMatiereController {
 
     @FXML private Button logoutButton;
 
-    private ServiceMatiere matiereService = new ServiceMatiere();
+    private final ServiceMatiere matiereService = new ServiceMatiere();
+
     @FXML
     private void handleAjouterMatiere(ActionEvent event) throws SQLException {
-        // Nettoyer les messages d'erreur
         clearErrorLabels();
-
         boolean valid = true;
 
         String nom = nomMField.getText().trim();
+
+        // Valider le nom : commence par une lettre, accepte lettres, chiffres, espaces, tirets, apostrophes
         if (nom.isEmpty()) {
             nomErrorLabel.setText("Le nom est requis.");
             valid = false;
-        } else if (!nom.matches("[a-zA-ZàâçéèêëîïôûùüÿñæœÀÂÇÉÈÊËÎÏÔÛÙÜŸÑÆŒ\\s\\-']+")) {
-            nomErrorLabel.setText("Le nom ne doit contenir que des lettres.");
+        } else if (!nom.matches("^[a-zA-Z][a-zA-Z0-9\\s\\-']*$")) {
+            nomErrorLabel.setText("Le nom doit commencer par une lettre et contenir uniquement lettres, chiffres, tirets ou espaces.");
+            valid = false;
+        } else if (matiereService.checkNomExist(nom)) {
+            nomErrorLabel.setText("Ce nom de matière existe déjà.");
             valid = false;
         }
 
@@ -77,53 +83,56 @@ public class AjoutMatiereController {
 
         if (!valid) {
             errorLabel.setText("Veuillez corriger les erreurs ci-dessus.");
+            errorLabel.setTextFill(Color.RED);
+            errorLabel.setFont(Font.font("System", FontWeight.NORMAL, 12));
             return;
         }
 
-        // Créez une nouvelle matière
         Matiere matiere = new Matiere();
         matiere.setNomM(nom);
         matiere.setTitreM(titreMField.getText());
         matiere.setDescM(descMField.getText());
         matiere.setObjM(objMField.getText());
 
-        File sourceImageFile = new File(imgMField.getText()); // Image choisie par l'utilisateur
+        File sourceImageFile = new File(imgMField.getText());
         if (sourceImageFile.exists()) {
-            // Récupérer uniquement le nom du fichier
             String imageName = sourceImageFile.getName();
-
-            // Chemin relatif vers le dossier 'resources/matiere'
             String projectRoot = System.getProperty("user.dir");
             Path targetImagePath = Path.of(projectRoot, "src", "main", "resources", "matiere", imageName);
 
             try {
-                // Copier l'image vers le dossier resources/matiere
                 Files.copy(sourceImageFile.toPath(), targetImagePath, StandardCopyOption.REPLACE_EXISTING);
-
-                // Enregistrer uniquement le nom du fichier dans la base de données
-                matiere.setImgM(  imageName); // Enregistrement relatif dans la base de données
+                matiere.setImgM(imageName);
             } catch (IOException e) {
                 e.printStackTrace();
                 errorLabel.setText("Erreur lors de la copie de l'image.");
+                errorLabel.setTextFill(Color.RED);
+                errorLabel.setFont(Font.font("System", FontWeight.NORMAL, 12));
                 return;
             }
         } else {
             errorLabel.setText("Fichier image non trouvé.");
+            errorLabel.setTextFill(Color.RED);
+            errorLabel.setFont(Font.font("System", FontWeight.NORMAL, 12));
             return;
         }
 
-        // Ajoutez la matière à la base de données
         try {
             matiereService.ajouter(matiere);
-            System.out.println("Matière ajoutée avec succès !");
         } catch (SQLException e) {
             e.printStackTrace();
             errorLabel.setText("Erreur lors de l'ajout de la matière.");
+            errorLabel.setTextFill(Color.RED);
+            errorLabel.setFont(Font.font("System", FontWeight.NORMAL, 12));
+            return;
         }
 
-        // Réinitialiser les champs
         resetFields();
+
+        // ✅ Message en gras et en vert
         errorLabel.setText("✅ Matière ajoutée avec succès !");
+        errorLabel.setTextFill(Color.GREEN);
+        errorLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
     }
 
     @FXML
@@ -141,7 +150,6 @@ public class AjoutMatiereController {
                 new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
         );
         File file = fileChooser.showOpenDialog(new Stage());
-
         if (file != null) {
             imgMField.setText(file.getAbsolutePath());
         }
@@ -202,6 +210,7 @@ public class AjoutMatiereController {
             e.printStackTrace();
         }
     }
+
     public void goToMatiere(ActionEvent actionEvent) {
         loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
     }
@@ -229,5 +238,4 @@ public class AjoutMatiereController {
         stage.setScene(new Scene(root));
         stage.show();
     }
-
 }

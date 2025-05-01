@@ -43,7 +43,7 @@ public class AjouterFichierController {
             // Déduire le type d'après l'extension
             String fileName = selectedFile.getName();
             if (fileName.toLowerCase().endsWith(".pdf")) {
-                typeCombo.setValue("PDF");
+                typeCombo.setValue("Pdf");
             } else if (fileName.toLowerCase().endsWith(".docx")) {
                 typeCombo.setValue("Word");
             }

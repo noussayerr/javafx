@@ -83,6 +83,8 @@ public class ApprenantDashboardController {
     }
 
     public void handleExploreCourses(ActionEvent actionEvent) {
+        System.out.println("Naviguer vers gestion des matières...");
+        loadPage(actionEvent, "/org/example/view/MatiereFrontA.fxml");
     }
     @FXML
     private void handleProfile() {
@@ -137,7 +139,7 @@ public class ApprenantDashboardController {
 
     public void goMatiereF(ActionEvent actionEvent) {
         System.out.println("Naviguer vers gestion des matières...");
-        loadPage(actionEvent, "/org/example/view/ListeMatiereF.fxml");
+        loadPage(actionEvent, "/org/example/view/MatiereFrontA.fxml");
     }
 
     private void loadPage(ActionEvent event, String fxmlPath) {

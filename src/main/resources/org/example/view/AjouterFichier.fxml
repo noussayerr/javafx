@@ -20,9 +20,11 @@
         <ComboBox fx:id="typeCombo" GridPane.rowIndex="1" GridPane.columnIndex="1">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="PDF"/>
+                    <String fx:value="Pdf"/>
                     <String fx:value="Word"/>
                     <String fx:value="Excel"/>
+                    <String fx:value="Video"/>
+                    <String fx:value="Image"/>
                     <String fx:value="Autre"/>
                 </FXCollections>
             </items>

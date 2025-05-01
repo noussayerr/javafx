@@ -14,28 +14,31 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="801.0" prefWidth="1366.0" style="-fx-background-color: #F4F7FC;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.ListeMatiereFController">
+<AnchorPane prefHeight="801.0" prefWidth="1366.0" style="-fx-background-color: #F4F7FC;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.MatiereFrontAController">
     <!-- Header avec effet de verre -->
-    <HBox alignment="CENTER" prefHeight="36.0" prefWidth="960.0" style="-fx-background-color: rgba(255,255,255,0.3); -fx-background-radius: 15;" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+    <HBox style="-fx-background-color: rgba(255,255,255,0.3); -fx-background-radius: 15;" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
         <effect>
             <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
         </effect>
+
         <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@/images/admin-icon.png" />
             </image>
         </ImageView>
-        <Label style="-fx-text-fill: #495057; -fx-font-size: 24px; -fx-font-weight: bold; -fx-font-family: 'Comic Sans MS';" text="DysCover" HBox.hgrow="ALWAYS" />
-        <HBox alignment="CENTER" prefWidth="785.0" spacing="15.0" style="-fx-padding: 0 15 0 0;">
-            <Button style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Tableau de bord" />
-            <Button onAction="#goMatiereF" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Mes Cours" />
-            <Button fx:id="studentsButton" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Étudiants" />
-            <Button fx:id="profileButton" onAction="#handleProfile" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Profile" />
-            <Button fx:id="logoutButton" onAction="#logout" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Déconnexion">
+
+        <Label style="-fx-text-fill: #3a4a6d; -fx-font-size: 24px; -fx-font-weight: bold;" text="DysCover" HBox.hgrow="ALWAYS" />
+
+        <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-padding: 0 15 0 0;">
+            <Button style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Accueil" />
+            <Button onAction="#goMatiereF" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Cours" />
+            <Button fx:id="profileButton" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="les Événements" onAction="#ouvrirListeEvenements" />
+            <Button fx:id="btnEvenements" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Profil" onAction="#handleProfile" />
+            <Button style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Jeux" onAction="#showGames" />
+            <Button fx:id="logoutButton" onAction="#logout" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Déconnexion">
                 <HBox.margin>
                     <Insets left="300.0" />
-                </HBox.margin>
-            </Button>
+                </HBox.margin></Button>
         </HBox>
     </HBox>
     <VBox alignment="TOP_CENTER" layoutX="-4.0" layoutY="78.0" prefHeight="118.0" prefWidth="1007.0" style="-fx-background-color: #4B5EAA;" AnchorPane.leftAnchor="-4.0" AnchorPane.rightAnchor="-3.0" AnchorPane.topAnchor="78.0">
@@ -56,13 +59,13 @@
                         <Font size="14.0" />
                     </font>
                 </Label>
-            <HBox alignment="TOP_RIGHT" blendMode="SRC_ATOP" prefHeight="34.0" prefWidth="496.0">
-               <children>
-                      <TextField fx:id="searchField" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="240.0" promptText=" 🔍 Rechercher..." style="-fx-background-color: #FFFFFF; -fx-border-color: #D1D5DB; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;" />
-                      <Button alignment="CENTER" onAction="#effacerRecherche" prefHeight="31.0" prefWidth="46.0" style="-fx-background-color: linear-gradient(to right, #00c6ff, #0072ff); -fx-text-fill: white; -fx-font-weight: bold;-fx-background-radius: 25; -fx-padding: 8 16; -fx-cursor: hand;" text="❌">
-                </Button>
-               </children>
-            </HBox>
+                <HBox alignment="TOP_RIGHT" blendMode="SRC_ATOP" prefHeight="34.0" prefWidth="496.0">
+                    <children>
+                        <TextField fx:id="searchField" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="240.0" promptText=" 🔍 Rechercher..." style="-fx-background-color: #FFFFFF; -fx-border-color: #D1D5DB; -fx-border-radius: 5; -fx-background-radius: 5; -fx-font-family: 'Segoe UI'; -fx-font-size: 12px;" />
+                        <Button alignment="CENTER" onAction="#effacerRecherche" prefHeight="31.0" prefWidth="46.0" style="-fx-background-color: linear-gradient(to right, #00c6ff, #0072ff); -fx-text-fill: white; -fx-font-weight: bold;-fx-background-radius: 25; -fx-padding: 8 16; -fx-cursor: hand;" text="❌">
+                        </Button>
+                    </children>
+                </HBox>
             </HBox>
             <!-- Scrollable Content Area for Cards -->
             <ScrollPane fx:id="scrollPane" fitToWidth="true" prefHeight="464.0" prefWidth="1031.0" style="-fx-background-color: transparent; -fx-padding: 0 20 20 20;">
