@@ -10,6 +10,9 @@ public class Transaction {
     private Apprenant apprenant;
     private String status;
 
+    public Transaction() {
+    }
+
     // Constructeur
     public Transaction(int id, float amount, String transactionId, LocalDateTime transactionDate, Apprenant apprenant, String status) {
         this.id = id;

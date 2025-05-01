@@ -82,9 +82,10 @@
 
     <!-- Center - Edit Form -->
     <center>
-        <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 30px;">
+        <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 30px;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
             <!-- Form Container -->
             <VBox spacing="25" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 30px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);" prefWidth="600">
+
                 <Label text="Modifier l'Abonnement" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
                 <!-- Form Grid -->
@@ -97,21 +98,27 @@
                     <!-- Titre -->
                     <Label text="Titre:" GridPane.rowIndex="0" GridPane.columnIndex="0"
                            style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
-                    <TextField fx:id="titreAbonnementField" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                               style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;"/>
+                    <VBox GridPane.rowIndex="0" GridPane.columnIndex="1">
+                        <TextField fx:id="titreAbonnementField" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;"/>
+                        <Label fx:id="titreError" text="" style="-fx-text-fill: red; -fx-font-size: 10px;"/>
+                    </VBox>
 
                     <!-- Prix -->
                     <Label text="Prix:" GridPane.rowIndex="1" GridPane.columnIndex="0"
                            style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
-                    <TextField fx:id="prixField" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                               style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;"/>
+                    <VBox GridPane.rowIndex="1" GridPane.columnIndex="1">
+                        <TextField fx:id="prixField" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;"/>
+                        <Label fx:id="prixError" text="" style="-fx-text-fill: red; -fx-font-size: 10px;"/>
+                    </VBox>
 
                     <!-- Description -->
                     <Label text="Description:" GridPane.rowIndex="2" GridPane.columnIndex="0"
                            style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
-                    <TextArea fx:id="descriptionField" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                              style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;"
-                              prefRowCount="4"/>
+                    <VBox GridPane.rowIndex="2" GridPane.columnIndex="1">
+                        <TextArea fx:id="descriptionField" prefRowCount="4"
+                                  style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;"/>
+                        <Label fx:id="descriptionError" text="" style="-fx-text-fill: red; -fx-font-size: 10px;"/>
+                    </VBox>
                 </GridPane>
 
                 <!-- Action Buttons -->
@@ -121,8 +128,10 @@
                     <Button text="Enregistrer" onAction="#handleSave"
                             style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 8 20;"/>
                 </HBox>
+
             </VBox>
         </VBox>
+
     </center>
 
     <!-- Bottom - Footer -->

@@ -29,8 +29,11 @@
             <Button fx:id="profileButton" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="les Événements" onAction="#ouvrirListeEvenements" />
             <Button fx:id="btnEvenements" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Profil" onAction="#handleProfile" />
             <Button style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Jeux" onAction="#showGames" />
+            <Button  fx:id="btnAbonnement" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Abonnement" onAction="#goAbonnement" />
+            <Button  fx:id="btnReclamation" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Reclamations" onAction="#goReclamation" />
             <Button fx:id="logoutButton" onAction="#logout" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Déconnexion">
-            <HBox.margin>
+
+                <HBox.margin>
                <Insets left="300.0" />
             </HBox.margin></Button>
         </HBox>

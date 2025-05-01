@@ -7,6 +7,10 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.shape.*?>
 
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.LineChart?>
 <BorderPane xmlns="http://javafx.com/javafx/16"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.controller.ListAbonnementController"
@@ -111,9 +115,19 @@
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
                 </TableView>
+                <LineChart fx:id="lineChart" prefWidth="600" prefHeight="400">
+                    <xAxis>
+                        <CategoryAxis label="Date" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Number of Subscribers" />
+                    </yAxis>
+                </LineChart>
             </VBox>
         </VBox>
+
     </center>
+
 
     <!-- Bottom - Footer -->
     <bottom>

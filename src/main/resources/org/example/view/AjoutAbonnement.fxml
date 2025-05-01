@@ -83,9 +83,10 @@
 
    <!-- Center - Add Subscription Form -->
    <center>
-      <VBox alignment="CENTER" spacing="20" style="-fx-padding: 30px;">
+      <VBox alignment="CENTER" spacing="20" style="-fx-padding: 30px;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
          <!-- Form Container -->
          <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 30px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);" prefWidth="500">
+
             <Label text="Nouvel Abonnement" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 10 0;"/>
 
             <!-- Form Fields -->
@@ -97,29 +98,42 @@
 
                <!-- Titre -->
                <Label text="Titre Abonnement:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-text-fill: #2c3e50;"/>
-               <TextField fx:id="titreAbonnement" GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;"/>
+               <VBox GridPane.rowIndex="0" GridPane.columnIndex="1">
+                  <TextField fx:id="titreAbonnement" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;"/>
+                  <Label fx:id="titreError" text="" style="-fx-text-fill: red; -fx-font-size: 10px;"/>
+               </VBox>
 
                <!-- Prix -->
                <Label text="Prix:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-text-fill: #2c3e50;"/>
-               <TextField fx:id="prixAbonnement" GridPane.rowIndex="1" GridPane.columnIndex="1" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;"/>
+               <VBox GridPane.rowIndex="1" GridPane.columnIndex="1">
+                  <TextField fx:id="prixAbonnement" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;"/>
+                  <Label fx:id="prixError" text="" style="-fx-text-fill: red; -fx-font-size: 10px;"/>
+               </VBox>
 
                <!-- Description -->
                <Label text="Description:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-text-fill: #2c3e50;"/>
-               <TextField fx:id="descriptionAbonnement" GridPane.rowIndex="2" GridPane.columnIndex="1" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;"/>
+               <VBox GridPane.rowIndex="2" GridPane.columnIndex="1">
+                  <TextField fx:id="descriptionAbonnement" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;"/>
+                  <Label fx:id="descriptionError" text="" style="-fx-text-fill: red; -fx-font-size: 10px;"/>
+               </VBox>
 
                <!-- Période -->
                <Label text="Période:" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-text-fill: #2c3e50;"/>
-               <ComboBox fx:id="periode" GridPane.rowIndex="3" GridPane.columnIndex="1" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;" prefWidth="150.0"/>
+               <VBox GridPane.rowIndex="3" GridPane.columnIndex="1">
+                  <ComboBox fx:id="periode" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;" prefWidth="150.0"/>
+                  <Label fx:id="periodeError" text="" style="-fx-text-fill: red; -fx-font-size: 10px;"/>
+               </VBox>
             </GridPane>
 
             <!-- Submit Button -->
             <Button fx:id="AjoutButton" text="Ajouter" onAction="#AjouterPersonneAction"
                     style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 8 20;"
                     GridPane.columnIndex="1" GridPane.halignment="RIGHT">
-
             </Button>
+
          </VBox>
       </VBox>
+     
    </center>
 
    <!-- Bottom - Footer -->
