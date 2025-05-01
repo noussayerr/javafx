@@ -43,22 +43,14 @@ public class ScoreController {
                 @Override
                 protected void updateItem(Jeux game, boolean empty) {
                     super.updateItem(game, empty);
-                    if (empty || game == null) {
-                        setText(null);
-                    } else {
-                        setText(game.getNom());
-                    }
+                    setText(empty || game == null ? null : game.getNom());
                 }
             });
             gameFilter.setButtonCell(new ListCell<Jeux>() {
                 @Override
                 protected void updateItem(Jeux game, boolean empty) {
                     super.updateItem(game, empty);
-                    if (empty || game == null) {
-                        setText(null);
-                    } else {
-                        setText(game.getNom());
-                    }
+                    setText(empty || game == null ? null : game.getNom());
                 }
             });
 
@@ -70,28 +62,41 @@ public class ScoreController {
                     new SimpleStringProperty(cellData.getValue().getJeux().getNom()));
             scoreColumn.setCellValueFactory(new PropertyValueFactory<>("highScore"));
 
-            // Configure table row factory for styling
+            // Get current user
+            User currentUser = SessionManager.getInstance().getCurrentUser();
+
+            // Configure table row factory with highlight for current user
             scoreTable.setRowFactory(tv -> {
-                TableRow<Score> row = new TableRow<>();
-                row.setStyle("-fx-background-color: rgba(255,255,255,0.05);");
+                TableRow<Score> row = new TableRow<>() {
+                    @Override
+                    protected void updateItem(Score score, boolean empty) {
+                        super.updateItem(score, empty);
+                        if (empty || score == null) {
+                            setStyle("-fx-background-color: rgba(255,255,255,0.1);");
+                        } else {
+                            applyRowStyle(this, score, currentUser);
+                        }
+                    }
+                };
 
+                // Hover effects
                 row.hoverProperty().addListener((obs, wasHovered, isNowHovered) -> {
+                    Score score = row.getItem();
+                    if (score == null) return;
+
                     if (isNowHovered) {
-                        row.setStyle("-fx-background-color: rgba(255,255,255,0.1);");
+                        if (currentUser != null && score.getUser().getId() == currentUser.getId()) {
+                            row.setStyle("-fx-background-color: #45a049; " +
+                                    "-fx-text-fill: white; " +
+                                    "-fx-font-weight: bold;");
+                        } else {
+                            row.setStyle("-fx-background-color: rgba(255,255,255,0.1);");
+                        }
                     } else {
-                        row.setStyle("-fx-background-color: rgba(255,255,255,0.05);");
+                        applyRowStyle(row, score, currentUser);
                     }
                 });
 
-                row.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
-                    if (isNowSelected) {
-                        row.setStyle("-fx-background-color: rgba(76,161,175,0.4);");
-                    } else {
-                        row.setStyle(row.isHover() ?
-                                "-fx-background-color: rgba(255,255,255,0.1);" :
-                                "-fx-background-color: rgba(255,255,255,0.05);");
-                    }
-                });
                 return row;
             });
 
@@ -99,6 +104,19 @@ public class ScoreController {
             showAlert("Erreur lors du chargement des jeux: " + e.getMessage());
         }
     }
+
+    private void applyRowStyle(TableRow<Score> row, Score score, User currentUser) {
+        if (currentUser != null && score.getUser().getId() == currentUser.getId()) {
+            row.setStyle("-fx-background-color: #4CAF50; " +
+                    "-fx-text-fill: white; " +
+                    "-fx-font-weight: bold; " +
+                    "-fx-border-color: #388E3C; " +
+                    "-fx-border-width: 0 0 0 3px;");
+        } else {
+            row.setStyle("-fx-background-color: rgba(255,255,255,0.05);");
+        }
+    }
+
 
     @FXML
     void loadScores() {

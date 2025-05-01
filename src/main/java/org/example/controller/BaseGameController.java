@@ -3,10 +3,15 @@ package org.example.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.animation.ScaleTransition;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import org.example.entity.Jeux;
 import org.example.entity.Score;
 import org.example.entity.User;
+import org.example.model.giphy.GiphyResponse;
+import org.example.services.GiphyService;
 import org.example.services.ServiceJeux;
 import org.example.services.ServiceScore;
 import org.example.utils.SessionManager;
@@ -14,10 +19,8 @@ import org.example.utils.SessionManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 
 public abstract class BaseGameController {
 
@@ -26,10 +29,27 @@ public abstract class BaseGameController {
     protected int roundsPlayed = 0;
     protected Map<String, List<String>> wordPool;
 
-    protected void loadHighScore(String gameName, Label highScoreLabel) {
+    protected StackPane gifContainer;
+    protected final GiphyService giphyService = new GiphyService();
+    protected int previousHighScore = 0;
+
+    // GIF-related constants
+    protected static final String[] CELEBRATION_TERMS = {
+            "celebration", "winner", "congratulations", "happy dance",
+            "fireworks", "party", "success", "trophy"
+    };
+
+    protected static final String[] SAD_TERMS = {
+            "sad", "game over", "try again", "disappointed",
+            "oh no", "failure", "losing", "cry"
+    };
+
+    protected final Random random = new Random();
+
+
+    protected int loadHighScore(String gameName, Label highScoreLabel) {
         try {
             User currentUser = SessionManager.getInstance().getCurrentUser();
-
             ServiceJeux serviceJeux = new ServiceJeux();
             Jeux foundGame = serviceJeux.getByNom(gameName);
 
@@ -37,14 +57,18 @@ public abstract class BaseGameController {
             Score existingScore = serviceScore.findByUserAndGame(currentUser.getId(), foundGame.getId());
 
             if (existingScore != null) {
-                highScoreLabel.setText("🏆 High Score: " + existingScore.getHighScore());
+                int highScore = existingScore.getHighScore();
+                highScoreLabel.setText("🏆 High Score: " + highScore);
                 animateHighScore(highScoreLabel);
+                return highScore;  // Return the high score value
             } else {
                 highScoreLabel.setText("No high score yet.");
+                return 0;  // Return 0 if no score exists
             }
         } catch (Exception e) {
             highScoreLabel.setText("?");
             e.printStackTrace();
+            return 0;  // Return 0 on error
         }
     }
 
@@ -120,5 +144,54 @@ public abstract class BaseGameController {
         wordPool.put("medium", Arrays.asList("adventure", "beautiful", "mountain", "elephant"));
         wordPool.put("hard", Arrays.asList("extravaganza", "hippopotamus", "kaleidoscope", "magnificent"));
     }
+    protected void setGifContainer(StackPane container) {
+        this.gifContainer = container;
+    }
 
+    protected void showCelebrationGif() {
+        try {
+            String term = CELEBRATION_TERMS[random.nextInt(CELEBRATION_TERMS.length)];
+            int offset = random.nextInt(50);
+            GiphyResponse response = giphyService.searchGifs(term, 1, offset);
+            displayGif(response.getData().get(0).getImages().getFixedHeight().getUrl());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void showSadGif() {
+        try {
+            String term = SAD_TERMS[random.nextInt(SAD_TERMS.length)];
+            int offset = random.nextInt(50);
+            GiphyResponse response = giphyService.searchGifs(term, 1, offset);
+            displayGif(response.getData().get(0).getImages().getFixedHeight().getUrl());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void displayGif(String gifUrl) {
+        if (gifContainer == null) return;
+
+        javafx.application.Platform.runLater(() -> {
+            gifContainer.getChildren().clear();
+            ImageView gifView = new ImageView(gifUrl);
+            gifView.setFitWidth(300);
+            gifView.setFitHeight(300);
+            gifView.setPreserveRatio(true);
+            gifContainer.getChildren().add(gifView);
+
+            // Auto-hide after 3 seconds
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            javafx.application.Platform.runLater(() ->
+                                    gifContainer.getChildren().clear());
+                        }
+                    },
+                    3000
+            );
+        });
+    }
 }
