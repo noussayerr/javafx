@@ -1,5 +1,7 @@
 package org.example.controller;
 
+import com.sun.speech.freetts.Voice;
+import com.sun.speech.freetts.VoiceManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,9 +26,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class AffichCoursAppController implements Initializable {
 
@@ -48,6 +51,77 @@ public class AffichCoursAppController implements Initializable {
     private final ServiceCommentaire serviceCommentaire = new ServiceCommentaire();
     private final ServiceMatiere serviceMatiere = new ServiceMatiere();
     private int selectedRating = 0;
+    private final Map<Integer, List<Integer>> progressData = new HashMap<>();
+    private final Map<Integer, ScheduledExecutorService> fileTimers = new HashMap<>();
+    private Voice ttsVoice;
+    private boolean ttsInitialized = false;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        initializeTTS();
+
+        ToggleGroup priceGroup = new ToggleGroup();
+        filterAll.setToggleGroup(priceGroup);
+        filterFree.setToggleGroup(priceGroup);
+        filterPremium.setToggleGroup(priceGroup);
+
+        filterAll.setOnAction(e -> applyFilters());
+        filterFree.setOnAction(e -> applyFilters());
+        filterPremium.setOnAction(e -> applyFilters());
+
+        filterAllLevels.setOnAction(e -> {
+            if (filterAllLevels.isSelected()) {
+                filterBeginner.setSelected(false);
+                filterIntermediate.setSelected(false);
+                filterExpert.setSelected(false);
+            }
+            applyFilters();
+        });
+
+        filterBeginner.setOnAction(e -> {
+            filterAllLevels.setSelected(false);
+            applyFilters();
+        });
+
+        filterIntermediate.setOnAction(e -> {
+            filterAllLevels.setSelected(false);
+            applyFilters();
+        });
+
+        filterExpert.setOnAction(e -> {
+            filterAllLevels.setSelected(false);
+            applyFilters();
+        });
+    }
+
+    private void initializeTTS() {
+        try {
+            VoiceManager voiceManager = VoiceManager.getInstance();
+            ttsVoice = voiceManager.getVoice("kevin16");
+            if (ttsVoice != null) {
+                ttsVoice.allocate();
+                ttsInitialized = true;
+            } else {
+                showAlert(Alert.AlertType.WARNING, "Erreur TTS", "Voix TTS彼此Field, Kevin16 non disponible. La fonctionnalité TTS est désactivée.");
+            }
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.WARNING, "Erreur TTS", "Échec de l'initialisation TTS: " + e.getMessage());
+        }
+    }
+
+    private void speakText(String text) {
+        if (ttsInitialized && ttsVoice != null && text != null && !text.trim().isEmpty()) {
+            ttsVoice.speak(text);
+        } else {
+            showAlert(Alert.AlertType.WARNING, "Erreur TTS", "TTS non initialisé ou texte invalide.");
+        }
+    }
+
+    private void stopTTS() {
+        if (ttsInitialized && ttsVoice != null) {
+            ttsVoice.speak("");
+        }
+    }
 
     public void setMatiere(Matiere matiere) {
         this.matiere = matiere;
@@ -56,49 +130,55 @@ public class AffichCoursAppController implements Initializable {
         loadEvaluations();
         loadCommentaires();
         loadCategories();
+        loadProgressData();
+    }
+
+    private void loadProgressData() {
+        progressData.clear();
+    }
+
+    private void saveProgressData() {
+        // Implement saving to database or file if needed
     }
 
     private void loadMatiereDetails() {
-        if (matiere != null) {
-            matiereNom.setText(matiere.getNomM());
-            matiereTitre.setText(matiere.getTitreM());
-            matiereTitreNav.setText(matiere.getTitreM());
-            matiereDesc.setText(matiere.getDescM());
+        if (matiere == null) return;
 
-            objectivesContainer.getChildren().clear();
-            String[] objectives = matiere.getObjM().split("\\.");
-            for (String obj : objectives) {
-                if (!obj.trim().isEmpty()) {
-                    Label objLabel = new Label("• " + obj.trim());
-                    objLabel.setStyle("-fx-text-fill: #0e0e0e;-fx-font-size: 16px;");
-                    objectivesContainer.getChildren().add(objLabel);
-                }
-            }
+        matiereNom.setText(matiere.getNomM());
+        matiereTitre.setText(matiere.getTitreM());
+        matiereTitreNav.setText(matiere.getTitreM());
+        matiereDesc.setText(matiere.getDescM());
 
-            if (matiere.getImgM() != null && !matiere.getImgM().isEmpty()) {
-                try {
-                    File file = new File("src/main/resources/matiere/" + matiere.getImgM());
-                    if (file.exists()) {
-                        matiereImage.setImage(new Image(file.toURI().toString()));
-                    } else {
-                        InputStream stream = getClass().getResourceAsStream("/matiere/" + matiere.getImgM());
-                        if (stream != null) {
-                            matiereImage.setImage(new Image(stream));
-                        }
-                    }
-                } catch (Exception e) {
-                    System.err.println("Erreur de chargement d'image: " + e.getMessage());
-                    matiereImage.setVisible(false);
-                }
-            } else {
-                matiereImage.setVisible(false);
+        objectivesContainer.getChildren().clear();
+        String[] objectives = matiere.getObjM().split("\\.");
+        for (String obj : objectives) {
+            if (!obj.trim().isEmpty()) {
+                Label objLabel = new Label("• " + obj.trim());
+                objLabel.setStyle("-fx-text-fill: #0e0e0e;-fx-font-size: 16px;");
+                objectivesContainer.getChildren().add(objLabel);
             }
         }
-    }
 
-    private void toggleFichiers(VBox coursBox) {
-        VBox fichiersContainer = (VBox) coursBox.getChildren().get(3);
-        fichiersContainer.setVisible(!fichiersContainer.isVisible());
+        if (matiere.getImgM() != null && !matiere.getImgM().isEmpty()) {
+            try {
+                File file = new File("src/main/resources/matiere/" + matiere.getImgM());
+                if (file.exists()) {
+                    matiereImage.setImage(new Image(file.toURI().toString()));
+                } else {
+                    InputStream stream = getClass().getResourceAsStream("/matiere/" + matiere.getImgM());
+                    if (stream != null) {
+                        matiereImage.setImage(new Image(stream));
+                    } else {
+                        matiereImage.setVisible(false);
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Erreur de chargement d'image: " + e.getMessage());
+                matiereImage.setVisible(false);
+            }
+        } else {
+            matiereImage.setVisible(false);
+        }
     }
 
     private void loadCours() {
@@ -113,17 +193,16 @@ public class AffichCoursAppController implements Initializable {
             }
             applyFilters();
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Chargement des cours échoué", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Chargement des cours échoué: " + e.getMessage());
         }
     }
 
-    private VBox createCoursBox(Cours cours) throws SQLException {
-        VBox coursBox = new VBox(10);
-        coursBox.setStyle("-fx-background-color: white; -fx-padding: 15; -fx-spacing: 10; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);");
+    private VBox createCoursBox(Cours cours) {
+        VBox coursBox = new VBox(5);
+        coursBox.setStyle("-fx-background-color: white; -fx-padding: 15; -fx-spacing: 5; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);");
         coursBox.getProperties().put("type", cours.getType());
         coursBox.getProperties().put("level", cours.getNivC());
 
-        HBox header = new HBox(10);
         VBox infoBox = new VBox(5);
         infoBox.getChildren().addAll(
                 createStyledLabel(cours.getNomC(), "-fx-font-size: 18px; -fx-font-weight: bold;"),
@@ -131,60 +210,193 @@ public class AffichCoursAppController implements Initializable {
                 createStyledLabel("Niveau: " + cours.getNivC(), "-fx-text-fill: #666;")
         );
 
-        VBox objBox = new VBox(5);
+        VBox objBox = new VBox(2);
         String[] objectives = cours.getObjC().split("\\.");
+        StringBuilder objectivesText = new StringBuilder();
         for (String obj : objectives) {
             if (!obj.trim().isEmpty()) {
                 objBox.getChildren().add(createStyledLabel("• " + obj.trim(), "-fx-text-fill: #666;"));
+                objectivesText.append(obj.trim()).append(". ");
             }
         }
 
-        List<Fichier> fichiers = serviceFichier.getFichiersByCours(cours.getId());
+        List<Fichier> fichiers;
+        try {
+            fichiers = serviceFichier.getFichiersByCours(cours.getId());
+        } catch (SQLException e) {
+            fichiers = new ArrayList<>();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement des fichiers: " + e.getMessage());
+        }
+
         int pdfCount = (int) fichiers.stream().filter(f -> f.getType().equals("Pdf")).count();
         int wordCount = (int) fichiers.stream().filter(f -> f.getType().equals("Word")).count();
         int videoCount = (int) fichiers.stream().filter(f -> f.getType().equals("Video")).count();
         int imageCount = (int) fichiers.stream().filter(f -> f.getType().equals("Image")).count();
-        Label fileSummary = createStyledLabel(
-                String.format("%d Vidéo(s), %d Word, %d Pdf, %d Image(s)", videoCount, wordCount, pdfCount, imageCount),
-                "-fx-text-fill: #666;"
+        String fileSummaryText = String.format("%d Vidéo(s), %d Word, %d Pdf, %d Image(s)", videoCount, wordCount, pdfCount, imageCount);
+        Label fileSummary = createStyledLabel(fileSummaryText, "-fx-text-fill: #666; -fx-padding: 5 0;");
+
+        String ttsText = String.format(
+                "Cours: %s. Niveau: %s. Enseigné par: %s. Objectifs: %s. Résumé des fichiers: %s",
+                cours.getNomC(),
+                cours.getNivC(),
+                cours.getUser() != null ? cours.getUser().getNom() + " " + cours.getUser().getPrenom() : "Inconnu",
+                objectivesText.toString(),
+                fileSummaryText
         );
 
-        // Buttons
-        HBox buttonBox = new HBox(10);
-        buttonBox.getChildren().addAll(
-                createButton("Afficher fichiers", e -> toggleFichiers(coursBox))
-        );
+        Button ttsBtn = createButton("🔊 Lire Cours", e -> speakText(ttsText));
+        ttsBtn.setStyle("-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 5 10;");
 
-        coursBox.getChildren().addAll(header, objBox, fileSummary);
+        VBox fichiersContainer = createFichiersContainer(cours, fichiers);
 
+        Button showFilesBtn = createButton("Afficher fichiers", e -> toggleFichiers(fichiersContainer));
+        showFilesBtn.setStyle("-fx-background-color: #4B5EAA; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 5 10;");
+
+        HBox progressBox = new HBox();
+        progressBox.setStyle("-fx-background-color: #eee; -fx-border-radius: 5; -fx-pref-height: 20;");
+        Label progressLabel = new Label("Progression: ");
+        progressLabel.setStyle("-fx-text-fill: #666; -fx-padding: 0 5;");
+
+        ProgressBar progressBar = new ProgressBar();
+        progressBar.setPrefWidth(200);
+        progressBar.setId("progress-bar-" + cours.getId());
+
+        Label progressPercent = new Label("0%");
+        progressPercent.setId("progress-percent-" + cours.getId());
+
+        progressBox.getChildren().addAll(progressLabel, progressBar, progressPercent);
+
+        updateProgressBar(cours.getId(), fichiers.size());
+
+        VBox contentBox = new VBox(5);
+        contentBox.getChildren().addAll(infoBox, objBox, fileSummary, ttsBtn, progressBox, showFilesBtn, fichiersContainer);
+
+        coursBox.getChildren().add(contentBox);
         return coursBox;
     }
 
-    private VBox createFichiersContainer(Cours cours) {
-        VBox container = new VBox(5);
+    private void updateProgressBar(int coursId, int totalFiles) {
+        List<Integer> completedFiles = progressData.getOrDefault(coursId, new ArrayList<>());
+        double progress = totalFiles > 0 ? (double) completedFiles.size() / totalFiles : 0;
+
+        ProgressBar progressBar = (ProgressBar) coursContainer.lookup("#progress-bar-" + coursId);
+        Label progressPercent = (Label) coursContainer.lookup("#progress-percent-" + coursId);
+
+        if (progressBar != null && progressPercent != null) {
+            progressBar.setProgress(progress);
+            progressPercent.setText(String.format("%.0f%%", progress * 100));
+        }
+    }
+
+    private VBox createFichiersContainer(Cours cours, List<Fichier> fichiers) {
+        VBox container = new VBox(2);
         container.setVisible(false);
+        container.setStyle("-fx-padding: 5 0 0 10;");
 
-        try {
-            List<Fichier> fichiers = serviceFichier.getFichiersByCours(cours.getId());
-            if (!fichiers.isEmpty()) {
-                for (Fichier fichier : fichiers) {
-                    HBox fichierBox = new HBox(10);
-                    fichierBox.setStyle("-fx-background-color: #f5f5f5; -fx-padding: 8; -fx-border-radius: 5;");
+        if (!fichiers.isEmpty()) {
+            for (int i = 0; i < fichiers.size(); i++) {
+                final int index = i;
+                Fichier fichier = fichiers.get(i);
+                HBox fichierBox = new HBox(10);
+                fichierBox.setStyle("-fx-background-color: #f5f5f5; -fx-padding: 5; -fx-border-radius: 5; -fx-spacing: 10;");
 
-                    Label fileLabel = createStyledLabel(fichier.getNomF() + " (" + fichier.getType() + ")", "");
-                    Button downloadBtn = createButton("Télécharger", e -> telechargerFichier(fichier));
+                Label fileLabel = createStyledLabel(fichier.getNomF() + " (" + fichier.getType() + ")", "-fx-font-size: 14px;");
 
-                    fichierBox.getChildren().addAll(fileLabel, downloadBtn);
-                    container.getChildren().add(fichierBox);
-                }
-            } else {
-                container.getChildren().add(createStyledLabel("Aucun fichier disponible", "-fx-font-style: italic;"));
+                Button viewBtn = createButton("Voir", e -> viewFile(fichier, cours.getId(), index));
+                viewBtn.setStyle("-fx-background-color: #4B5EAA; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 3 8;");
+
+                Button downloadBtn = createButton("Télécharger", e -> telechargerFichier(fichier));
+                downloadBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 3 8;");
+
+                Button ttsBtn = createButton("🔊", e -> speakText(fichier.getNomF() + ". Type: " + fichier.getType()));
+                ttsBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #666; -fx-font-size: 14px;");
+
+                fichierBox.getChildren().addAll(fileLabel, viewBtn, downloadBtn, ttsBtn);
+                container.getChildren().add(fichierBox);
             }
-        } catch (Exception e) {
-            container.getChildren().add(createStyledLabel("Erreur de chargement des fichiers", "-fx-text-fill: red;"));
+        } else {
+            container.getChildren().add(createStyledLabel("Aucun fichier disponible", "-fx-font-style: italic; -fx-text-fill: #666;"));
         }
 
         return container;
+    }
+
+    private void viewFile(Fichier fichier, int coursId, int fileIndex) {
+        if (fileIndex > 0) {
+            try {
+                List<Integer> completedFiles = progressData.getOrDefault(coursId, new ArrayList<>());
+                Fichier previousFile = serviceFichier.getFichiersByCours(coursId).get(fileIndex - 1);
+
+                if (!completedFiles.contains(previousFile.getId())) {
+                    showAlert(Alert.AlertType.WARNING, "Accès restreint", "Veuillez ouvrir le fichier précédent (" + previousFile.getNomF() + ") pendant au moins 10 secondes avant d'accéder à celui-ci.");
+                    return;
+                }
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la vérification de la progression: " + e.getMessage());
+                return;
+            }
+        }
+
+        try {
+            File file = new File(fichier.getUrlF());
+            if (file.exists()) {
+                java.awt.Desktop.getDesktop().open(file);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Fichier introuvable: " + fichier.getUrlF());
+            }
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le fichier: " + e.getMessage());
+        }
+
+        startFileTimer(coursId, fichier.getId());
+    }
+
+    private void startFileTimer(int coursId, int fileId) {
+        if (fileTimers.containsKey(fileId)) {
+            fileTimers.get(fileId).shutdownNow();
+        }
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        fileTimers.put(fileId, executor);
+
+        final List<Integer> completedFiles = progressData.getOrDefault(coursId, new ArrayList<>());
+        executor.schedule(() -> {
+            if (!completedFiles.contains(fileId)) {
+                completedFiles.add(fileId);
+                progressData.put(coursId, completedFiles);
+                saveProgressData();
+
+                javafx.application.Platform.runLater(() -> {
+                    try {
+                        updateProgressBar(coursId, serviceFichier.getFichiersByCours(coursId).size());
+                    } catch (SQLException e) {
+                        showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la mise à jour de la progression: " + e.getMessage());
+                    }
+                });
+            }
+        }, 10, TimeUnit.SECONDS);
+    }
+
+    private void toggleFichiers(VBox fichiersContainer) {
+        fichiersContainer.setVisible(!fichiersContainer.isVisible());
+    }
+
+    private void telechargerFichier(Fichier fichier) {
+        if (fichier.getUrlF() == null || fichier.getUrlF().isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Aucun fichier associé");
+            return;
+        }
+
+        try {
+            File file = new File(fichier.getUrlF());
+            if (file.exists()) {
+                java.awt.Desktop.getDesktop().open(file);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Fichier introuvable: " + fichier.getUrlF());
+            }
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le fichier: " + e.getMessage());
+        }
     }
 
     private void loadEvaluations() {
@@ -203,12 +415,12 @@ public class AffichCoursAppController implements Initializable {
 
         ratingBars.getChildren().clear();
         for (int star = 5; star >= 1; star--) {
-            final int finalStar = star;
-            long count = evaluations.stream().filter(e -> e.getNote() == finalStar).count();
+            final int currentStar = star;
+            long count = evaluations.stream().filter(e -> e.getNote() == currentStar).count();
             double percentage = evaluations.isEmpty() ? 0 : (count * 100.0 / evaluations.size());
 
             HBox barBox = new HBox(10);
-            Label starLabel = createStyledLabel(star + " étoiles:", "-fx-text-fill: #495057;");
+            Label starLabel = createStyledLabel(currentStar + " étoiles:", "-fx-text-fill: #495057;");
             ProgressBar bar = new ProgressBar(percentage / 100);
             bar.setPrefWidth(200);
             Label percentLabel = createStyledLabel(String.format("%.0f%%", percentage), "-fx-text-fill: #495057;");
@@ -218,10 +430,10 @@ public class AffichCoursAppController implements Initializable {
 
         evaluationStars.getChildren().clear();
         for (int i = 1; i <= 5; i++) {
+            final int rating = i;
             ImageView star = new ImageView(new Image("/images/star-empty.png"));
             star.setFitHeight(20);
             star.setFitWidth(20);
-            int rating = i;
             star.setOnMouseClicked(e -> selectRating(rating));
             evaluationStars.getChildren().add(star);
         }
@@ -231,11 +443,11 @@ public class AffichCoursAppController implements Initializable {
         selectedRating = rating;
         evaluationStars.getChildren().clear();
         for (int i = 1; i <= 5; i++) {
+            final int currentRating = i;
             ImageView star = new ImageView(i <= rating ? new Image("/images/star-filled.png") : new Image("/images/star-empty.png"));
             star.setFitHeight(20);
             star.setFitWidth(20);
-            int finalI = i;
-            star.setOnMouseClicked(e -> selectRating(finalI));
+            star.setOnMouseClicked(e -> selectRating(currentRating));
             evaluationStars.getChildren().add(star);
         }
     }
@@ -243,7 +455,7 @@ public class AffichCoursAppController implements Initializable {
     @FXML
     private void submitEvaluation() {
         if (selectedRating == 0) {
-            showAlert(Alert.AlertType.WARNING, "Erreur", "Veuillez sélectionner une note", "");
+            showAlert(Alert.AlertType.WARNING, "Erreur", "Veuillez sélectionner une note");
             return;
         }
 
@@ -254,7 +466,7 @@ public class AffichCoursAppController implements Initializable {
 
             User currentUser = SessionManager.getInstance().getCurrentUser();
             if (currentUser == null) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Utilisateur non connecté", "");
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Utilisateur non connecté");
                 return;
             }
             evalu.setUser(currentUser);
@@ -263,9 +475,9 @@ public class AffichCoursAppController implements Initializable {
             loadEvaluations();
             selectedRating = 0;
             selectRating(0);
-            showAlert(Alert.AlertType.INFORMATION, "Succès", "Évaluation ajoutée", "");
+            showAlert(Alert.AlertType.INFORMATION, "Succès", "Évaluation ajoutée");
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de l'ajout de l'évaluation", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de l'ajout de l'évaluation: " + e.getMessage());
         }
     }
 
@@ -287,6 +499,18 @@ public class AffichCoursAppController implements Initializable {
                 ratingBox.getChildren().add(star);
             }
 
+            String ttsCommentText = String.format(
+                    "Commentaire par %s %s, le %s. Sujet: %s. Contenu: %s",
+                    commentaire.getUser().getNom(),
+                    commentaire.getUser().getPrenom(),
+                    commentaire.getDate().toString(),
+                    commentaire.getSujet(),
+                    commentaire.getContenu()
+            );
+
+            Button ttsCommentBtn = createButton("🔊 Lire", e -> speakText(ttsCommentText));
+            ttsCommentBtn.setStyle("-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 3 8;");
+
             commentBox.getChildren().addAll(
                     ratingBox,
                     createStyledLabel(commentaire.getSujet() + ":", "-fx-font-weight: bold;"),
@@ -295,7 +519,8 @@ public class AffichCoursAppController implements Initializable {
                             commentaire.getUser().getNom() + " " + commentaire.getUser().getPrenom() + " - " +
                                     commentaire.getDate().toString(),
                             "-fx-text-fill: #6c757d; -fx-font-style: italic;"
-                    )
+                    ),
+                    ttsCommentBtn
             );
             commentairesContainer.getChildren().add(commentBox);
         }
@@ -307,32 +532,28 @@ public class AffichCoursAppController implements Initializable {
         String contenu = commentaireContenu.getText().trim();
 
         if (sujet.isEmpty() || contenu.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Erreur", "Veuillez remplir tous les champs", "");
+            showAlert(Alert.AlertType.WARNING, "Erreur", "Veuillez remplir tous les champs");
             return;
         }
 
-        try {
-            Commentaire commentaire = new Commentaire();
-            commentaire.setSujet(sujet);
-            commentaire.setContenu(contenu);
-            commentaire.setDate(LocalDateTime.now());
-            commentaire.setMatiere(matiere);
+        Commentaire commentaire = new Commentaire();
+        commentaire.setSujet(sujet);
+        commentaire.setContenu(contenu);
+        commentaire.setDate(LocalDateTime.now());
+        commentaire.setMatiere(matiere);
 
-            User currentUser = SessionManager.getInstance().getCurrentUser();
-            if (currentUser == null) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Utilisateur non connecté", "");
-                return;
-            }
-            commentaire.setUser(currentUser);
-
-            serviceCommentaire.ajouter(commentaire);
-            loadCommentaires();
-            commentaireSujet.clear();
-            commentaireContenu.clear();
-            showAlert(Alert.AlertType.INFORMATION, "Succès", "Commentaire ajouté", "");
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de l'ajout du commentaire", e.getMessage());
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Utilisateur non connecté");
+            return;
         }
+        commentaire.setUser(currentUser);
+
+        serviceCommentaire.ajouter(commentaire);
+        loadCommentaires();
+        commentaireSujet.clear();
+        commentaireContenu.clear();
+        showAlert(Alert.AlertType.INFORMATION, "Succès", "Commentaire ajouté");
     }
 
     private void loadCategories() {
@@ -341,11 +562,12 @@ public class AffichCoursAppController implements Initializable {
             categoriesContainer.getChildren().clear();
             for (Matiere m : matieres) {
                 CheckBox checkBox = new CheckBox(m.getNomM() + " (" + serviceCours.getCoursParMatiere(m.getId()).size() + ")");
-                checkBox.setOnAction(e -> redirectToMatiere(m));
+                final Matiere currentMatiere = m;
+                checkBox.setOnAction(e -> redirectToMatiere(currentMatiere));
                 categoriesContainer.getChildren().add(checkBox);
             }
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Chargement des catégories échoué", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Chargement des catégories échoué: " + e.getMessage());
         }
     }
 
@@ -360,20 +582,7 @@ public class AffichCoursAppController implements Initializable {
             stage.centerOnScreen();
             stage.setMaximized(true);
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Navigation échouée", e.getMessage());
-        }
-    }
-
-    private void telechargerFichier(Fichier fichier) {
-        if (fichier.getUrlF() == null || fichier.getUrlF().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Aucun fichier associé", "");
-            return;
-        }
-        File file = new File(fichier.getUrlF());
-        if (file.exists()) {
-            showAlert(Alert.AlertType.INFORMATION, "Téléchargement", "Prêt à télécharger", fichier.getNomF());
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Fichier introuvable", "Chemin: " + fichier.getUrlF());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Navigation échouée: " + e.getMessage());
         }
     }
 
@@ -416,44 +625,12 @@ public class AffichCoursAppController implements Initializable {
         return btn;
     }
 
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+    private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
-        alert.setHeaderText(header);
+        alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        ToggleGroup priceGroup = new ToggleGroup();
-        filterAll.setToggleGroup(priceGroup);
-        filterFree.setToggleGroup(priceGroup);
-        filterPremium.setToggleGroup(priceGroup);
-
-        filterAll.setOnAction(e -> applyFilters());
-        filterFree.setOnAction(e -> applyFilters());
-        filterPremium.setOnAction(e -> applyFilters());
-        filterAllLevels.setOnAction(e -> {
-            if (filterAllLevels.isSelected()) {
-                filterBeginner.setSelected(false);
-                filterIntermediate.setSelected(false);
-                filterExpert.setSelected(false);
-            }
-            applyFilters();
-        });
-        filterBeginner.setOnAction(e -> {
-            filterAllLevels.setSelected(false);
-            applyFilters();
-        });
-        filterIntermediate.setOnAction(e -> {
-            filterAllLevels.setSelected(false);
-            applyFilters();
-        });
-        filterExpert.setOnAction(e -> {
-            filterAllLevels.setSelected(false);
-            applyFilters();
-        });
     }
 
     @FXML
@@ -467,12 +644,12 @@ public class AffichCoursAppController implements Initializable {
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement des événements: " + e.getMessage());
         }
     }
 
     @FXML
-    private void showGames(ActionEvent event) throws IOException {
+    private void showGames(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/jeuxApprenant.fxml"));
             AnchorPane listPane = loader.load();
@@ -481,7 +658,7 @@ public class AffichCoursAppController implements Initializable {
             stage.setScene(new Scene(listPane));
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement des jeux: " + e.getMessage());
         }
     }
 
@@ -495,9 +672,9 @@ public class AffichCoursAppController implements Initializable {
         try {
             SessionManager.getInstance().logout();
             loadPage("/org/example/view/Login.fxml", "Connexion");
-            showAlert(Alert.AlertType.INFORMATION, "Déconnexion", "Déconnecté avec succès", "");
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion", "Déconnecté avec succès");
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de déconnexion", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de déconnexion: " + e.getMessage());
         }
     }
 
@@ -515,7 +692,7 @@ public class AffichCoursAppController implements Initializable {
             stage.centerOnScreen();
             stage.setMaximized(true);
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Navigation échouée", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Navigation échouée: " + e.getMessage());
         }
     }
 }

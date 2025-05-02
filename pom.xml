@@ -19,7 +19,7 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
-            <version>17</version>
+            <version>21</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -29,16 +29,13 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>17.0.12</version>
-            <classifier>win</classifier>
+            <version>21</version>
         </dependency>
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
             <version>3.5.2</version>
         </dependency>
-
-        <!-- ZXing JavaSE -->
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
@@ -47,16 +44,13 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>17.0.12</version>
-            <classifier>win</classifier>
+            <version>21</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
             <version>17.0.12</version>
-            <classifier>win</classifier>
         </dependency>
-        <!-- iText PDF 7 -->
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>kernel</artifactId>
@@ -72,7 +66,6 @@
             <artifactId>io</artifactId>
             <version>7.1.17</version>
         </dependency>
-        <!-- Jakarta Mail -->
         <dependency>
             <groupId>jakarta.mail</groupId>
             <artifactId>jakarta.mail-api</artifactId>
@@ -113,8 +106,31 @@
             <artifactId>json</artifactId>
             <version>20231013</version>
         </dependency>
+        <!-- FreeTTS Dependencies -->
+        <dependency>
+            <groupId>net.sf.free-tts</groupId>
+            <artifactId>freetts</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.free-tts</groupId>
+            <artifactId>cmulex</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.free-tts</groupId>
+            <artifactId>en_us</artifactId>
+            <version>1.2.2</version>
+        </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </repository>
+    </repositories>
     <build>
         <resources>
             <resource>
@@ -127,7 +143,6 @@
                     <include>**/*.jpeg</include>
                     <include>**/*.html</include>
                     <include>**/*.js</include>
-
                 </includes>
             </resource>
         </resources>
@@ -149,6 +164,24 @@
                 <configuration>
                     <mainClass>org.example.Main</mainClass>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
