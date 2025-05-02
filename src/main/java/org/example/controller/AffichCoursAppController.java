@@ -55,6 +55,8 @@ public class AffichCoursAppController implements Initializable {
     private final Map<Integer, ScheduledExecutorService> fileTimers = new HashMap<>();
     private Voice ttsVoice;
     private boolean ttsInitialized = false;
+    private boolean isSpeaking = false;
+    private Button currentTtsButton = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -95,32 +97,91 @@ public class AffichCoursAppController implements Initializable {
     }
 
     private void initializeTTS() {
+        System.setProperty("freetts.voices", "com.sun.speech.freetts.en.us.cmu_us_kal.KevinVoiceDirectory");
+
         try {
             VoiceManager voiceManager = VoiceManager.getInstance();
-            ttsVoice = voiceManager.getVoice("kevin16");
-            if (ttsVoice != null) {
-                ttsVoice.allocate();
-                ttsInitialized = true;
-            } else {
-                showAlert(Alert.AlertType.WARNING, "Erreur TTS", "Voix TTS彼此Field, Kevin16 non disponible. La fonctionnalité TTS est désactivée.");
+            System.out.println("Available voices: " + Arrays.toString(voiceManager.getVoices()));
+
+            String[] voiceNames = {"kevin16", "kevin", "alan", "cmu_us_kal"};
+
+            for (String voiceName : voiceNames) {
+                try {
+                    ttsVoice = voiceManager.getVoice(voiceName);
+                    if (ttsVoice != null) {
+                        ttsVoice.allocate();
+                        ttsVoice.setRate(150);
+                        ttsVoice.setPitch(100);
+                        ttsVoice.setVolume(1);
+                        ttsInitialized = true;
+                        System.out.println("TTS initialisé avec la voix: " + voiceName);
+                        break;
+                    }
+                } catch (Exception e) {
+                    System.err.println("Erreur avec la voix " + voiceName + ": " + e.getMessage());
+                }
+            }
+
+            if (!ttsInitialized) {
+                showAlert(Alert.AlertType.WARNING, "Erreur TTS",
+                        "Aucune voix TTS disponible. Vérifiez les dépendances FreeTTS.");
             }
         } catch (Exception e) {
-            showAlert(Alert.AlertType.WARNING, "Erreur TTS", "Échec de l'initialisation TTS: " + e.getMessage());
+            showAlert(Alert.AlertType.WARNING, "Erreur TTS",
+                    "Échec de l'initialisation TTS: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    private void speakText(String text) {
-        if (ttsInitialized && ttsVoice != null && text != null && !text.trim().isEmpty()) {
-            ttsVoice.speak(text);
-        } else {
-            showAlert(Alert.AlertType.WARNING, "Erreur TTS", "TTS non initialisé ou texte invalide.");
+    private void toggleSpeech(String text, Button button) {
+        if (!ttsInitialized || ttsVoice == null) {
+            showAlert(Alert.AlertType.WARNING, "Erreur TTS", "TTS non initialisé.");
+            return;
         }
-    }
 
-    private void stopTTS() {
-        if (ttsInitialized && ttsVoice != null) {
+        if (text == null || text.trim().isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Erreur TTS", "Texte invalide.");
+            return;
+        }
+
+        if (currentTtsButton != null && currentTtsButton != button) {
             ttsVoice.speak("");
+            currentTtsButton.setText("🔊 Lire");
+            currentTtsButton = button;
         }
+
+        if (isSpeaking) {
+            ttsVoice.speak("");
+            button.setText("🔊 Lire");
+            isSpeaking = false;
+            currentTtsButton = null;
+        } else {
+            new Thread(() -> {
+                try {
+                    isSpeaking = true;
+                    currentTtsButton = button;
+                    javafx.application.Platform.runLater(() -> button.setText("■ Arrêter"));
+                    ttsVoice.speak(prepareFrenchText(text));
+                    isSpeaking = false;
+                    javafx.application.Platform.runLater(() -> button.setText("🔊 Lire"));
+                } catch (Exception e) {
+                    isSpeaking = false;
+                    javafx.application.Platform.runLater(() -> {
+                        button.setText("🔊 Lire");
+                        showAlert(Alert.AlertType.ERROR, "Erreur TTS", "Erreur lors de la lecture: " + e.getMessage());
+                    });
+                }
+            }).start();
+        }
+    }
+
+    private String prepareFrenchText(String text) {
+        return text.replaceAll("é", "e")
+                .replaceAll("è", "e")
+                .replaceAll("ê", "e")
+                .replaceAll("à", "a")
+                .replaceAll("ù", "u")
+                .replaceAll("ç", "c");
     }
 
     public void setMatiere(Matiere matiere) {
@@ -135,10 +196,6 @@ public class AffichCoursAppController implements Initializable {
 
     private void loadProgressData() {
         progressData.clear();
-    }
-
-    private void saveProgressData() {
-        // Implement saving to database or file if needed
     }
 
     private void loadMatiereDetails() {
@@ -187,9 +244,7 @@ public class AffichCoursAppController implements Initializable {
             List<Cours> coursList = serviceCours.afficherParMatiere(matiere.getId());
 
             for (Cours cours : coursList) {
-                VBox coursBox = createCoursBox(cours);
-                coursContainer.getChildren().add(coursBox);
-                coursContainer.setStyle("-fx-text-fill: #0e0e0e;-fx-font-size: 14px");
+                coursContainer.getChildren().add(createCoursBox(cours));
             }
             applyFilters();
         } catch (SQLException e) {
@@ -244,12 +299,14 @@ public class AffichCoursAppController implements Initializable {
                 fileSummaryText
         );
 
-        Button ttsBtn = createButton("🔊 Lire Cours", e -> speakText(ttsText));
+        Button ttsBtn = new Button("🔊 Lire");
+        ttsBtn.setOnAction(e -> toggleSpeech(ttsText, ttsBtn));
         ttsBtn.setStyle("-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 5 10;");
 
         VBox fichiersContainer = createFichiersContainer(cours, fichiers);
 
-        Button showFilesBtn = createButton("Afficher fichiers", e -> toggleFichiers(fichiersContainer));
+        Button showFilesBtn = new Button("Afficher fichiers");
+        showFilesBtn.setOnAction(e -> toggleFichiers(fichiersContainer));
         showFilesBtn.setStyle("-fx-background-color: #4B5EAA; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 5 10;");
 
         HBox progressBox = new HBox();
@@ -265,13 +322,12 @@ public class AffichCoursAppController implements Initializable {
         progressPercent.setId("progress-percent-" + cours.getId());
 
         progressBox.getChildren().addAll(progressLabel, progressBar, progressPercent);
-
         updateProgressBar(cours.getId(), fichiers.size());
 
         VBox contentBox = new VBox(5);
         contentBox.getChildren().addAll(infoBox, objBox, fileSummary, ttsBtn, progressBox, showFilesBtn, fichiersContainer);
-
         coursBox.getChildren().add(contentBox);
+
         return coursBox;
     }
 
@@ -302,13 +358,16 @@ public class AffichCoursAppController implements Initializable {
 
                 Label fileLabel = createStyledLabel(fichier.getNomF() + " (" + fichier.getType() + ")", "-fx-font-size: 14px;");
 
-                Button viewBtn = createButton("Voir", e -> viewFile(fichier, cours.getId(), index));
+                Button viewBtn = new Button("Voir");
+                viewBtn.setOnAction(e -> viewFile(fichier, cours.getId(), index));
                 viewBtn.setStyle("-fx-background-color: #4B5EAA; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 3 8;");
 
-                Button downloadBtn = createButton("Télécharger", e -> telechargerFichier(fichier));
+                Button downloadBtn = new Button("Télécharger");
+                downloadBtn.setOnAction(e -> telechargerFichier(fichier));
                 downloadBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 3 8;");
 
-                Button ttsBtn = createButton("🔊", e -> speakText(fichier.getNomF() + ". Type: " + fichier.getType()));
+                Button ttsBtn = new Button("🔊");
+                ttsBtn.setOnAction(e -> toggleSpeech(fichier.getNomF() + ". Type: " + fichier.getType(), ttsBtn));
                 ttsBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #666; -fx-font-size: 14px;");
 
                 fichierBox.getChildren().addAll(fileLabel, viewBtn, downloadBtn, ttsBtn);
@@ -364,7 +423,6 @@ public class AffichCoursAppController implements Initializable {
             if (!completedFiles.contains(fileId)) {
                 completedFiles.add(fileId);
                 progressData.put(coursId, completedFiles);
-                saveProgressData();
 
                 javafx.application.Platform.runLater(() -> {
                     try {
@@ -508,7 +566,8 @@ public class AffichCoursAppController implements Initializable {
                     commentaire.getContenu()
             );
 
-            Button ttsCommentBtn = createButton("🔊 Lire", e -> speakText(ttsCommentText));
+            Button ttsCommentBtn = new Button("🔊 Lire");
+            ttsCommentBtn.setOnAction(e -> toggleSpeech(ttsCommentText, ttsCommentBtn));
             ttsCommentBtn.setStyle("-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 3 8;");
 
             commentBox.getChildren().addAll(
@@ -616,13 +675,6 @@ public class AffichCoursAppController implements Initializable {
         Label label = new Label(text);
         label.setStyle(style);
         return label;
-    }
-
-    private Button createButton(String text, javafx.event.EventHandler<ActionEvent> handler) {
-        Button btn = new Button(text);
-        btn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
-        btn.setOnAction(handler);
-        return btn;
     }
 
     private void showAlert(Alert.AlertType type, String title, String content) {
