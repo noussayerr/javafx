@@ -161,15 +161,10 @@ public class AjouterCategorieController {
         }
 
         // ✅ Vérification image
-        if (nomImageFinale == null || nomImageFinale.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Image manquante");
-            alert.setHeaderText(null);
-            alert.setContentText("Veuillez choisir une image.");
-            alert.showAndWait();
-            isValid = false;
+        // ✅ Image optionnelle : on garde le champ vide si aucune image n’est choisie
+        if (nomImageFinale == null) {
+            nomImageFinale = "";
         }
-
         if (!isValid) return;
 
         // ✅ Création et enregistrement
