@@ -15,11 +15,18 @@ public class Comment {
         this.content = content;
         this.nomUtilisateur = nomUtilisateur;
     }
+    public Comment() {
+
+    }
 
     // ✅ Getters & setters nécessaires
     public int getEventId() {
         return eventId;
     }
+    public void setId(int id) {
+        this.id = id;
+    }
+
 
     public int getUserId() {
         return userId;

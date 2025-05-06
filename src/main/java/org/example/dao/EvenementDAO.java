@@ -206,6 +206,8 @@ public class EvenementDAO {
                 e.setHeureFin(rs.getTime("heure_fin").toLocalTime());
                 e.setLieu(rs.getString("lieu"));
                 e.setImage(rs.getString("image"));
+
+
                 list.add(e);
             }
         } catch (SQLException e) {

@@ -39,6 +39,7 @@ public class CalendarView extends VBox {
     private void buildCalendar() {
         this.getChildren().clear();
         eventDetailsBox.getChildren().clear();
+        eventDisplayBox.getChildren().clear();
 
 
         HBox header = new HBox(10);

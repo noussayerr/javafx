@@ -247,19 +247,55 @@ public class EvenementController {
         if (fromIndex >= toIndex || filtered.isEmpty()) {
             tableEvenements.setItems(FXCollections.observableArrayList());
         } else {
-            // Tri de la sous-liste avec le comparateur actif
             List<Evenement> subList = new ArrayList<>(filtered.subList(fromIndex, toIndex));
             subList.sort(currentComparator);
             tableEvenements.setItems(FXCollections.observableArrayList(subList));
         }
 
-        return new AnchorPane(); // requis pour la pagination
+        // 🔁 TOUJOURS redéfinir la CellFactory (en dehors du if)
+        colActions.setCellFactory(param -> new TableCell<>() {
+            private final Button btnModifier = new Button("📝 Modifier");
+            private final Button btnSupprimer = new Button("🗑️ Supprimer");
+            private final HBox hBox = new HBox(10, btnModifier, btnSupprimer);
+
+            {
+                btnModifier.setStyle("-fx-background-color: linear-gradient(to right, #74ebd5, #acb6e5); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 25;");
+                btnSupprimer.setStyle("-fx-background-color: linear-gradient(to right, #8e44ad, #9b59b6); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 25;");
+                hBox.setStyle("-fx-alignment: center;");
+
+                btnModifier.setOnAction(e -> {
+                    Evenement evt = getTableView().getItems().get(getIndex());
+                    if (evt != null) {
+                        tableEvenements.getSelectionModel().select(evt);
+                        modifierEvenement();
+                    }
+                });
+
+                btnSupprimer.setOnAction(e -> {
+                    Evenement evt = getTableView().getItems().get(getIndex());
+                    if (evt != null) {
+                        tableEvenements.getSelectionModel().select(evt);
+                        supprimerEvenement();
+                    }
+                });
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(hBox);
+                }
+            }
+        });
+
+        return new AnchorPane();
     }
 
 
 
-
-    public void rafraichirTable() {
+            public void rafraichirTable() {
         EvenementDAO dao = new EvenementDAO();
         allEvenements.setAll(dao.getAllEvenements());
         pagination.setPageCount((int) Math.ceil((double) allEvenements.size() / ROWS_PER_PAGE));
