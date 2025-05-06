@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.TranslateController"
+            prefHeight="420.0" prefWidth="650.0"
+            style="-fx-background-color: linear-gradient(to right, #fceff9, #e0c3fc); -fx-padding: 30;">
+
+    <VBox spacing="20" alignment="TOP_CENTER" prefWidth="600" layoutX="25" layoutY="20">
+
+        <Label text="✨ Traduction Magique"
+               style="-fx-font-size: 26px; -fx-text-fill: #b388eb; -fx-font-weight: bold;" />
+
+        <TextArea fx:id="txtSource" promptText="Saisis ton texte ici..." prefHeight="100" wrapText="true"
+                  style="-fx-background-radius: 15; -fx-border-color: #f8cdda; -fx-border-width: 2; -fx-font-size: 14px;" />
+
+        <HBox spacing="20" alignment="CENTER">
+            <ComboBox fx:id="comboFrom" promptText="Langue source" prefWidth="160"
+                      style="-fx-background-color: white; -fx-background-radius: 10;" />
+            <ComboBox fx:id="comboTo" promptText="Langue cible" prefWidth="160"
+                      style="-fx-background-color: white; -fx-background-radius: 10;" />
+        </HBox>
+
+        <Button fx:id="btnTraduire" text="🌸 Traduire maintenant"
+                onAction="#handleTranslate"
+                style="-fx-background-color: linear-gradient(to right, #f8cdda, #a18cd1);
+                       -fx-background-radius: 30;
+                       -fx-text-fill: white;
+                       -fx-font-weight: bold;
+                       -fx-font-size: 14px;
+                       -fx-cursor: hand;
+                       -fx-padding: 10 25;" />
+
+        <TextArea fx:id="txtResult" editable="false" promptText="Résultat de la traduction..."
+                  prefHeight="100" wrapText="true"
+                  style="-fx-background-radius: 15; -fx-border-color: #b388eb; -fx-border-width: 2; -fx-font-size: 14px;" />
+
+    </VBox>
+</AnchorPane>

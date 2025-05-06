@@ -21,6 +21,8 @@ import org.example.services.MailService;
 import org.example.utils.Toast;
 import org.example.services.MailService;
 import org.example.utils.Toast;
+import org.example.services.ServicePDF;
+
 
 
 
@@ -171,36 +173,56 @@ public class EvenementDetailController {
                 return;
             }
 
+            // 📂 Vérifier et créer les dossiers QR et PDF
+            File qrDirectory = new File("C:/Users/nourb/Desktop/qr/");
+            if (!qrDirectory.exists()) {
+                qrDirectory.mkdirs();
+            }
 
-            String contenuQR1 = "https://eventili.webnode.fr/";
-                    // 📦 Génération du QR code
-            String contenuQR = "Réservation pour : " + evenementActuel.getNom() + "\n"
-                    + "Date : " + evenementActuel.getDate() + "\n"
-                    + "Lieu : " + evenementActuel.getLieu();
+            File pdfDirectory = new File("C:/Users/nourb/Desktop/pdf/");
+            if (!pdfDirectory.exists()) {
+                pdfDirectory.mkdirs();
+            }
 
-            String qrPath = "qr_codes/" + evenementActuel.getId() + "_ticket.png";
+            // 📂 Chemins dynamiques
+            String qrPath = "C:/Users/nourb/Desktop/qr/" + evenementActuel.getId() + "_ticket.png";
+            String pdfPath = "C:/Users/nourb/Desktop/pdf/" + evenementActuel.getId() + "_ticket.pdf";
 
-            QRCodeGenerator.generateQRCode(contenuQR1, qrPath);
+            // 📦 Génération du QR code
+            String contenuQR = "https://eventili.webnode.fr/";
+            QRCodeGenerator.generateQRCode(contenuQR, qrPath);
 
-            // 📧 Préparation de l'e-mail
+            // 📦 Génération du PDF événement
+            ServicePDF.generateEvenementPDF(pdfPath, evenementActuel);
+
+            // 📧 Sujet du mail
             String sujet = "🎫 Réservation confirmée : " + evenementActuel.getNom();
-            String corps = """
-        Bonjour,
 
-        Votre réservation pour l'événement « %s » est confirmée.
-        Veuillez trouver votre QR code ci-joint.
 
-        Merci pour votre confiance !
-        """.formatted(evenementActuel.getNom());
+            // 💬 Message HTML dynamique
+            String messageTexte = String.format("""
+            Bonjour,<br><br>
+            Votre réservation pour l'événement <strong>%s</strong> est confirmée.<br>
+            📍 <strong>Lieu :</strong> %s<br>
+            📅 <strong>Date :</strong> %s<br><br>
+            Veuillez trouver votre <strong>QR code</strong> ci-dessous ainsi que votre <strong>fiche PDF</strong> en pièce jointe.<br><br>
+            Merci pour votre confiance 💜
+        """,
+                    evenementActuel.getNom(),
+                    evenementActuel.getLieu(),
+                    evenementActuel.getDate().toString());
 
-            // ✅ Adresse réelle (ou remplace par txtEmail.getText().trim())
-            String emailUtilisateur = "nourbrahem275@gmail.com";
+            // 📩 Adresse du destinataire
+            String destinataire = "nourbrahem275@gmail.com"; // ou txtEmail.getText().trim()
 
-            // ✅ Envoi du mail
-            MailService.envoyerQRCodeParMail(emailUtilisateur, sujet, corps, qrPath);
+            // ✅ Envoi du mail avec QR code + PDF attaché
+            MailService.envoyerTicketCompletParMail(destinataire, sujet, messageTexte, qrPath, pdfPath);
+
+
 
             // ✅ Confirmation visuelle
-            Toast.showSuccess(mainContainer, "QR code envoyé avec succès !");
+            Toast.showGradientToast(mainContainer, "✅ QR Code + PDF envoyés avec succès !");
+
         } catch (Exception e) {
             System.out.println("❌ Erreur lors de la réservation : " + e.getMessage());
             Toast.showError(mainContainer, "Échec de la réservation.");

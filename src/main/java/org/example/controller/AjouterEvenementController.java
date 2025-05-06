@@ -1,9 +1,17 @@
 package org.example.controller;
 
+import javafx.animation.Interpolator;
+import javafx.animation.SequentialTransition;
+import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import org.example.dao.EvenementDAO;
 import org.example.entity.Evenement;
 import org.example.utils.MyDatabase;
@@ -34,6 +42,9 @@ public class AjouterEvenementController {
     private Button btnTheme;
     @FXML
     private Button logoutButton;
+    @FXML
+    private StackPane mainContainer;
+
 
 
     @FXML
@@ -71,6 +82,7 @@ public class AjouterEvenementController {
     private Label lblErreurHeureDebut;
     @FXML
     private Label lblErreurHeureFin;
+
 
 
     @FXML
@@ -146,6 +158,7 @@ public class AjouterEvenementController {
 
     @FXML
     private void ajouterEvenement() {
+
         clearErrors();
         boolean isValid = true;
 
@@ -242,7 +255,7 @@ public class AjouterEvenementController {
 
         EvenementDAO dao = new EvenementDAO();
         dao.ajouterEvenement(event);
-
+       
         Toast.show((Stage) txtTitre.getScene().getWindow(), "✅ Événement ajouté !");
         parentController.rafraichirTable();
 
@@ -250,6 +263,8 @@ public class AjouterEvenementController {
         pause.setOnFinished(e -> fermerFenetre());
         pause.play();
     }
+
+
 
     private void fermerFenetre() {
         Stage stage = (Stage) txtTitre.getScene().getWindow();

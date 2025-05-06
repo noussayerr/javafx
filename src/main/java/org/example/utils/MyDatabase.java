@@ -1,6 +1,5 @@
 package org.example.utils;
 
-
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -16,29 +15,25 @@ import java.sql.SQLException;
 
 public class MyDatabase {
 
-
-    private final String URL = "jdbc:mysql://localhost:3307/integrationpidev";
+    private final String URL = "jdbc:mysql://localhost:3306/integrationpidev";
     private final String USERNAME = "root";
     private final String PASSWORD = "";
-
-    //final String URL="jdbc:mysql://localhost:3306/pi";
-
 
     private Connection connection;
 
     private static MyDatabase instance;
 
     private MyDatabase() {
-        connect(); // initialisation directe
+        connect();
     }
 
-    // ✅ Méthode de connexion robuste
     private void connect() {
         try {
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             System.out.println("✅ Connexion à la base de données établie !");
         } catch (SQLException e) {
-            System.err.println("❌ Échec de la connexion à la base de données : " + e.getMessage());
+            System.err.println("❌ Échec de connexion : " + e.getMessage());
+            connection = null; // ⚠️ très important
         }
     }
 
@@ -49,15 +44,17 @@ public class MyDatabase {
         return instance;
     }
 
-    // ✅ Vérifie que la connexion est toujours valide
     public Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
                 System.out.println("⚠️ Connexion fermée. Tentative de reconnexion...");
                 connect();
             }
+            if (connection == null || connection.isClosed()) {
+                throw new SQLException("🔴 Connexion non disponible après tentative de reconnexion.");
+            }
         } catch (SQLException e) {
-            System.err.println("❌ Erreur lors de la vérification de la connexion : " + e.getMessage());
+            System.err.println("❌ Connexion invalide : " + e.getMessage());
         }
         return connection;
     }

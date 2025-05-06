@@ -1,7 +1,6 @@
 package org.example.utils;
 
-import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
+import javafx.animation.*;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
@@ -108,5 +107,54 @@ public class Toast {
 
         new javafx.animation.SequentialTransition(fadeIn, pause, fadeOut).play();
     }
+    public static void showGradientToast(StackPane root, String message) {
+        Label label = new Label(message);
+        label.setStyle("""
+        -fx-text-fill: white;
+        -fx-padding: 14px 28px;
+        -fx-font-size: 15px;
+        -fx-background-radius: 20px;
+        -fx-font-weight: bold;
+        -fx-background-color: linear-gradient(to right, #ff5eae, #8e2de2);
+        -fx-effect: dropshadow(gaussian, #e84393, 12, 0.3, 0, 2);
+    """);
+
+        StackPane toastContainer = new StackPane(label);
+        toastContainer.setOpacity(0);
+        toastContainer.setTranslateY(0);
+
+        StackPane.setMargin(toastContainer, new javafx.geometry.Insets(20));
+        root.getChildren().add(toastContainer);
+
+        // Animation apparition avec montée
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(400), toastContainer);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        TranslateTransition slideUp = new TranslateTransition(Duration.millis(400), toastContainer);
+        slideUp.setFromY(20);
+        slideUp.setToY(0);
+
+        // Pause visible
+        PauseTransition pause = new PauseTransition(Duration.seconds(2.5));
+
+        // Animation disparition avec descente
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(400), toastContainer);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+
+        TranslateTransition slideDown = new TranslateTransition(Duration.millis(400), toastContainer);
+        slideDown.setFromY(0);
+        slideDown.setToY(20);
+
+        fadeOut.setOnFinished(e -> root.getChildren().remove(toastContainer));
+
+        new SequentialTransition(
+                new ParallelTransition(fadeIn, slideUp),
+                pause,
+                new ParallelTransition(fadeOut, slideDown)
+        ).play();
+    }
+
 
 }
