@@ -36,6 +36,8 @@ public class StatistiquesController {
     public void initialize() {
         setupAnimations();
         loadStatistics();
+        barChart.setCategoryGap(20); // Espace entre les catégories
+        barChart.setBarGap(10);      // Espace entre les barres
     }
 
     private void setupAnimations() {

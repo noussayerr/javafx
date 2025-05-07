@@ -17,7 +17,7 @@ public class EvenementDAO {
 
     // ➕ Ajouter un événement
     public void ajouterEvenement(Evenement event) {
-        String sql = "INSERT INTO event (category_id, nom, description, date, heure_debut, heure_fin, lieu, image,prix) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
+        String sql = "INSERT INTO event (category_id, nom, description, date, heure_debut, heure_fin, lieu, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, event.getCategoryId());
             stmt.setString(2, event.getNom());
@@ -28,7 +28,6 @@ public class EvenementDAO {
             stmt.setTime(6, Time.valueOf(event.getHeureFin()));
             stmt.setString(7, event.getLieu());
             stmt.setString(8, event.getImage());
-            stmt.setFloat(9, event.getPrix());
 
             stmt.executeUpdate();
             System.out.println("✅ Événement ajouté avec succès !");
@@ -55,8 +54,7 @@ public class EvenementDAO {
                         rs.getTime("heure_debut").toLocalTime(),
                         rs.getTime("heure_fin").toLocalTime(),
                         rs.getString("lieu"),
-                        rs.getString("image"),
-                        rs.getFloat("prix")
+                        rs.getString("image")
                 );
                 e.setNomCategorie(rs.getString("nomCategorie")); // ✅ ICI
                 list.add(e);
@@ -68,8 +66,37 @@ public class EvenementDAO {
 
         return list;
     }
+    public Evenement findById(int id) {
+        Evenement event = null;
+        String sql = "SELECT * FROM event WHERE id = ?";
 
-    // ❌ Supprimer un événement
+        try (Connection conn = MyDatabase.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                event = new Evenement();
+                event.setId(rs.getInt("id"));
+                event.setNom(rs.getString("nom"));
+                event.setDescription(rs.getString("description"));
+                event.setDate(rs.getDate("date").toLocalDate());
+                event.setHeureDebut(rs.getTime("heure_debut").toLocalTime());
+                event.setHeureFin(rs.getTime("heure_fin").toLocalTime());
+                event.setLieu(rs.getString("lieu"));
+                event.setImage(rs.getString("image"));
+                event.setCategoryId(rs.getInt("category_id"));
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Erreur findById : " + e.getMessage());
+        }
+
+        return event;
+    }
+
+
+
     public void supprimerEvenement(int id) {
         String sql = "DELETE FROM event WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -81,9 +108,9 @@ public class EvenementDAO {
         }
     }
 
-    // ✏️ Modifier un événement
+
     public void modifierEvenement(Evenement event) {
-        String sql = "UPDATE event SET category_id = ?, nom = ?, description = ?, date = ?, heure_debut = ?, heure_fin = ?, lieu = ?, image = ?, prix = ? WHERE id = ?";
+        String sql = "UPDATE event SET category_id = ?, nom = ?, description = ?, date = ?, heure_debut = ?, heure_fin = ?, lieu = ?, image = ? WHERE id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, event.getCategoryId());
@@ -94,8 +121,7 @@ public class EvenementDAO {
             stmt.setTime(6, Time.valueOf(event.getHeureFin()));
             stmt.setString(7, event.getLieu());
             stmt.setString(8, event.getImage());
-            stmt.setFloat(9, event.getPrix());
-            stmt.setInt(10, event.getId());
+            stmt.setInt(9, event.getId());
             stmt.executeUpdate();
             System.out.println("✅ Événement modifié !");
         } catch (SQLException e) {
@@ -180,7 +206,8 @@ public class EvenementDAO {
                 e.setHeureFin(rs.getTime("heure_fin").toLocalTime());
                 e.setLieu(rs.getString("lieu"));
                 e.setImage(rs.getString("image"));
-                e.setPrix(rs.getFloat("prix"));
+
+
                 list.add(e);
             }
         } catch (SQLException e) {
@@ -188,5 +215,6 @@ public class EvenementDAO {
         }
         return list;
     }
+
 
 }

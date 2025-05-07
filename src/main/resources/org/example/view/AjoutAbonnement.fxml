@@ -40,6 +40,7 @@
          <Label text="NAVIGATION" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold; -fx-padding: 0 0 10 5;"/>
 
          <Button text="Utilisateurs"
+
                  style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
             <graphic>
                <ImageView fitHeight="20" fitWidth="20">

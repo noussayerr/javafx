@@ -6,13 +6,28 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class ServiceUser {
     private Connection connection;
+    private static final Map<String, ResetCodeData> resetCodes = new HashMap<>();
+    private static final Map<String, String> rememberMeTokens = new HashMap<>();
 
     public ServiceUser() {
         connection = MyDatabase.getInstance().getConnection();
+    }
+
+    private static class ResetCodeData {
+        String code;
+        long expiresAt;
+
+        ResetCodeData(String code, long expiresAt) {
+            this.code = code;
+            this.expiresAt = expiresAt;
+        }
     }
 
     public User authenticate(String email, String password) throws SQLException {
@@ -25,7 +40,6 @@ public class ServiceUser {
             if (resultSet.next()) {
                 String storedHash = resultSet.getString("password");
 
-                // Conversion du format Symfony ($2y$) vers format BCrypt Java ($2a$)
                 if (storedHash.startsWith("$2y$")) {
                     storedHash = "$2a$" + storedHash.substring(4);
                 }
@@ -36,6 +50,9 @@ public class ServiceUser {
                     user.setEmail(resultSet.getString("email"));
                     user.setNom(resultSet.getString("nom"));
                     user.setPrenom(resultSet.getString("prenom"));
+                    user.setTelephone(resultSet.getInt("telephone"));
+                    user.setDateNaissance(resultSet.getString("dateNaissance"));
+                    user.setPhotoProfil(resultSet.getString("photo_profil"));
 
                     String rolesJson = resultSet.getString("roles");
                     List<String> roles = convertJsonToRoles(rolesJson);
@@ -48,10 +65,23 @@ public class ServiceUser {
         return null;
     }
 
+    public User authenticateWithToken(String email, String token) throws SQLException {
+        String storedToken = rememberMeTokens.get(email);
+        if (storedToken != null && storedToken.equals(token)) {
+            return findByEmail(email);
+        }
+        return null;
+    }
+
+    public String generateRememberMeToken(String email) {
+        String token = UUID.randomUUID().toString();
+        rememberMeTokens.put(email, token);
+        return token;
+    }
+
     private List<String> convertJsonToRoles(String rolesJson) {
         List<String> roles = new ArrayList<>();
         if (rolesJson != null && !rolesJson.isEmpty()) {
-            // Supposons que le JSON est sous forme ["ROLE1","ROLE2"]
             String cleaned = rolesJson.replaceAll("[\\[\\]\"]", "");
             String[] roleArray = cleaned.split(",");
             for (String role : roleArray) {
@@ -64,7 +94,6 @@ public class ServiceUser {
     }
 
     public boolean toggleUserStatus(int userId) throws SQLException {
-        // D'abord récupérer l'état actuel de l'utilisateur
         String currentStateQuery = "SELECT etat FROM user WHERE id = ?";
         String currentState = null;
 
@@ -79,10 +108,7 @@ public class ServiceUser {
             }
         }
 
-        // Déterminer le nouvel état
         String newState = "actif".equalsIgnoreCase(currentState) ? "inactif" : "actif";
-
-        // Mettre à jour l'état
         String updateQuery = "UPDATE user SET etat = ? WHERE id = ?";
 
         try (PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
@@ -94,4 +120,60 @@ public class ServiceUser {
         }
     }
 
+    public User findByEmail(String email) throws SQLException {
+        String query = "SELECT * FROM user WHERE email = ?";
+        User user = null;
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setEmail(resultSet.getString("email"));
+                user.setNom(resultSet.getString("nom"));
+                user.setPrenom(resultSet.getString("prenom"));
+                user.setEtat(resultSet.getString("etat"));
+                user.setPhotoProfil(resultSet.getString("photo_profil"));
+                user.setPassword(resultSet.getString("password"));
+                user.setTelephone(resultSet.getInt("telephone"));
+
+                String rolesJson = resultSet.getString("roles");
+                List<String> roles = convertJsonToRoles(rolesJson);
+                user.setRoles(roles);
+            }
+        }
+        return user;
+    }
+
+    public void updatePassword(String email, String newPassword) throws SQLException {
+        String sql = "UPDATE user SET password = ? WHERE email = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+            stmt.setString(1, hashedPassword);
+            stmt.setString(2, email);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("No user found with email: " + email);
+            }
+        }
+    }
+
+    public void storePasswordResetCode(String email, String resetCode) {
+        long expiresAt = System.currentTimeMillis() + 30 * 60 * 1000;
+        resetCodes.put(email, new ResetCodeData(resetCode, expiresAt));
+    }
+
+    public boolean verifyResetCode(String email, String resetCode) {
+        ResetCodeData data = resetCodes.get(email);
+        if (data == null) {
+            return false;
+        }
+        boolean isValid = data.code.equals(resetCode) && data.expiresAt > System.currentTimeMillis();
+        if (isValid) {
+            resetCodes.remove(email);
+        }
+        return isValid;
+    }
 }

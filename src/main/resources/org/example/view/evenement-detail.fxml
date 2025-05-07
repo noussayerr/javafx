@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
@@ -6,71 +7,101 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.paint.*?>
 
-<StackPane xmlns="http://javafx.com/javafx"
+<StackPane fx:id="mainContainer"
+           xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="org.example.controller.EvenementDetailController"
            style="-fx-background-color: transparent;">
 
-    <!-- ✅ Arrière-plan animé -->
-    <Rectangle fx:id="bgRect" arcWidth="0" arcHeight="0" />
+    <children>
 
-    <!-- ✅ Scroll principal -->
-    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
-        <content>
-            <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 30;">
-                <StackPane style="-fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0.5, 0, 0);">
+        <!-- ✅ Arrière-plan animé -->
+        <Rectangle fx:id="bgRect" arcWidth="0" arcHeight="0" />
 
-                    <VBox spacing="20" alignment="TOP_CENTER"
-                          style="-fx-background-radius: 20; -fx-background-color: linear-gradient(to bottom right, #f3e7e9, #e3eeff); -fx-padding: 30;">
+        <!-- ✅ Bouton retour fixe en haut à gauche -->
+        <HBox StackPane.alignment="TOP_LEFT" style="-fx-padding: 15;">
+            <children>
+                <Button text="⟵ Retour"
+                        onAction="#retour"
+                        style="-fx-background-color: #D9B3FF;
+                               -fx-text-fill: white;
+                               -fx-font-size: 13px;
+                               -fx-font-weight: bold;
+                               -fx-background-radius: 15px;
+                               -fx-padding: 5 15;" />
+            </children>
+        </HBox>
 
-                        <!-- Image -->
-                        <ImageView fx:id="imageView" fitWidth="800" fitHeight="300" preserveRatio="true"
-                                   style="-fx-background-radius: 20 20 0 0;" />
+        <!-- ✅ Scroll principal -->
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <content>
+                <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 30;">
+                    <StackPane style="-fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0.5, 0, 0);">
 
-                        <!-- Titre -->
-                        <Label fx:id="nomLabel" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2d3436;" />
+                        <VBox spacing="20" alignment="TOP_CENTER"
+                              style="-fx-background-radius: 20; -fx-background-color: linear-gradient(to bottom right, #f3e7e9, #e3eeff); -fx-padding: 30;">
 
-                        <!-- Catégorie et Date -->
-                        <HBox spacing="15" alignment="CENTER">
-                            <Label fx:id="categorieLabel"
-                                   style="-fx-font-size: 14px; -fx-text-fill: #636e72; -fx-background-color: #dfe6e9; -fx-background-radius: 10; -fx-padding: 5 10;" />
-                            <Label fx:id="dateLabel"
-                                   style="-fx-font-size: 14px; -fx-text-fill: #636e72; -fx-background-color: #dfe6e9; -fx-background-radius: 10; -fx-padding: 5 10;" />
-                        </HBox>
+                            <ImageView fx:id="imageView" fitWidth="800" fitHeight="300" preserveRatio="true"
+                                       style="-fx-background-radius: 20 20 0 0;" />
 
-                        <!-- Description -->
-                        <Label fx:id="descriptionLabel" wrapText="true" style="-fx-font-size: 16px; -fx-text-fill: #2d3436;" />
+                            <Label fx:id="nomLabel" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2d3436;" />
 
-                        <!-- Infos supplémentaires -->
-                        <GridPane hgap="20" vgap="15">
-                            <columnConstraints>
-                                <ColumnConstraints percentWidth="50"/>
-                                <ColumnConstraints percentWidth="50"/>
-                            </columnConstraints>
+                            <HBox spacing="15" alignment="CENTER">
+                                <Label fx:id="categorieLabel"
+                                       style="-fx-font-size: 14px; -fx-text-fill: #636e72; -fx-background-color: #dfe6e9; -fx-background-radius: 10; -fx-padding: 5 10;" />
+                                <Label fx:id="dateLabel"
+                                       style="-fx-font-size: 14px; -fx-text-fill: #636e72; -fx-background-color: #dfe6e9; -fx-background-radius: 10; -fx-padding: 5 10;" />
+                            </HBox>
 
-                            <Label text="🕘 Heure de début:" GridPane.rowIndex="0" GridPane.columnIndex="0"
-                                   style="-fx-font-size: 14px; -fx-text-fill: #636e72;" />
-                            <Label fx:id="heureDebutLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                                   style="-fx-font-size: 14px; -fx-text-fill: #2d3436;" />
+                            <Label fx:id="descriptionLabel" wrapText="true" style="-fx-font-size: 16px; -fx-text-fill: #2d3436;" />
 
-                            <Label text="🕙 Heure de fin:" GridPane.rowIndex="1" GridPane.columnIndex="0"
-                                   style="-fx-font-size: 14px; -fx-text-fill: #636e72;" />
-                            <Label fx:id="heureFinLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                                   style="-fx-font-size: 14px; -fx-text-fill: #2d3436;" />
+                            <GridPane hgap="20" vgap="15">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="50"/>
+                                    <ColumnConstraints percentWidth="50"/>
+                                </columnConstraints>
 
-                            <Label text="📍 Lieu:" GridPane.rowIndex="2" GridPane.columnIndex="0"
-                                   style="-fx-font-size: 14px; -fx-text-fill: #636e72;" />
-                            <Label fx:id="lieuLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                                   style="-fx-font-size: 14px; -fx-text-fill: #2d3436;" />
+                                <Label text="🕘 Heure de début:" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                                       style="-fx-font-size: 14px; -fx-text-fill: #636e72;" />
+                                <Label fx:id="heureDebutLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                                       style="-fx-font-size: 14px; -fx-text-fill: #2d3436;" />
 
-                            <Label text="💰 Prix:" GridPane.rowIndex="3" GridPane.columnIndex="0"
-                                   style="-fx-font-size: 14px; -fx-text-fill: #636e72;" />
-                            <Label fx:id="prixLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"
-                                   style="-fx-font-size: 14px; -fx-text-fill: #2d3436;" />
-                        </GridPane>
-                    </VBox>
-                </StackPane>
-            </VBox>
-        </content>
-    </ScrollPane>
+                                <Label text="🕙 Heure de fin:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                                       style="-fx-font-size: 14px; -fx-text-fill: #636e72;" />
+                                <Label fx:id="heureFinLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                       style="-fx-font-size: 14px; -fx-text-fill: #2d3436;" />
+
+                                <Label text="📍 Lieu:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                                       style="-fx-font-size: 14px; -fx-text-fill: #636e72;" />
+                                <Label fx:id="lieuLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                                       style="-fx-font-size: 14px; -fx-text-fill: #2d3436;" />
+
+                            </GridPane>
+                            <Button text="📩 Réserver"
+                                    onAction="#reserver"
+                                    style="-fx-background-color: linear-gradient(to bottom right, #a29bfe, #dfe6e9);
+               -fx-text-fill: #2d3436;
+               -fx-font-size: 14px;
+               -fx-font-weight: bold;
+               -fx-background-radius: 20px;
+               -fx-padding: 8 20;
+               -fx-border-width: 1px;" />
+
+
+                            <!-- 🔙 Bouton retour bas -->
+                            <Button text="⟵ Retour"
+                                    onAction="#retour"
+                                    style="-fx-background-color: #D9B3FF;
+               -fx-text-fill: white;
+               -fx-font-size: 14px;
+               -fx-font-weight: bold;
+               -fx-background-radius: 15px;
+               -fx-padding: 6 18;" />
+
+                        </VBox>
+                    </StackPane>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </children>
 </StackPane>

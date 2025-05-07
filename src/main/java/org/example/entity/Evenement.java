@@ -7,6 +7,8 @@ import java.util.Locale;
 
 public class Evenement {
     private int id;
+    private double latitude;
+    private double longitude;
 
     private int categoryId;
     private String nomCategorie;
@@ -21,14 +23,14 @@ public class Evenement {
 
     private String lieu;
     private String image;
-    private float prix;
+
 
 
     public Evenement() {}
 
     // 🔹 Constructeur sans ID
     public Evenement(int categoryId, String nom, String description, LocalDate date,
-                     LocalTime heureDebut, LocalTime heureFin, String lieu, String image, float prix) {
+                     LocalTime heureDebut, LocalTime heureFin, String lieu, String image) {
         this.categoryId = categoryId;
         this.nom = nom;
         this.description = description;
@@ -37,7 +39,6 @@ public class Evenement {
         this.heureFin = heureFin;
         this.lieu = lieu;
         this.image = image;
-        this.prix = prix;
     }
     public String getFormattedDate() {
         if (date != null) {
@@ -50,7 +51,7 @@ public class Evenement {
     // 🔹 Constructeur avec ID
     public Evenement(int id, int categoryId, String nom, String description, LocalDate date,
                      LocalTime heureDebut, LocalTime heureFin,
-                     String lieu, String image, float prix) {
+                     String lieu, String image) {
         this.id = id;
         this.categoryId = categoryId;
         this.nom = nom;
@@ -60,7 +61,6 @@ public class Evenement {
         this.heureFin = heureFin;
         this.lieu = lieu;
         this.image = image;
-        this.prix = prix;
     }
 
     // ✅ Getters & Setters
@@ -93,8 +93,6 @@ public class Evenement {
     public String getImage() { return image; }
     public void setImage(String image) { this.image = image; }
 
-    public float getPrix() { return prix; }
-    public void setPrix(float prix) { this.prix = prix; }
     public String getTitre() {
         return this.nom;
     }
@@ -116,7 +114,6 @@ public class Evenement {
                 ", heureFin=" + heureFin +
                 ", lieu='" + lieu + '\'' +
                 ", image='" + image + '\'' +
-                ", prix=" + prix +
                 '}';
     }
 }

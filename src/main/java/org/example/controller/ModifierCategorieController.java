@@ -110,10 +110,11 @@ public class ModifierCategorieController {
             txtNom.setStyle("-fx-border-color: red;");
             lblErreurNom.setText("❌ Le nom doit contenir uniquement des lettres.");
             isValid = false;
+
         } else {
             CategorieDAO dao = new CategorieDAO();
             boolean existe = dao.getAllCategories().stream()
-                    .anyMatch(cat -> cat.getNom().equalsIgnoreCase(nom));
+                    .anyMatch(cat -> cat.getNom().equalsIgnoreCase(nom) && cat.getId() != selectedCategorie.getId());
             if (existe) {
                 txtNom.setStyle("-fx-border-color: red;");
                 lblErreurNom.setText("❌ Ce nom existe déjà.");
@@ -132,7 +133,12 @@ public class ModifierCategorieController {
         // ✅ Mise à jour
         selectedCategorie.setNom(nom);
         selectedCategorie.setDescription(description);
-        selectedCategorie.setImage(imagePathFinal);
+        if (imagePathFinal != null && !imagePathFinal.isEmpty()) {
+            selectedCategorie.setImage(imagePathFinal);
+        } else {
+            selectedCategorie.setImage(selectedCategorie.getImage());
+        }
+
 
         CategorieDAO dao = new CategorieDAO();
         dao.modifierCategorie(selectedCategorie);

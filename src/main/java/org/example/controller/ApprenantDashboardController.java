@@ -48,30 +48,27 @@ public class ApprenantDashboardController {
     @FXML
     private void logout() {
         try {
-            // Effacer la session utilisateur
+            // Clear the session
             SessionManager.getInstance().logout();
 
-            // Charger la vue de connexion
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
+            // Load the login screen
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Home.fxml"));
             Parent root = loader.load();
-
-            // Obtenir la scène actuelle depuis le bouton existant
             Stage stage = (Stage) logoutButton.getScene().getWindow();
-
-            // Changer la scène
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
             stage.setTitle("Connexion");
             stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
 
-            // Afficher un message de confirmation
-            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie",
-                    "Vous avez été déconnecté avec succès.", "");
-
+            // Show logout confirmation
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Erreur lors de la déconnexion", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", "Impossible de charger l'écran de connexion: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
 
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
@@ -134,5 +131,30 @@ public class ApprenantDashboardController {
             e.printStackTrace();
         }
     }
+
+    public void goMatiereF(ActionEvent actionEvent) {
+        System.out.println("Naviguer vers gestion des matières...");
+        loadPage(actionEvent, "/org/example/view/ListeMatiereF.fxml");
+    }
+
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            System.out.println("Chargement du fichier : " + fxmlPath);
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace(); // ← affiche l'erreur exacte dans la console
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger la page", e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace(); // ← attrape aussi toute autre erreur de controller
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Exception générale", e.getMessage());
+        }
+    }
+
 
 }

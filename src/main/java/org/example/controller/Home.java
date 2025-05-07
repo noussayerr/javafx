@@ -6,11 +6,64 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 public class Home {
+
+
+
+    @FXML
+    public void initialize() {
+
+        // Chargez votre fichier JavaScript
+        String jsCode = loadJsFile("/org/example/view/chatbase.js");
+
+        // Exécutez le JavaScript
+
+        // Charger directement le chatbot
+        //String htmlContent = "<!DOCTYPE html>\n" +
+        // "<html lang=\"fr\">\n" +
+        //       "<head>\n" +
+        //      "    <meta charset=\"UTF-8\">\n" +
+        //      "    <title>Chatbot</title>\n" +
+        //        "    <style>\n" +
+        //       "        body { margin: 0; padding: 0; }\n" +
+        //       "    </style>\n" +
+        //       "</head>\n" +
+        //       "<body>\n" +
+        //       "<script>\n" +
+        //       "    (function(){\n" +
+        //       "        if(!window.chatbase || window.chatbase(\"getState\") !== \"initialized\") {\n" +
+        //    "            window.chatbase = function() {\n" +
+                        //       "                if(!window.chatbase.q) { window.chatbase.q = []; }\n" +
+        //       "                window.chatbase.q.push(arguments);\n" +
+        //       "            };\n" +
+        //       "        }\n" +
+                        //        "        const script = document.createElement(\"script\");\n" +
+        //       "        script.src = \"https://www.chatbase.co/embed.min.js\";\n" +
+        //       "        script.id = \"mvIwJ4lajfms0zYw9GuZk\";\n" +
+        //       "        script.setAttribute(\"chatbotId\", \"votre-id-chatbot\");\n" +
+        //       "        script.setAttribute(\"domain\", \"www.chatbase.co\");\n" +
+        //       "        document.body.appendChild(script);\n" +
+                        //      "    })();\n" +
+        //       "</script>\n" +
+        //       "</body>\n" +
+        //      "</html>";
+
+        //chatbotWebView.getEngine().loadContent(htmlContent);
+
+        // Configuration supplémentaire si nécessaire
+        //chatbotWebView.setContextMenuEnabled(false);
+        //chatbotWebView.getEngine().setJavaScriptEnabled(true);
+    }
+
 
     public void goToRegister(ActionEvent event) {
         loadPage(event, "/org/example/view/choix.fxml");
@@ -32,6 +85,19 @@ public class Home {
         } catch (IOException e) {
             e.printStackTrace();
             // Gérer l'erreur (peut-être afficher un message à l'utilisateur)
+        }
+    }
+
+
+
+
+    private String loadJsFile(String path) {
+        try {
+            return new Scanner(getClass().getResourceAsStream(path), "UTF-8")
+                    .useDelimiter("\\A").next();
+        } catch (Exception e) {
+            System.err.println("Error loading JS file: " + e.getMessage());
+            return "";
         }
     }
 }
