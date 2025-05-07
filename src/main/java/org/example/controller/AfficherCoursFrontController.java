@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -51,8 +50,6 @@ public class AfficherCoursFrontController implements Initializable {
     private final ServiceCommentaire serviceCommentaire = new ServiceCommentaire();
     private final ServiceMatiere serviceMatiere = new ServiceMatiere();
     private int selectedRating = 0;
-
-
 
     // Functional interface for listeners
     @FunctionalInterface
@@ -90,14 +87,15 @@ public class AfficherCoursFrontController implements Initializable {
             // Load image
             if (matiere.getImgM() != null && !matiere.getImgM().isEmpty()) {
                 try {
-                    File file = new File("src/main/resources/matiere/" +matiere.getImgM());
+                    File file = new File("src/main/resources/matiere/" + matiere.getImgM());
                     if (file.exists()) {
                         matiereImage.setImage(new Image(file.toURI().toString()));
                     } else {
-                        String imagePath = "/matiere/" + matiere.getImgM();
-                        InputStream stream = getClass().getResourceAsStream(matiere.getImgM());
+                        InputStream stream = getClass().getResourceAsStream("/matiere/" + matiere.getImgM());
                         if (stream != null) {
                             matiereImage.setImage(new Image(stream));
+                        } else {
+                            matiereImage.setVisible(false);
                         }
                     }
                 } catch (Exception e) {
@@ -118,7 +116,6 @@ public class AfficherCoursFrontController implements Initializable {
             for (Cours cours : coursList) {
                 VBox coursBox = createCoursBox(cours);
                 coursContainer.getChildren().add(coursBox);
-                coursContainer.setStyle("-fx-text-fill: #0e0e0e;-fx-font-size: 14px");
             }
             applyFilters();
         } catch (SQLException e) {
@@ -128,18 +125,26 @@ public class AfficherCoursFrontController implements Initializable {
 
     private VBox createCoursBox(Cours cours) throws SQLException {
         VBox coursBox = new VBox(10);
-        coursBox.getStyleClass().add("cours-box");
-        coursBox.setStyle("-fx-background-color: white; -fx-padding: 15; -fx-spacing: 10; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);");
+        coursBox.getStyleClass().add("cours-card");
+        coursBox.setStyle("-fx-background-color: #ffffff; -fx-padding: 15; -fx-border-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);");
         coursBox.getProperties().put("type", cours.getType());
         coursBox.getProperties().put("level", cours.getNivC());
 
         // Header
-        HBox header = new HBox(10);
+        HBox header = new HBox();
+        header.getStyleClass().add("cours-header");
+        Label headerLabel = new Label(cours.getNomC());
+        headerLabel.getStyleClass().add("cours-header-label");
+        header.getChildren().add(headerLabel);
+
+        // Content
+        VBox content = new VBox(10);
+        content.getStyleClass().add("cours-content");
+
         VBox infoBox = new VBox(5);
         infoBox.getChildren().addAll(
-                createStyledLabel(cours.getNomC(), "-fx-font-size: 18px; -fx-font-weight: bold;"),
-                createStyledLabel("Enseigné par: " + (cours.getUser() != null ? cours.getUser().getNom() + " " + cours.getUser().getPrenom() : "Inconnu"), "-fx-text-fill: #666;"),
-                createStyledLabel("Niveau: " + cours.getNivC(), "-fx-text-fill: #666;")
+                createStyledLabel("Enseigné par: " + (cours.getUser() != null ? cours.getUser().getNom() + " " + cours.getUser().getPrenom() : "Inconnu"), "cours-info-label"),
+                createStyledLabel("Niveau: " + cours.getNivC(), "cours-info-label")
         );
 
         // Objectives
@@ -147,32 +152,32 @@ public class AfficherCoursFrontController implements Initializable {
         String[] objectives = cours.getObjC().split("\\.");
         for (String obj : objectives) {
             if (!obj.trim().isEmpty()) {
-                objBox.getChildren().add(createStyledLabel("• " + obj.trim(), "-fx-text-fill: #666;"));
+                objBox.getChildren().add(createStyledLabel("• " + obj.trim(), "cours-objectives-label"));
             }
         }
 
         // File counts
         List<Fichier> fichiers = serviceFichier.getFichiersByCours(cours.getId());
-        int pdfCount = (int) fichiers.stream().filter(f -> f.getType().equals("Pdf")).count();
-        int wordCount = (int) fichiers.stream().filter(f -> f.getType().equals("Word")).count();
-        int videoCount = (int) fichiers.stream().filter(f -> f.getType().equals("Video")).count();
-        int imageCount = (int) fichiers.stream().filter(f -> f.getType().equals("Image")).count();
+        int pdfCount = (int) fichiers.stream().filter(f -> "PDF".equals(f.getType())).count();
+        int wordCount = (int) fichiers.stream().filter(f -> "Word".equals(f.getType())).count();
+        int videoCount = (int) fichiers.stream().filter(f -> "Video".equals(f.getType())).count();
+        int imageCount = (int) fichiers.stream().filter(f -> "Image".equals(f.getType())).count();
         Label fileSummary = createStyledLabel(
-                String.format("%d Vidéo(s), %d Word, %d Pdf, %d Image(s)", videoCount, wordCount, pdfCount, imageCount),
-                "-fx-text-fill: #666;"
+                String.format("%d Vidéos, %d Word, %d PDF, %d Images", videoCount, wordCount, pdfCount, imageCount),
+                "cours-file-summary"
         );
 
         // Buttons
         HBox buttonBox = new HBox(10);
         buttonBox.getChildren().addAll(
-                createButton("Afficher fichiers", e -> toggleFichiers(coursBox)),
-                createButton("Ajouter fichier", e -> ajouterFichier(cours)),
-                createButton("Modifier", e -> modifierCours(cours)),
-                createButton("Supprimer", e -> supprimerCours(cours))
+                createButton("Afficher fichiers", e -> toggleFichiers(coursBox), "#4CAF50"),
+                createButton("Ajouter fichier", e -> ajouterFichier(cours), "#4CAF50"),
+                createButton("Modifier", e -> modifierCours(cours), "#FF9800"),
+                createButton("Supprimer", e -> supprimerCours(cours), "#DC3545")
         );
 
-        header.getChildren().addAll(infoBox, buttonBox);
-        coursBox.getChildren().addAll(header, objBox, fileSummary, createFichiersContainer(cours));
+        content.getChildren().addAll(infoBox, objBox, fileSummary, buttonBox);
+        coursBox.getChildren().addAll(header, content, createFichiersContainer(cours));
 
         return coursBox;
     }
@@ -180,26 +185,27 @@ public class AfficherCoursFrontController implements Initializable {
     private VBox createFichiersContainer(Cours cours) {
         VBox container = new VBox(5);
         container.setVisible(false);
+        container.setStyle("-fx-padding: 10 0 0 10;");
 
         try {
             List<Fichier> fichiers = serviceFichier.getFichiersByCours(cours.getId());
             if (!fichiers.isEmpty()) {
                 for (Fichier fichier : fichiers) {
                     HBox fichierBox = new HBox(10);
-                    fichierBox.setStyle("-fx-background-color: #f5f5f5; -fx-padding: 8; -fx-border-radius: 5;");
+                    fichierBox.getStyleClass().add("cours-file-box");
 
-                    Label fileLabel = createStyledLabel(fichier.getNomF() + " (" + fichier.getType() + ")", "");
-                    Button downloadBtn = createButton("Télécharger", e -> telechargerFichier(fichier));
-                    Button editBtn = createButton("Modifier", e -> modifierFichier(fichier));
-                    Button deleteBtn = createButton("Supprimer", e -> supprimerFichier(fichier));
+                    Label fileLabel = createStyledLabel(fichier.getNomF() + " (" + fichier.getType() + ")", "cours-info-label");
+                    Button downloadBtn = createButton("Télécharger", e -> telechargerFichier(fichier), "#4CAF50");
+                    Button editBtn = createButton("Modifier", e -> modifierFichier(fichier), "#FF9800");
+                    Button deleteBtn = createButton("Supprimer", e -> supprimerFichier(fichier), "#DC3545");
 
                     fichierBox.getChildren().addAll(fileLabel, downloadBtn, editBtn, deleteBtn);
                     container.getChildren().add(fichierBox);
                 }
             } else {
-                container.getChildren().add(createStyledLabel("Aucun fichier disponible", "-fx-font-style: italic;"));
+                container.getChildren().add(createStyledLabel("Aucun fichier disponible", "cours-info-label"));
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             container.getChildren().add(createStyledLabel("Erreur de chargement des fichiers", "-fx-text-fill: red;"));
         }
 
@@ -216,25 +222,24 @@ public class AfficherCoursFrontController implements Initializable {
         starRating.getChildren().clear();
         for (int i = 1; i <= 5; i++) {
             ImageView star = new ImageView(i <= avgRating ? new Image("/images/star-filled.png") : new Image("/images/star-empty.png"));
-            star.setFitHeight(20);
-            star.setFitWidth(20);
+            star.setFitHeight(24);
+            star.setFitWidth(24);
             starRating.getChildren().add(star);
         }
 
         // Rating bars
         ratingBars.getChildren().clear();
-
         for (int star = 5; star >= 1; star--) {
-            final int finalStar = star;
-            long count = evaluations.stream().filter(e -> e.getNote() == finalStar).count();
+            final int currentStar = star;
+            long count = evaluations.stream().filter(e -> e.getNote() == currentStar).count();
             double percentage = evaluations.isEmpty() ? 0 : (count * 100.0 / evaluations.size());
 
             HBox barBox = new HBox(10);
-            Label starLabel = createStyledLabel(star + " étoiles:", "-fx-text-fill: #495057;");
+            Label starLabel = createStyledLabel(currentStar + " étoiles:", "-fx-text-fill: #495057; -fx-font-size: 14px;");
             ProgressBar bar = new ProgressBar(percentage / 100);
-            bar.setStyle( ";");
-            bar.setPrefWidth(200);
-            Label percentLabel = createStyledLabel(String.format("%.0f%%", percentage), "-fx-text-fill: #495057;");
+            bar.setPrefWidth(250);
+            bar.setStyle("-fx-accent: #1734a4;");
+            Label percentLabel = createStyledLabel(String.format("%.0f%%", percentage), "-fx-text-fill: #495057; -fx-font-size: 14px;");
             barBox.getChildren().addAll(starLabel, bar, percentLabel);
             ratingBars.getChildren().add(barBox);
         }
@@ -242,10 +247,10 @@ public class AfficherCoursFrontController implements Initializable {
         // Evaluation stars
         evaluationStars.getChildren().clear();
         for (int i = 1; i <= 5; i++) {
+            final int rating = i;
             ImageView star = new ImageView(new Image("/images/star-empty.png"));
-            star.setFitHeight(20);
-            star.setFitWidth(20);
-            int rating = i;
+            star.setFitHeight(24);
+            star.setFitWidth(24);
             star.setOnMouseClicked(e -> selectRating(rating));
             evaluationStars.getChildren().add(star);
         }
@@ -255,11 +260,11 @@ public class AfficherCoursFrontController implements Initializable {
         selectedRating = rating;
         evaluationStars.getChildren().clear();
         for (int i = 1; i <= 5; i++) {
+            final int currentRating = i;
             ImageView star = new ImageView(i <= rating ? new Image("/images/star-filled.png") : new Image("/images/star-empty.png"));
-            star.setFitHeight(20);
-            star.setFitWidth(20);
-            int finalI = i;
-            star.setOnMouseClicked(e -> selectRating(finalI));
+            star.setFitHeight(24);
+            star.setFitWidth(24);
+            star.setOnMouseClicked(e -> selectRating(currentRating));
             evaluationStars.getChildren().add(star);
         }
     }
@@ -271,30 +276,22 @@ public class AfficherCoursFrontController implements Initializable {
             return;
         }
 
+        Evalu evalu = new Evalu();
+        evalu.setNote(selectedRating);
+        if (matiere == null) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Aucune matière sélectionnée", "");
+            return;
+        }
+        evalu.setMatiere(matiere);
+
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Utilisateur non connecté", "");
+            return;
+        }
+        evalu.setUser(currentUser);
+
         try {
-            Evalu evalu = new Evalu();
-            evalu.setNote(selectedRating);
-
-            // Make sure matiere is properly initialized
-            if (matiere == null) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Aucune matière sélectionnée", "");
-                return;
-            }
-
-            // Initialize the evaluations list if null
-            if (matiere.getEvalus() == null) {
-                matiere.setEvalus(new ArrayList<>());
-            }
-
-            evalu.setMatiere(matiere);
-
-            User currentUser = SessionManager.getInstance().getCurrentUser();
-            if (currentUser == null) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Utilisateur non connecté", "");
-                return;
-            }
-            evalu.setUser(currentUser);
-
             serviceEvalu.ajouter(evalu);
             loadEvaluations();
             selectedRating = 0;
@@ -302,7 +299,6 @@ public class AfficherCoursFrontController implements Initializable {
             showAlert(Alert.AlertType.INFORMATION, "Succès", "Évaluation ajoutée", "");
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de l'ajout de l'évaluation", e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -311,27 +307,29 @@ public class AfficherCoursFrontController implements Initializable {
         List<Commentaire> commentaires = serviceCommentaire.getCommentairesByMatiere(matiere.getId());
 
         for (Commentaire commentaire : commentaires) {
-            VBox commentBox = new VBox(5);
-            commentBox.setStyle("-fx-background-color: #f5f5f5; -fx-padding: 10; -fx-border-radius: 5;");
+            VBox commentBox = new VBox(10);
+            commentBox.setStyle("-fx-background-color: #ffffff; -fx-padding: 20; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);");
+            commentBox.setOnMouseEntered(e -> commentBox.setStyle("-fx-background-color: #f8f9fa; -fx-padding: 20; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 3);"));
+            commentBox.setOnMouseExited(e -> commentBox.setStyle("-fx-background-color: #ffffff; -fx-padding: 20; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);"));
 
-            HBox ratingBox = new HBox(5);
+            HBox ratingBox = new HBox(6);
             int note = serviceEvalu.getEvaluationByUserAndMatiere(commentaire.getUser().getId(), matiere.getId())
                     .map(Evalu::getNote).orElse(0);
             for (int i = 1; i <= 5; i++) {
                 ImageView star = new ImageView(i <= note ? new Image("/images/star-filled.png") : new Image("/images/star-empty.png"));
-                star.setFitHeight(16);
-                star.setFitWidth(16);
+                star.setFitHeight(20);
+                star.setFitWidth(20);
                 ratingBox.getChildren().add(star);
             }
 
             commentBox.getChildren().addAll(
                     ratingBox,
-                    createStyledLabel(commentaire.getSujet() + ":", "-fx-font-weight: bold;"),
-                    createStyledLabel(commentaire.getContenu(), "-fx-text-fill: #6c757d;"),
+                    createStyledLabel(commentaire.getSujet() + ":", "-fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: #050809;"),
+                    createStyledLabel(commentaire.getContenu(), "-fx-text-fill: #495057; -fx-font-size: 16px;"),
                     createStyledLabel(
                             commentaire.getUser().getNom() + " " + commentaire.getUser().getPrenom() + " - " +
                                     commentaire.getDate().toString(),
-                            "-fx-text-fill: #6c757d; -fx-font-style: italic;"
+                            "-fx-text-fill: #6c757d; -fx-font-size: 14px; -fx-font-style: italic;"
                     )
             );
             commentairesContainer.getChildren().add(commentBox);
@@ -348,44 +346,39 @@ public class AfficherCoursFrontController implements Initializable {
             return;
         }
 
-        try {
-            Commentaire commentaire = new Commentaire();
-            commentaire.setSujet(sujet);
-            commentaire.setContenu(contenu);
-            commentaire.setDate(LocalDateTime.now());
-
-            // Ensure matiere exists
-            if (matiere == null) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Aucune matière sélectionnée", "");
-                return;
-            }
-
-            // Ensure user is logged in
-            User currentUser = SessionManager.getInstance().getCurrentUser();
-            if (currentUser == null) {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Utilisateur non connecté", "");
-                return;
-            }
-
-            commentaire.setMatiere(matiere);
-            commentaire.setUser(currentUser);
-
-            serviceCommentaire.ajouter(commentaire);
-            loadCommentaires();
-            commentaireSujet.clear();
-            commentaireContenu.clear();
-            showAlert(Alert.AlertType.INFORMATION, "Succès", "Commentaire ajouté", "");
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de l'ajout du commentaire", e.getMessage());
+        Commentaire commentaire = new Commentaire();
+        commentaire.setSujet(sujet);
+        commentaire.setContenu(contenu);
+        commentaire.setDate(LocalDateTime.now());
+        if (matiere == null) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Aucune matière sélectionnée", "");
+            return;
         }
+        commentaire.setMatiere(matiere);
+
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Utilisateur non connecté", "");
+            return;
+        }
+        commentaire.setUser(currentUser);
+
+        serviceCommentaire.ajouter(commentaire);
+        loadCommentaires();
+        commentaireSujet.clear();
+        commentaireContenu.clear();
+        showAlert(Alert.AlertType.INFORMATION, "Succès", "Commentaire ajouté", "");
     }
+
     private void loadCategories() {
         try {
             List<Matiere> matieres = serviceMatiere.afficher().stream().limit(6).toList();
             categoriesContainer.getChildren().clear();
             for (Matiere m : matieres) {
                 CheckBox checkBox = new CheckBox(m.getNomM() + " (" + serviceCours.getCoursParMatiere(m.getId()).size() + ")");
-                checkBox.setOnAction(e -> redirectToMatiere(m));
+                checkBox.setStyle("-fx-font-size: 14px; -fx-text-fill: #0e0e0e;");
+                final Matiere currentMatiere = m;
+                checkBox.setOnAction(e -> redirectToMatiere(currentMatiere));
                 categoriesContainer.getChildren().add(checkBox);
             }
         } catch (SQLException e) {
@@ -409,7 +402,7 @@ public class AfficherCoursFrontController implements Initializable {
     }
 
     private void toggleFichiers(VBox coursBox) {
-        VBox fichiersContainer = (VBox) coursBox.getChildren().get(3);
+        VBox fichiersContainer = (VBox) coursBox.getChildren().get(2);
         fichiersContainer.setVisible(!fichiersContainer.isVisible());
     }
 
@@ -462,7 +455,11 @@ public class AfficherCoursFrontController implements Initializable {
         }
         File file = new File(fichier.getUrlF());
         if (file.exists()) {
-            showAlert(Alert.AlertType.INFORMATION, "Téléchargement", "Prêt à télécharger", fichier.getNomF());
+            try {
+                java.awt.Desktop.getDesktop().open(file);
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le fichier", e.getMessage());
+            }
         } else {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Fichier introuvable", "Chemin: " + fichier.getUrlF());
         }
@@ -574,12 +571,15 @@ public class AfficherCoursFrontController implements Initializable {
     private Label createStyledLabel(String text, String style) {
         Label label = new Label(text);
         label.setStyle(style);
+        if (!style.isEmpty()) {
+            label.getStyleClass().add(style);
+        }
         return label;
     }
 
-    private Button createButton(String text, javafx.event.EventHandler<ActionEvent> handler) {
+    private Button createButton(String text, javafx.event.EventHandler<ActionEvent> handler, String backgroundColor) {
         Button btn = new Button(text);
-        btn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;");
+        btn.setStyle("-fx-background-color: " + backgroundColor + "; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 15;");
         btn.setOnAction(handler);
         return btn;
     }

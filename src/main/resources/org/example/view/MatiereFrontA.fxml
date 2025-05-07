@@ -32,9 +32,9 @@
         <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-padding: 0 15 0 0;">
             <Button style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Accueil" />
             <Button onAction="#goMatiereF" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Cours" />
-            <Button fx:id="profileButton" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="les Événements" onAction="#ouvrirListeEvenements" />
-            <Button fx:id="btnEvenements" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Profil" onAction="#handleProfile" />
-            <Button style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Jeux" onAction="#showGames" />
+            <Button fx:id="profileButton" onAction="#ouvrirListeEvenements" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="les Événements" />
+            <Button fx:id="btnEvenements" onAction="#handleProfile" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Profil" />
+            <Button onAction="#showGames" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Jeux" />
             <Button fx:id="logoutButton" onAction="#logout" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Déconnexion">
                 <HBox.margin>
                     <Insets left="300.0" />
@@ -83,18 +83,14 @@
             </HBox>
         </VBox>
         <!-- Right Sidebar -->
-        <VBox prefHeight="508.0" prefWidth="334.0" spacing="20" style="-fx-padding: 20; -fx-background-color: transparent ; -fx-border-width: 1; -fx-border-radius: 5;">
+        <VBox prefHeight="542.0" prefWidth="285.0" spacing="10" style="-fx-padding: 20; -fx-background-color: transparent;">
             <!-- Categories -->
-            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #ffffff; -fx-border-color: #0e0e0e;
-             -fx-padding: 10; -fx-border-width: 1;
-             -fx-background-radius: 10; -fx-border-radius: 10;">
+            <VBox spacing="5" style="-fx-background-color: #ffffff; -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                 <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-text-fill: #1734a4;" text="Nos Matières" />
                 <VBox fx:id="categoriesContainer" alignment="CENTER" spacing="5.0" />
             </VBox>
             <!-- Price Filter -->
-            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #ffffff; -fx-border-color: #0e0e0e;
-             -fx-padding: 10; -fx-border-width: 1;
-             -fx-background-radius: 10; -fx-border-radius: 10;">
+            <VBox spacing="5" style="-fx-background-color: #ffffff; -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                 <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-text-fill: #1734a4;" text="Filtre de prix" />
                 <VBox spacing="5.0">
                     <Label fx:id="totalCountLabel" style="-fx-font-size: 12px; -fx-font-family: 'Segoe UI'; -fx-text-fill: #0e0e0e;" text="Tous (0)" />
@@ -103,9 +99,7 @@
                 </VBox>
             </VBox>
             <!-- Skill Level Filter -->
-            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #ffffff; -fx-border-color: #0e0e0e;
-             -fx-padding: 10; -fx-border-width: 1;
-             -fx-background-radius: 10; -fx-border-radius: 10;">
+            <VBox spacing="5" style="-fx-background-color: #ffffff; -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
                 <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-text-fill: #1734a4;" text="Niveau de compétence" />
                 <VBox spacing="5.0">
                     <Label fx:id="totalLevelCountLabel" style="-fx-font-size: 12px; -fx-font-family: 'Segoe UI'; -fx-text-fill: #0e0e0e;" text="Tous les niveaux (0)" />

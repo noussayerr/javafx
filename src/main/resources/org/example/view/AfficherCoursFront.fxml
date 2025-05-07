@@ -21,7 +21,7 @@
 
 <AnchorPane prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.AfficherCoursFrontController">
     <stylesheets>
-        <URL value="@/styles/matiere.css" />
+        <URL value="@/styles/cours-blackboard.css" />
     </stylesheets>
 
     <!-- Header avec effet de verre -->
@@ -50,11 +50,11 @@
 
     <!-- Breadcrumbs -->
     <VBox alignment="TOP_CENTER" layoutX="-4.0" layoutY="78.0" prefHeight="118.0" prefWidth="1007.0" style="-fx-background-color: #4B5EAA;" AnchorPane.leftAnchor="-4.0" AnchorPane.rightAnchor="-3.0" AnchorPane.topAnchor="78.0">
-        <VBox alignment="CENTER" prefHeight="104.0" prefWidth="1269.0" style=" -fx-background-radius: 10; -fx-padding: 20;">
+        <VBox alignment="CENTER" prefHeight="104.0" prefWidth="1269.0" style="-fx-background-radius: 10; -fx-padding: 20;">
             <Label fx:id="matiereNom" style="-fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold;" />
             <Label fx:id="matiereTitre" style="-fx-text-fill: #ffffff; -fx-font-size: 24px; -fx-font-weight: bold;" />
             <HBox alignment="CENTER" spacing="5">
-                <Label alignment="CENTER" style="-fx-text-fill: #ffffff;" text="Accueil &gt; Matiere &gt;" />
+                <Label alignment="CENTER" style="-fx-text-fill: #ffffff;" text="Accueil > Matiere >" />
                 <Label fx:id="matiereTitreNav" style="-fx-text-fill: #ffffff;" />
             </HBox>
         </VBox>
@@ -84,14 +84,13 @@
                         <VBox fx:id="objectivesContainer" spacing="5" style="-fx-text-fill: #0e0e0e;-fx-font-size: 16px" />
                     </VBox>
                 </Tab>
-
                 <!-- Cours Tab -->
                 <Tab closable="false">
                     <graphic>
                         <Label alignment="CENTER" contentDisplay="CENTER" style="-fx-text-fill: #1734a4; -fx-font-size: 13; -fx-font-weight: bold;" text="Cours                                           " />
                     </graphic>
                     <VBox spacing="15" style="-fx-padding: 20;">
-                        <Button fx:id="btnAjouterCours" onAction="#ajouterCours" style="-fx-background-color: #1734a4; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-font-size: 14px;" text="Créer un cours" />
+                        <Button fx:id="btnAjouterCours" onAction="#ajouterCours" style="-fx-background-color: #1734a4; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-font-size: 14px; -fx-padding: 10 20;" text="Créer un cours" />
                         <ScrollPane fitToWidth="true" style="-fx-background: #ffffff; -fx-border-color: transparent;">
                             <VBox fx:id="coursContainer" spacing="15" style="-fx-padding: 10; -fx-text-fill: #050809" />
                         </ScrollPane>
@@ -102,90 +101,87 @@
                     <graphic>
                         <Label alignment="CENTER" contentDisplay="CENTER" style="-fx-text-fill: #1734a4; -fx-font-size: 13; -fx-font-weight: bold;" text="Avis                                           " />
                     </graphic>
-               <ScrollPane>
-                  <content>
-                          <VBox prefHeight="576.0" prefWidth="782.0" spacing="15" style="-fx-padding: 20 ; ">
-                              <!-- Evaluations -->
-                              <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #050809" text="Évaluations" />
-                              <HBox spacing="20">
-                                  <VBox spacing="5">
-                                      <Label fx:id="averageRating" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
-                                      <HBox fx:id="starRating" spacing="5" />
-                                      <Label fx:id="totalEvaluations" style="-fx-text-fill: #6c757d;" />
-                                  </VBox>
-                                  <VBox spacing="10">
-                                      <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #050809" text="Évaluation détaillée" />
-                                      <VBox fx:id="ratingBars" spacing="5" />
-                                  </VBox>
-                              </HBox>
-                              <!-- Commentaires -->
-                              <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #050809" text="Commentaires" />
-                              <ScrollPane fitToWidth="true" prefHeight="339.0" prefWidth="742.0" style="-fx-background: #ffffff; -fx-border-color: transparent;">
-                                  <VBox fx:id="commentairesContainer" prefHeight="667.0" prefWidth="776.0" spacing="15" style="-fx-padding: 10;" />
-                              </ScrollPane>
-                              <!-- Ajouter Evaluation -->
-                              <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #050809" text="Ajouter une évaluation" />
-                              <HBox fx:id="evaluationStars" spacing="5" />
-                              <Button fx:id="submitEvaluation" alignment="TOP_LEFT" onAction="#submitEvaluation" style="-fx-background-color: #1734a4; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8;" text="Soumettre" />
-                              <!-- Ajouter Commentaire -->
-                              <Label style="-fx-font-size: 18px; -fx-font-weight: bold;-fx-text-fill: #050809" text="Écrire un commentaire" />
-                              <TextField fx:id="commentaireSujet" promptText="Sujet" style="-fx-background-radius: 5;" />
-                              <TextArea fx:id="commentaireContenu" prefHeight="100.0" promptText="Votre commentaire" style="-fx-background-radius: 5;" />
-                              <Button fx:id="submitCommentaire" onAction="#submitCommentaire" style="-fx-background-color: #1734a4; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8;" text="Soumettre le commentaire" />
-                          </VBox>
-                  </content>
-               </ScrollPane>
+                    <ScrollPane>
+                        <content>
+                            <VBox prefHeight="755.0" prefWidth="988.0" spacing="20" style="-fx-padding: 25; -fx-background-color: #ffffff; -fx-background-radius: 10;">
+                                <!-- Evaluations -->
+                                <VBox spacing="15" style="-fx-background-color: #f8f9fa; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1734a4;" text="Évaluations" />
+                                    <HBox alignment="CENTER_LEFT" spacing="30">
+                                        <VBox alignment="TOP_CENTER" spacing="10">
+                                            <Label fx:id="averageRating" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #050809;" />
+                                            <HBox fx:id="starRating" spacing="8" />
+                                            <Label fx:id="totalEvaluations" style="-fx-text-fill: #6c757d; -fx-font-size: 14px;" />
+                                        </VBox>
+                                        <VBox spacing="12">
+                                            <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #050809;" text="Répartition des notes" />
+                                            <VBox fx:id="ratingBars" spacing="8" />
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+                                <!-- Commentaires -->
+                                <VBox prefHeight="450.0" prefWidth="782.0" spacing="20">
+                                    <Label style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1734a4;" text="Commentaires" />
+                                    <ScrollPane fitToWidth="true" prefHeight="400.0" prefWidth="782.0" style="-fx-background: #ffffff; -fx-border-color: transparent; -fx-background-radius: 10;">
+                                        <VBox fx:id="commentairesContainer" prefHeight="380.0" prefWidth="762.0" spacing="20" style="-fx-padding: 20;">
+                                            <effect>
+                                                <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.05)" radius="8" />
+                                            </effect>
+                                        </VBox>
+                                    </ScrollPane>
+                                </VBox>
+                                <!-- Ajouter Evaluation -->
+                                <VBox spacing="15" style="-fx-background-color: #f8f9fa; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1734a4;" text="Ajouter une évaluation" />
+                                    <HBox fx:id="evaluationStars" spacing="8" />
+                                    <Button fx:id="submitEvaluation" alignment="TOP_LEFT" onAction="#submitEvaluation" style="-fx-background-color: #1734a4; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20;" text="Soumettre" />
+                                </VBox>
+                                <!-- Ajouter Commentaire -->
+                                <VBox spacing="15" style="-fx-background-color: #f8f9fa; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                                    <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1734a4;" text="Écrire un commentaire" />
+                                    <TextField fx:id="commentaireSujet" promptText="Sujet" style="-fx-background-radius: 5; -fx-font-size: 14px; -fx-padding: 10;" />
+                                    <TextArea fx:id="commentaireContenu" prefHeight="120.0" promptText="Votre commentaire" style="-fx-background-radius: 5; -fx-font-size: 14px; -fx-padding: 10;" />
+                                    <Button fx:id="submitCommentaire" onAction="#submitCommentaire" style="-fx-background-color: #1734a4; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20;" text="Soumettre le commentaire" />
+                                </VBox>
+                            </VBox>
+                        </content>
+                    </ScrollPane>
                 </Tab>
-            <opaqueInsets>
-               <Insets />
-            </opaqueInsets>
+                <opaqueInsets>
+                    <Insets />
+                </opaqueInsets>
             </TabPane>
         </VBox>
-
         <!-- Right Column: Filters -->
-        <VBox prefHeight="548.0" prefWidth="574.0" spacing="20" style="-fx-padding: 20; -fx-background-color: transparent ; -fx-border-width: 1; -fx-border-radius: 5;">
+        <VBox prefHeight="548.0" prefWidth="620.0" spacing="20" style="-fx-padding: 20; -fx-background-color: transparent;">
             <!-- Categories -->
-            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #ffffff; -fx-border-color: #0e0e0e;              -fx-padding: 10; -fx-border-width: 1;              -fx-background-radius: 10; -fx-border-radius: 10;">
-                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-text-fill: #1734a4;" text="Nos Matières" />
-                <VBox fx:id="categoriesContainer" spacing="5" />
+            <VBox spacing="10" style="-fx-background-color: #ffffff; -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-text-fill: #1734a4;" text="Nos Matières" />
+                <VBox fx:id="categoriesContainer" spacing="10" />
             </VBox>
             <!-- Price Filter -->
-            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #ffffff; -fx-border-color: #0e0e0e;              -fx-padding: 10; -fx-border-width: 1;              -fx-background-radius: 10; -fx-border-radius: 10;">
-                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-text-fill: #1734a4;" text="Filtre de prix" />
-                <VBox spacing="5">
-                    <HBox spacing="5">
-                        <RadioButton fx:id="filterAll" selected="true" style="-fx-text-fill: #0e0e0e;" text="Tous" />
-                    </HBox>
-                    <HBox spacing="5">
-                        <RadioButton fx:id="filterFree" style="-fx-text-fill: #0e0e0e;" text="Cours gratuits" />
-                    </HBox>
-                    <HBox spacing="5">
-                        <RadioButton fx:id="filterPremium" style="-fx-text-fill: #0e0e0e;" text="Cours Premium" />
-                    </HBox>
+            <VBox spacing="10" style="-fx-background-color: #ffffff; -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-text-fill: #1734a4;" text="Filtre de prix" />
+                <VBox spacing="10">
+                    <RadioButton fx:id="filterAll" selected="true" style="-fx-text-fill: #0e0e0e; -fx-font-size: 14px;" text="Tous" />
+                    <RadioButton fx:id="filterFree" style="-fx-text-fill: #0e0e0e; -fx-font-size: 14px;" text="Cours gratuits" />
+                    <RadioButton fx:id="filterPremium" style="-fx-text-fill: #0e0e0e; -fx-font-size: 14px;" text="Cours Premium" />
                 </VBox>
             </VBox>
             <!-- Level Filter -->
-            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #ffffff; -fx-border-color: #0e0e0e;              -fx-padding: 10; -fx-border-width: 1;              -fx-background-radius: 10; -fx-border-radius: 10;">
-                <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-text-fill: #1734a4;" text="Niveau de compétence" />
-                <VBox spacing="5">
-                    <HBox spacing="5">
-                        <CheckBox fx:id="filterAllLevels" selected="true" style="-fx-text-fill: #0e0e0e;" text="Tous les niveaux" />
-                    </HBox>
-                    <HBox spacing="5">
-                        <CheckBox fx:id="filterBeginner" style="-fx-text-fill: #0e0e0e;" text="Débutant" />
-                    </HBox>
-                    <HBox spacing="5">
-                        <CheckBox fx:id="filterIntermediate" style="-fx-text-fill: #0e0e0e;" text="Intermédiaire" />
-                    </HBox>
-                    <HBox spacing="5">
-                        <CheckBox fx:id="filterExpert" style="-fx-text-fill: #0e0e0e;" text="Avancé" />
-                    </HBox>
+            <VBox spacing="10" style="-fx-background-color: #ffffff; -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI'; -fx-text-fill: #1734a4;" text="Niveau de compétence" />
+                <VBox spacing="10">
+                    <CheckBox fx:id="filterAllLevels" selected="true" style="-fx-text-fill: #0e0e0e; -fx-font-size: 14px;" text="Tous les niveaux" />
+                    <CheckBox fx:id="filterBeginner" style="-fx-text-fill: #0e0e0e; -fx-font-size: 14px;" text="Débutant" />
+                    <CheckBox fx:id="filterIntermediate" style="-fx-text-fill: #0e0e0e; -fx-font-size: 14px;" text="Intermédiaire" />
+                    <CheckBox fx:id="filterExpert" style="-fx-text-fill: #0e0e0e; -fx-font-size: 14px;" text="Avancé" />
                 </VBox>
             </VBox>
         </VBox>
     </HBox>
     <!-- Footer -->
-    <HBox alignment="CENTER" layoutX="20.0" layoutY="772.6" style="-fx-background-color: rgba(255,255,255,0.5); -fx-background-radius: 10; -fx-padding: 10;" AnchorPane.bottomAnchor="-8.600000000000023" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+    <HBox alignment="CENTER" layoutX="20.0" layoutY="772.6" style="-fx-background-color: rgba(255,255,255,0.5); -fx-background-radius: 10; -fx-padding: 10;" AnchorPane.bottomAnchor="-8.6" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
         <Label style="-fx-text-fill: #495057; -fx-font-family: 'Arial Rounded MT Bold';" text="© 2023 DysCover - Plateforme d'éducation pour la dyslexie" />
     </HBox>
 </AnchorPane>

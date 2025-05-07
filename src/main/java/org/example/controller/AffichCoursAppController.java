@@ -50,8 +50,8 @@ public class AffichCoursAppController implements Initializable {
     private final ServiceEvalu serviceEvalu = new ServiceEvalu();
     private final ServiceCommentaire serviceCommentaire = new ServiceCommentaire();
     private final ServiceMatiere serviceMatiere = new ServiceMatiere();
+    private final ServiceProgress serviceProgress = new ServiceProgress();
     private int selectedRating = 0;
-    private final Map<Integer, List<Integer>> progressData = new HashMap<>();
     private final Map<Integer, ScheduledExecutorService> fileTimers = new HashMap<>();
     private Voice ttsVoice;
     private boolean ttsInitialized = false;
@@ -110,7 +110,7 @@ public class AffichCoursAppController implements Initializable {
                     ttsVoice = voiceManager.getVoice(voiceName);
                     if (ttsVoice != null) {
                         ttsVoice.allocate();
-                        ttsVoice.setRate(150);
+                        ttsVoice.setRate(140); // Slightly slower for clarity
                         ttsVoice.setPitch(100);
                         ttsVoice.setVolume(1);
                         ttsInitialized = true;
@@ -144,44 +144,54 @@ public class AffichCoursAppController implements Initializable {
             return;
         }
 
-        if (currentTtsButton != null && currentTtsButton != button) {
-            ttsVoice.speak("");
-            currentTtsButton.setText("🔊 Lire");
-            currentTtsButton = button;
+        if (isSpeaking) {
+            ttsVoice.deallocate(); // Stop current speech
+            try {
+                ttsVoice.allocate(); // Reallocate for new speech
+            } catch (Exception e) {
+                System.err.println("Erreur lors de la réallocation de la voix: " + e.getMessage());
+            }
+            isSpeaking = false;
+            if (currentTtsButton != null) {
+                currentTtsButton.setText("🔊 Lire");
+            }
+            currentTtsButton = null;
+            return;
         }
 
-        if (isSpeaking) {
-            ttsVoice.speak("");
-            button.setText("🔊 Lire");
-            isSpeaking = false;
-            currentTtsButton = null;
-        } else {
-            new Thread(() -> {
-                try {
-                    isSpeaking = true;
-                    currentTtsButton = button;
-                    javafx.application.Platform.runLater(() -> button.setText("■ Arrêter"));
-                    ttsVoice.speak(prepareFrenchText(text));
+        currentTtsButton = button;
+        new Thread(() -> {
+            try {
+                isSpeaking = true;
+                javafx.application.Platform.runLater(() -> button.setText("■ Arrêter"));
+                ttsVoice.speak(prepareFrenchText(text));
+                javafx.application.Platform.runLater(() -> {
+                    button.setText("🔊 Lire");
                     isSpeaking = false;
-                    javafx.application.Platform.runLater(() -> button.setText("🔊 Lire"));
-                } catch (Exception e) {
+                    currentTtsButton = null;
+                });
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    button.setText("🔊 Lire");
                     isSpeaking = false;
-                    javafx.application.Platform.runLater(() -> {
-                        button.setText("🔊 Lire");
-                        showAlert(Alert.AlertType.ERROR, "Erreur TTS", "Erreur lors de la lecture: " + e.getMessage());
-                    });
-                }
-            }).start();
-        }
+                    currentTtsButton = null;
+                    showAlert(Alert.AlertType.ERROR, "Erreur TTS", "Erreur lors de la lecture: " + e.getMessage());
+                });
+            }
+        }).start();
     }
 
     private String prepareFrenchText(String text) {
-        return text.replaceAll("é", "e")
-                .replaceAll("è", "e")
-                .replaceAll("ê", "e")
-                .replaceAll("à", "a")
-                .replaceAll("ù", "u")
-                .replaceAll("ç", "c");
+        // Improved preprocessing to handle French pronunciation
+        return text.replaceAll("[éèêë]", "e")
+                .replaceAll("[àâä]", "a")
+                .replaceAll("[ùûü]", "u")
+                .replaceAll("[îï]", "i")
+                .replaceAll("[ôö]", "o")
+                .replaceAll("ç", "c")
+                .replaceAll("œ", "oe")
+                .replaceAll("æ", "ae")
+                .replaceAll("[^a-zA-Z0-9.,;:!?\\s]", ""); // Remove special characters
     }
 
     public void setMatiere(Matiere matiere) {
@@ -191,11 +201,6 @@ public class AffichCoursAppController implements Initializable {
         loadEvaluations();
         loadCommentaires();
         loadCategories();
-        loadProgressData();
-    }
-
-    private void loadProgressData() {
-        progressData.clear();
     }
 
     private void loadMatiereDetails() {
@@ -246,31 +251,58 @@ public class AffichCoursAppController implements Initializable {
             for (Cours cours : coursList) {
                 coursContainer.getChildren().add(createCoursBox(cours));
             }
+            updateAllProgressBars();
             applyFilters();
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Chargement des cours échoué: " + e.getMessage());
         }
     }
 
+    private void updateAllProgressBars() {
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            showAlert(Alert.AlertType.WARNING, "Erreur", "Utilisateur non connecté");
+            return;
+        }
+
+        try {
+            List<Cours> coursList = serviceCours.afficherParMatiere(matiere.getId());
+            for (Cours cours : coursList) {
+                List<Fichier> fichiers = serviceFichier.getFichiersByCours(cours.getId());
+                updateProgressBar(cours.getId(), fichiers.size());
+            }
+        } catch (SQLException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la mise à jour des progressions: " + e.getMessage());
+        }
+    }
+
     private VBox createCoursBox(Cours cours) {
-        VBox coursBox = new VBox(5);
-        coursBox.setStyle("-fx-background-color: white; -fx-padding: 15; -fx-spacing: 5; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);");
-        coursBox.getProperties().put("type", cours.getType());
-        coursBox.getProperties().put("level", cours.getNivC());
+        VBox coursCard = new VBox();
+        coursCard.getStyleClass().add("cours-card");
+        coursCard.getProperties().put("type", cours.getType());
+        coursCard.getProperties().put("level", cours.getNivC());
+
+        HBox header = new HBox();
+        header.getStyleClass().add("cours-header");
+        Label headerLabel = new Label(cours.getNomC());
+        headerLabel.getStyleClass().add("cours-header-label");
+        header.getChildren().add(headerLabel);
+
+        VBox content = new VBox(10);
+        content.getStyleClass().add("cours-content");
 
         VBox infoBox = new VBox(5);
         infoBox.getChildren().addAll(
-                createStyledLabel(cours.getNomC(), "-fx-font-size: 18px; -fx-font-weight: bold;"),
-                createStyledLabel("Enseigné par: " + (cours.getUser() != null ? cours.getUser().getNom() + " " + cours.getUser().getPrenom() : "Inconnu"), "-fx-text-fill: #666;"),
-                createStyledLabel("Niveau: " + cours.getNivC(), "-fx-text-fill: #666;")
+                createStyledLabel("Enseigné par: " + (cours.getUser() != null ? cours.getUser().getNom() + " " + cours.getUser().getPrenom() : "Inconnu"), "cours-info-label"),
+                createStyledLabel("Niveau: " + cours.getNivC(), "cours-info-label")
         );
 
-        VBox objBox = new VBox(2);
+        VBox objBox = new VBox(5);
         String[] objectives = cours.getObjC().split("\\.");
         StringBuilder objectivesText = new StringBuilder();
         for (String obj : objectives) {
             if (!obj.trim().isEmpty()) {
-                objBox.getChildren().add(createStyledLabel("• " + obj.trim(), "-fx-text-fill: #666;"));
+                objBox.getChildren().add(createStyledLabel("• " + obj.trim(), "cours-objectives-label"));
                 objectivesText.append(obj.trim()).append(". ");
             }
         }
@@ -283,12 +315,12 @@ public class AffichCoursAppController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement des fichiers: " + e.getMessage());
         }
 
-        int pdfCount = (int) fichiers.stream().filter(f -> f.getType().equals("Pdf")).count();
+        int pdfCount = (int) fichiers.stream().filter(f -> f.getType().equals("PDF")).count();
         int wordCount = (int) fichiers.stream().filter(f -> f.getType().equals("Word")).count();
         int videoCount = (int) fichiers.stream().filter(f -> f.getType().equals("Video")).count();
         int imageCount = (int) fichiers.stream().filter(f -> f.getType().equals("Image")).count();
-        String fileSummaryText = String.format("%d Vidéo(s), %d Word, %d Pdf, %d Image(s)", videoCount, wordCount, pdfCount, imageCount);
-        Label fileSummary = createStyledLabel(fileSummaryText, "-fx-text-fill: #666; -fx-padding: 5 0;");
+        String fileSummaryText = String.format("%d Vidéos, %d Word, %d PDF, %d Images", videoCount, wordCount, pdfCount, imageCount);
+        Label fileSummary = createStyledLabel(fileSummaryText, "cours-file-summary");
 
         String ttsText = String.format(
                 "Cours: %s. Niveau: %s. Enseigné par: %s. Objectifs: %s. Résumé des fichiers: %s",
@@ -301,92 +333,109 @@ public class AffichCoursAppController implements Initializable {
 
         Button ttsBtn = new Button("🔊 Lire");
         ttsBtn.setOnAction(e -> toggleSpeech(ttsText, ttsBtn));
-        ttsBtn.setStyle("-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 5 10;");
+        ttsBtn.getStyleClass().add("cours-tts-button");
 
-        VBox fichiersContainer = createFichiersContainer(cours, fichiers);
-
-        Button showFilesBtn = new Button("Afficher fichiers");
-        showFilesBtn.setOnAction(e -> toggleFichiers(fichiersContainer));
-        showFilesBtn.setStyle("-fx-background-color: #4B5EAA; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 5 10;");
-
-        HBox progressBox = new HBox();
-        progressBox.setStyle("-fx-background-color: #eee; -fx-border-radius: 5; -fx-pref-height: 20;");
+        HBox progressBox = new HBox(10);
+        progressBox.getStyleClass().add("cours-progress-box");
         Label progressLabel = new Label("Progression: ");
-        progressLabel.setStyle("-fx-text-fill: #666; -fx-padding: 0 5;");
+        progressLabel.getStyleClass().add("progress-label");
 
         ProgressBar progressBar = new ProgressBar();
-        progressBar.setPrefWidth(200);
         progressBar.setId("progress-bar-" + cours.getId());
+        progressBar.getStyleClass().add("progress-bar");
 
         Label progressPercent = new Label("0%");
         progressPercent.setId("progress-percent-" + cours.getId());
+        progressPercent.getStyleClass().add("progress-label");
 
         progressBox.getChildren().addAll(progressLabel, progressBar, progressPercent);
-        updateProgressBar(cours.getId(), fichiers.size());
 
-        VBox contentBox = new VBox(5);
-        contentBox.getChildren().addAll(infoBox, objBox, fileSummary, ttsBtn, progressBox, showFilesBtn, fichiersContainer);
-        coursBox.getChildren().add(contentBox);
+        VBox fichiersContainer = createFichiersContainer(cours, fichiers);
 
-        return coursBox;
+        Button showFilesBtn = new Button("Afficher les fichiers");
+        showFilesBtn.setOnAction(e -> toggleFichiers(fichiersContainer, cours));
+        showFilesBtn.getStyleClass().add("cours-button");
+
+        content.getChildren().addAll(infoBox, objBox, fileSummary, ttsBtn, progressBox, showFilesBtn, fichiersContainer);
+        coursCard.getChildren().addAll(header, content);
+
+        return coursCard;
     }
 
     private void updateProgressBar(int coursId, int totalFiles) {
-        List<Integer> completedFiles = progressData.getOrDefault(coursId, new ArrayList<>());
-        double progress = totalFiles > 0 ? (double) completedFiles.size() / totalFiles : 0;
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            return;
+        }
 
-        ProgressBar progressBar = (ProgressBar) coursContainer.lookup("#progress-bar-" + coursId);
-        Label progressPercent = (Label) coursContainer.lookup("#progress-percent-" + coursId);
+        try {
+            List<Progress> progressList = serviceProgress.getProgressByUserAndCours(currentUser.getId(), coursId);
+            double progress = totalFiles > 0 ? (double) progressList.size() / totalFiles : 0;
 
-        if (progressBar != null && progressPercent != null) {
-            progressBar.setProgress(progress);
-            progressPercent.setText(String.format("%.0f%%", progress * 100));
+            javafx.application.Platform.runLater(() -> {
+                ProgressBar progressBar = (ProgressBar) coursContainer.lookup("#progress-bar-" + coursId);
+                Label progressPercent = (Label) coursContainer.lookup("#progress-percent-" + coursId);
+
+                if (progressBar != null && progressPercent != null) {
+                    progressBar.setProgress(progress);
+                    progressPercent.setText(String.format("%.0f%%", progress * 100));
+                } else {
+                    System.err.println("ProgressBar or ProgressPercent not found for coursId: " + coursId);
+                }
+            });
+        } catch (SQLException e) {
+            javafx.application.Platform.runLater(() -> {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la mise à jour de la progression: " + e.getMessage());
+            });
         }
     }
 
     private VBox createFichiersContainer(Cours cours, List<Fichier> fichiers) {
-        VBox container = new VBox(2);
+        VBox container = new VBox(5);
         container.setVisible(false);
-        container.setStyle("-fx-padding: 5 0 0 10;");
+        container.setStyle("-fx-padding: 10 0 0 10;");
 
         if (!fichiers.isEmpty()) {
             for (int i = 0; i < fichiers.size(); i++) {
                 final int index = i;
                 Fichier fichier = fichiers.get(i);
                 HBox fichierBox = new HBox(10);
-                fichierBox.setStyle("-fx-background-color: #f5f5f5; -fx-padding: 5; -fx-border-radius: 5; -fx-spacing: 10;");
+                fichierBox.getStyleClass().add("cours-file-box");
 
-                Label fileLabel = createStyledLabel(fichier.getNomF() + " (" + fichier.getType() + ")", "-fx-font-size: 14px;");
+                Label fileLabel = createStyledLabel(fichier.getNomF() + " (" + fichier.getType() + ")", "cours-info-label");
 
                 Button viewBtn = new Button("Voir");
                 viewBtn.setOnAction(e -> viewFile(fichier, cours.getId(), index));
-                viewBtn.setStyle("-fx-background-color: #4B5EAA; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 3 8;");
-
-                Button downloadBtn = new Button("Télécharger");
-                downloadBtn.setOnAction(e -> telechargerFichier(fichier));
-                downloadBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 3 8;");
+                viewBtn.getStyleClass().add("cours-file-button");
 
                 Button ttsBtn = new Button("🔊");
                 ttsBtn.setOnAction(e -> toggleSpeech(fichier.getNomF() + ". Type: " + fichier.getType(), ttsBtn));
-                ttsBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #666; -fx-font-size: 14px;");
+                ttsBtn.getStyleClass().add("cours-tts-button");
 
-                fichierBox.getChildren().addAll(fileLabel, viewBtn, downloadBtn, ttsBtn);
+                fichierBox.getChildren().addAll(fileLabel, viewBtn, ttsBtn);
                 container.getChildren().add(fichierBox);
             }
         } else {
-            container.getChildren().add(createStyledLabel("Aucun fichier disponible", "-fx-font-style: italic; -fx-text-fill: #666;"));
+            container.getChildren().add(createStyledLabel("Aucun fichier disponible", "cours-info-label"));
         }
 
         return container;
     }
 
     private void viewFile(Fichier fichier, int coursId, int fileIndex) {
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            showAlert(Alert.AlertType.WARNING, "Erreur", "Utilisateur non connecté");
+            return;
+        }
+
         if (fileIndex > 0) {
             try {
-                List<Integer> completedFiles = progressData.getOrDefault(coursId, new ArrayList<>());
+                List<Progress> progressList = serviceProgress.getProgressByUserAndCours(currentUser.getId(), coursId);
+                List<Integer> completedFileIds = progressList.stream().map(Progress::getFichierId).toList();
                 Fichier previousFile = serviceFichier.getFichiersByCours(coursId).get(fileIndex - 1);
 
-                if (!completedFiles.contains(previousFile.getId())) {
+                if (!completedFileIds.contains(previousFile.getId())) {
                     showAlert(Alert.AlertType.WARNING, "Accès restreint", "Veuillez ouvrir le fichier précédent (" + previousFile.getNomF() + ") pendant au moins 10 secondes avant d'accéder à celui-ci.");
                     return;
                 }
@@ -411,6 +460,9 @@ public class AffichCoursAppController implements Initializable {
     }
 
     private void startFileTimer(int coursId, int fileId) {
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser == null) return;
+
         if (fileTimers.containsKey(fileId)) {
             fileTimers.get(fileId).shutdownNow();
         }
@@ -418,43 +470,42 @@ public class AffichCoursAppController implements Initializable {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         fileTimers.put(fileId, executor);
 
-        final List<Integer> completedFiles = progressData.getOrDefault(coursId, new ArrayList<>());
         executor.schedule(() -> {
-            if (!completedFiles.contains(fileId)) {
-                completedFiles.add(fileId);
-                progressData.put(coursId, completedFiles);
+            try {
+                List<Progress> progressList = serviceProgress.getProgressByUserAndCours(currentUser.getId(), coursId);
+                if (progressList.stream().noneMatch(p -> p.getFichierId() == fileId)) {
+                    Progress progress = new Progress();
+                    progress.setUserId(currentUser.getId());
+                    progress.setCoursId(coursId);
+                    progress.setFichierId(fileId);
+                    serviceProgress.ajouter(progress);
 
+                    javafx.application.Platform.runLater(() -> {
+                        try {
+                            updateProgressBar(coursId, serviceFichier.getFichiersByCours(coursId).size());
+                        } catch (SQLException e) {
+                            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la mise à jour de la progression: " + e.getMessage());
+                        }
+                    });
+                }
+            } catch (SQLException e) {
                 javafx.application.Platform.runLater(() -> {
-                    try {
-                        updateProgressBar(coursId, serviceFichier.getFichiersByCours(coursId).size());
-                    } catch (SQLException e) {
-                        showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la mise à jour de la progression: " + e.getMessage());
-                    }
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la sauvegarde de la progression: " + e.getMessage());
                 });
             }
         }, 10, TimeUnit.SECONDS);
     }
 
-    private void toggleFichiers(VBox fichiersContainer) {
-        fichiersContainer.setVisible(!fichiersContainer.isVisible());
-    }
-
-    private void telechargerFichier(Fichier fichier) {
-        if (fichier.getUrlF() == null || fichier.getUrlF().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Aucun fichier associé");
-            return;
-        }
-
-        try {
-            File file = new File(fichier.getUrlF());
-            if (file.exists()) {
-                java.awt.Desktop.getDesktop().open(file);
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Fichier introuvable: " + fichier.getUrlF());
+    private void toggleFichiers(VBox fichiersContainer, Cours cours) {
+        if (cours.getType().equalsIgnoreCase("premium")) {
+            // Placeholder for subscription check
+            boolean hasSubscription = false; // Replace with actual subscription check logic
+            if (!hasSubscription) {
+                showAlert(Alert.AlertType.WARNING, "Accès restreint", "Vous devez avoir un abonnement pour accéder aux fichiers de ce cours premium.");
+                return;
             }
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le fichier: " + e.getMessage());
         }
+        fichiersContainer.setVisible(!fichiersContainer.isVisible());
     }
 
     private void loadEvaluations() {
@@ -466,8 +517,8 @@ public class AffichCoursAppController implements Initializable {
         starRating.getChildren().clear();
         for (int i = 1; i <= 5; i++) {
             ImageView star = new ImageView(i <= avgRating ? new Image("/images/star-filled.png") : new Image("/images/star-empty.png"));
-            star.setFitHeight(20);
-            star.setFitWidth(20);
+            star.setFitHeight(24);
+            star.setFitWidth(24);
             starRating.getChildren().add(star);
         }
 
@@ -478,10 +529,11 @@ public class AffichCoursAppController implements Initializable {
             double percentage = evaluations.isEmpty() ? 0 : (count * 100.0 / evaluations.size());
 
             HBox barBox = new HBox(10);
-            Label starLabel = createStyledLabel(currentStar + " étoiles:", "-fx-text-fill: #495057;");
+            Label starLabel = createStyledLabel(currentStar + " étoiles:", "-fx-text-fill: #495057; -fx-font-size: 14px;");
             ProgressBar bar = new ProgressBar(percentage / 100);
-            bar.setPrefWidth(200);
-            Label percentLabel = createStyledLabel(String.format("%.0f%%", percentage), "-fx-text-fill: #495057;");
+            bar.setPrefWidth(250);
+            bar.setStyle("-fx-accent: #1734a4;");
+            Label percentLabel = createStyledLabel(String.format("%.0f%%", percentage), "-fx-text-fill: #495057; -fx-font-size: 14px;");
             barBox.getChildren().addAll(starLabel, bar, percentLabel);
             ratingBars.getChildren().add(barBox);
         }
@@ -490,8 +542,8 @@ public class AffichCoursAppController implements Initializable {
         for (int i = 1; i <= 5; i++) {
             final int rating = i;
             ImageView star = new ImageView(new Image("/images/star-empty.png"));
-            star.setFitHeight(20);
-            star.setFitWidth(20);
+            star.setFitHeight(24);
+            star.setFitWidth(24);
             star.setOnMouseClicked(e -> selectRating(rating));
             evaluationStars.getChildren().add(star);
         }
@@ -503,8 +555,8 @@ public class AffichCoursAppController implements Initializable {
         for (int i = 1; i <= 5; i++) {
             final int currentRating = i;
             ImageView star = new ImageView(i <= rating ? new Image("/images/star-filled.png") : new Image("/images/star-empty.png"));
-            star.setFitHeight(20);
-            star.setFitWidth(20);
+            star.setFitHeight(24);
+            star.setFitWidth(24);
             star.setOnMouseClicked(e -> selectRating(currentRating));
             evaluationStars.getChildren().add(star);
         }
@@ -544,16 +596,18 @@ public class AffichCoursAppController implements Initializable {
         List<Commentaire> commentaires = serviceCommentaire.getCommentairesByMatiere(matiere.getId());
 
         for (Commentaire commentaire : commentaires) {
-            VBox commentBox = new VBox(5);
-            commentBox.setStyle("-fx-background-color: #f5f5f5; -fx-padding: 10; -fx-border-radius: 5;");
+            VBox commentBox = new VBox(8);
+            commentBox.setStyle("-fx-background-color: #ffffff; -fx-padding: 15; -fx-border-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);");
+            commentBox.setOnMouseEntered(e -> commentBox.setStyle("-fx-background-color: #f8f9fa; -fx-padding: 15; -fx-border-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);"));
+            commentBox.setOnMouseExited(e -> commentBox.setStyle("-fx-background-color: #ffffff; -fx-padding: 15; -fx-border-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);"));
 
             HBox ratingBox = new HBox(5);
             int note = serviceEvalu.getEvaluationByUserAndMatiere(commentaire.getUser().getId(), matiere.getId())
                     .map(Evalu::getNote).orElse(0);
             for (int i = 1; i <= 5; i++) {
                 ImageView star = new ImageView(i <= note ? new Image("/images/star-filled.png") : new Image("/images/star-empty.png"));
-                star.setFitHeight(16);
-                star.setFitWidth(16);
+                star.setFitHeight(18);
+                star.setFitWidth(18);
                 ratingBox.getChildren().add(star);
             }
 
@@ -568,16 +622,16 @@ public class AffichCoursAppController implements Initializable {
 
             Button ttsCommentBtn = new Button("🔊 Lire");
             ttsCommentBtn.setOnAction(e -> toggleSpeech(ttsCommentText, ttsCommentBtn));
-            ttsCommentBtn.setStyle("-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 3 8;");
+            ttsCommentBtn.setStyle("-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 5 10;");
 
             commentBox.getChildren().addAll(
                     ratingBox,
-                    createStyledLabel(commentaire.getSujet() + ":", "-fx-font-weight: bold;"),
-                    createStyledLabel(commentaire.getContenu(), "-fx-text-fill: #6c757d;"),
+                    createStyledLabel(commentaire.getSujet() + ":", "-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #050809;"),
+                    createStyledLabel(commentaire.getContenu(), "-fx-text-fill: #495057; -fx-font-size: 14px;"),
                     createStyledLabel(
                             commentaire.getUser().getNom() + " " + commentaire.getUser().getPrenom() + " - " +
                                     commentaire.getDate().toString(),
-                            "-fx-text-fill: #6c757d; -fx-font-style: italic;"
+                            "-fx-text-fill: #6c757d; -fx-font-size: 12px; -fx-font-style: italic;"
                     ),
                     ttsCommentBtn
             );
@@ -621,6 +675,7 @@ public class AffichCoursAppController implements Initializable {
             categoriesContainer.getChildren().clear();
             for (Matiere m : matieres) {
                 CheckBox checkBox = new CheckBox(m.getNomM() + " (" + serviceCours.getCoursParMatiere(m.getId()).size() + ")");
+                checkBox.setStyle("-fx-font-size: 14px; -fx-text-fill: #0e0e0e;");
                 final Matiere currentMatiere = m;
                 checkBox.setOnAction(e -> redirectToMatiere(currentMatiere));
                 categoriesContainer.getChildren().add(checkBox);
@@ -671,9 +726,9 @@ public class AffichCoursAppController implements Initializable {
         }
     }
 
-    private Label createStyledLabel(String text, String style) {
+    private Label createStyledLabel(String text, String styleClass) {
         Label label = new Label(text);
-        label.setStyle(style);
+        label.getStyleClass().add(styleClass);
         return label;
     }
 
