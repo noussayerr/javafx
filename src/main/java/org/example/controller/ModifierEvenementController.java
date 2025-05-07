@@ -41,8 +41,6 @@ public class ModifierEvenementController {
     @FXML private ComboBox<String> comboCategorie;
     @FXML private Label lblErreurCategorie;
     @FXML private TextField txtImage;
-    @FXML private TextField txtPrix;
-    @FXML private Label lblErreurPrix;
     @FXML
     private Button logoutButton;
     @FXML private Button btnTheme;
@@ -60,7 +58,6 @@ public class ModifierEvenementController {
         txtImage.setText(evenementActuel.getImage());
         txtHeureDebut.setText(evenementActuel.getHeureDebut().toString());
         txtHeureFin.setText(evenementActuel.getHeureFin().toString());
-        txtPrix.setText(String.valueOf(evenementActuel.getPrix()));
     }
 
 
@@ -76,7 +73,6 @@ public class ModifierEvenementController {
         txtImage.setText(event.getImage());
         txtHeureDebut.setText(event.getHeureDebut().toString());
         txtHeureFin.setText(event.getHeureFin().toString());
-        txtPrix.setText(String.valueOf(event.getPrix()));
         datePicker.setValue(event.getDateEvent());
 
         chargerCategoriesDepuisBDD();
@@ -195,23 +191,9 @@ public class ModifierEvenementController {
             isValid = false;
         }
 
-        float prix = 0;
-        try {
-            prix = Float.parseFloat(txtPrix.getText().trim());
-            if (prix < 0) {
-                txtPrix.setStyle("-fx-border-color: red;");
-                lblErreurPrix.setText("Prix doit être positif.");
-                isValid = false;
-            }
-        } catch (NumberFormatException e) {
-            txtPrix.setStyle("-fx-border-color: red;");
-            lblErreurPrix.setText("Prix invalide (ex : 30.0).");
-            isValid = false;
-        }
 
         if (!isValid) return;
 
-        // Mise à jour de l'objet
         evenementActuel.setNom(titre);
 
         evenementActuel.setLieu(lieu);
@@ -220,7 +202,6 @@ public class ModifierEvenementController {
         evenementActuel.setHeureDebut(heureDebut);
         evenementActuel.setHeureFin(heureFin);
         evenementActuel.setImage(txtImage.getText());
-        evenementActuel.setPrix(prix);
         evenementActuel.setCategoryId(categoryId);
 
         EvenementDAO dao = new EvenementDAO();
@@ -243,7 +224,6 @@ public class ModifierEvenementController {
         txtHeureDebut.setStyle(""); lblErreurHeureDebut.setText("");
         txtHeureFin.setStyle(""); lblErreurHeureFin.setText("");
         comboCategorie.setStyle(""); lblErreurCategorie.setText("");
-        txtPrix.setStyle(""); lblErreurPrix.setText("");
     }
 
     private void fermerFenetre() {
@@ -260,7 +240,6 @@ public class ModifierEvenementController {
 
     @FXML
     private void viderChamps() {
-        txtTitre.clear(); txtLieu.clear(); txtImage.clear(); txtPrix.clear();
         txtHeureDebut.clear(); txtHeureFin.clear();
         datePicker.setValue(null);
         comboCategorie.setValue(null);

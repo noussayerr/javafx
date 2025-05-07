@@ -52,7 +52,7 @@
             </Button>
 
             <Button  text="Matières"
-                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;"
+                     style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;"
                      onAction="#goToMatiere">
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">

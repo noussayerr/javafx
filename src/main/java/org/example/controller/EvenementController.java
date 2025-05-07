@@ -1,5 +1,7 @@
 package org.example.controller;
 
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import org.example.dao.EvenementDAO;
 import org.example.entity.Evenement;
 import org.example.utils.SessionManager;
@@ -29,14 +31,21 @@ import javafx.event.ActionEvent;
 import org.example.services.ServicePDF;
 import org.example.services.MailService;
 import org.example.services.StripeLauncher;
+
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+
 
 
 public class EvenementController {
 
     @FXML private TableView<Evenement> tableEvenements;
     @FXML private TableColumn<Evenement, Integer> colId;
-    @FXML private TableColumn<Evenement, Integer> colCategorie;
+    @FXML private TableColumn<Evenement, String> colCategorie;
+
     @FXML private TableColumn<Evenement, String> colNom;
     @FXML private TableColumn<Evenement, String> colDescription;
     @FXML private TableColumn<Evenement, LocalDate> colDate;
@@ -44,64 +53,68 @@ public class EvenementController {
     @FXML private TableColumn<Evenement, LocalTime> colHeureFin;
     @FXML private TableColumn<Evenement, String> colLieu;
     @FXML private TableColumn<Evenement, String> colImage;
-    @FXML private TableColumn<Evenement, Float> colPrix;
     @FXML private TextField searchField;
     @FXML private Button btnTheme;
     @FXML private Label loadingIcon;
     @FXML private Pagination pagination;
     @FXML private TextField txtEmail;
     @FXML private Button logoutButton;
-
-    @FXML
-    private TableColumn<Evenement, Void> colPayer;
+    @FXML private TableColumn<Evenement, Void> colActions;
 
 
-
-    private static final int ROWS_PER_PAGE = 10;
+    private static final int ROWS_PER_PAGE = 6;
     private ObservableList<Evenement> allEvenements;
 
     @FXML
     public void initialize() {
         EvenementDAO dao = new EvenementDAO();
         allEvenements = FXCollections.observableArrayList(dao.getAllEvenements());
-        // Colonne Paiement
-        TableColumn<Evenement, Void> colPaiement = new TableColumn<>("Paiement");
+        colActions.setCellFactory(param -> new TableCell<>() {
+            private final Button btnModifier = new Button("📝 Modifier");
+            private final Button btnSupprimer = new Button("🗑️ Supprimer");
+            private final HBox hBox = new HBox(10, btnModifier, btnSupprimer);
 
-        Callback<TableColumn<Evenement, Void>, TableCell<Evenement, Void>> cellFactory = new Callback<>() {
+            {
+                btnModifier.setStyle("-fx-background-color: linear-gradient(to right, #74ebd5, #acb6e5); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 25;");
+                btnSupprimer.setStyle("-fx-background-color: linear-gradient(to right, #8e44ad, #9b59b6); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 25;");
+
+                btnModifier.setOnAction(e -> {
+                    Evenement evt = getTableView().getItems().get(getIndex());
+                    if (evt != null) {
+                        tableEvenements.getSelectionModel().select(evt);
+                        modifierEvenement();
+                    }
+                });
+
+                btnSupprimer.setOnAction(e -> {
+                    Evenement evt = getTableView().getItems().get(getIndex());
+                    if (evt != null) {
+                        tableEvenements.getSelectionModel().select(evt);
+                        supprimerEvenement();
+                    }
+                });
+
+                hBox.setStyle("-fx-alignment: center;");
+            }
+
             @Override
-            public TableCell<Evenement, Void> call(final TableColumn<Evenement, Void> param) {
-                return new TableCell<>() {
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : hBox);
+            }
+        });
 
-                    private final Button btn = new Button("💳 Payer");
 
-                    {
-                        btn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 8;");
-                        btn.setOnAction((event) -> {
-                            Evenement evenement = getTableView().getItems().get(getIndex());
-                            payerEvenement(evenement);
-                        });
-                    }
+        Callback<TableColumn<Evenement, Void>, TableCell<Evenement, Void>> cellFactory = param -> new TableCell<>() {
 
-                    @Override
-                    public void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            setGraphic(btn);
-                        }
-                    }
-                };
+
+            @Override
+            public void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
             }
         };
 
-        colPaiement.setCellFactory(cellFactory);
-        tableEvenements.getColumns().add(colPaiement);
-
-
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colCategorie.setCellValueFactory(new PropertyValueFactory<>("nomCategorie"));
-
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
@@ -109,15 +122,73 @@ public class EvenementController {
         colHeureFin.setCellValueFactory(new PropertyValueFactory<>("heureFin"));
         colLieu.setCellValueFactory(new PropertyValueFactory<>("lieu"));
         colImage.setCellValueFactory(new PropertyValueFactory<>("image"));
-        colPrix.setCellValueFactory(new PropertyValueFactory<>("prix"));
 
-        // Image en miniature
+
+
         colImage.setCellFactory(column -> new TableCell<>() {
             private final ImageView imageView = new ImageView();
+
             {
                 imageView.setFitHeight(50);
                 imageView.setFitWidth(50);
                 imageView.setPreserveRatio(true);
+
+                // Clic sur la cellule → popup image
+                this.setOnMouseClicked(event -> {
+                    Evenement evt = getTableRow().getItem();
+                    if (evt != null && evt.getImage() != null && !evt.getImage().isEmpty()) {
+                        try {
+                            String imagePath = evt.getImage();
+                            Image fullImage = new Image(getClass().getResource("/images/" + imagePath).toExternalForm());
+
+                            ImageView fullView = new ImageView(fullImage);
+                            fullView.setPreserveRatio(true);
+                            fullView.setSmooth(true);
+                            fullView.setCache(true);
+                            fullView.setFitHeight(600);
+
+                            ScrollPane scrollPane = new ScrollPane(fullView);
+                            scrollPane.setFitToWidth(true);
+                            scrollPane.setFitToHeight(true);
+                            scrollPane.setStyle("-fx-background-color: transparent;");
+
+                            Button closeButton = new Button("Fermer");
+                            closeButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;");
+
+                            VBox contentBox = new VBox(20, scrollPane, closeButton);
+                            contentBox.setStyle("-fx-alignment: center; -fx-padding: 20; -fx-background-color: white;");
+                            contentBox.setPrefSize(800, 700);
+
+                            AnchorPane modalRoot = new AnchorPane();
+                            modalRoot.setStyle("-fx-background-color: rgba(0, 0, 0, 0.6);");
+                            AnchorPane.setTopAnchor(contentBox, 50.0);
+                            AnchorPane.setLeftAnchor(contentBox, 100.0);
+                            AnchorPane.setRightAnchor(contentBox, 100.0);
+                            modalRoot.getChildren().add(contentBox);
+
+                            Scene scene = new Scene(modalRoot, 1000, 800);
+                            Stage popupStage = new Stage();
+                            popupStage.setTitle("📸 Aperçu de l'image");
+                            popupStage.setScene(scene);
+                            popupStage.setResizable(true);
+
+                            closeButton.setOnAction(e -> popupStage.close());
+
+                            popupStage.show();
+
+                            ScaleTransition scale = new ScaleTransition(Duration.seconds(0.4), contentBox);
+                            scale.setFromX(0.8);
+                            scale.setFromY(0.8);
+                            scale.setToX(1.0);
+                            scale.setToY(1.0);
+                            scale.play();
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println("❌ Erreur popup image : " + e.getMessage());
+                        }
+                    }
+                });
             }
 
             @Override
@@ -128,56 +199,64 @@ public class EvenementController {
                 } else {
                     try {
                         Image img = new Image(getClass().getResource("/images/" + imagePath).toExternalForm());
-
                         imageView.setImage(img);
+
+                        // ✅ Centrage horizontal
                         setGraphic(imageView);
+                        setStyle("-fx-alignment: CENTER;");
                     } catch (Exception e) {
-                        System.out.println("❌ Erreur image : " + e.getMessage());
                         setGraphic(null);
+                        System.out.println("❌ Erreur miniature : " + e.getMessage());
                     }
                 }
             }
         });
 
+
+
+
+        // 🔢 Pagination initiale
         pagination.setPageCount((int) Math.ceil((double) allEvenements.size() / ROWS_PER_PAGE));
         pagination.setCurrentPageIndex(0);
         pagination.setPageFactory(this::createPage);
 
+        // 🔍 Mise à jour pagination à chaque saisie dans la recherche
         searchField.textProperty().addListener((obs, oldValue, newValue) -> {
-            pagination.setPageFactory(this::createPage);
+            pagination.setCurrentPageIndex(0); // 🆕 revenir à la première page
+            pagination.setPageFactory(this::createPage); // 🆕 rafraîchir avec filtre
         });
     }
-    private Node createPage(int pageIndex) {
-        String filtre = searchField.getText().toLowerCase();
+    private Comparator<Evenement> currentComparator = Comparator.comparing(Evenement::getDate);
 
-        // Filtrage dynamique
+    private Node createPage(int pageIndex) {
+        String filtre = searchField.getText() != null ? searchField.getText().toLowerCase() : "";
+
         FilteredList<Evenement> filtered = new FilteredList<>(allEvenements, e ->
-                filtre == null || filtre.isEmpty()
-                        || e.getNom().toLowerCase().contains(filtre)
-                        || e.getDescription().toLowerCase().contains(filtre)
-                        || e.getLieu().toLowerCase().contains(filtre)
+                filtre.isEmpty() || e.getNom().toLowerCase().contains(filtre)
         );
 
-        // 🆕 Mise à jour dynamique du nombre de pages après filtre
         int totalItems = filtered.size();
         int totalPages = (int) Math.ceil((double) totalItems / ROWS_PER_PAGE);
-        pagination.setPageCount(Math.max(totalPages, 1));
-
+        if (pagination.getPageCount() != totalPages) {
+            pagination.setPageCount(Math.max(totalPages, 1));
+        }
 
         int fromIndex = pageIndex * ROWS_PER_PAGE;
         int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, totalItems);
 
-
-        if (fromIndex > toIndex || filtered.isEmpty()) {
+        if (fromIndex >= toIndex || filtered.isEmpty()) {
             tableEvenements.setItems(FXCollections.observableArrayList());
         } else {
-            SortedList<Evenement> sorted = new SortedList<>(FXCollections.observableArrayList(filtered.subList(fromIndex, toIndex)));
-            sorted.comparatorProperty().bind(tableEvenements.comparatorProperty());
-            tableEvenements.setItems(sorted);
+            // Tri de la sous-liste avec le comparateur actif
+            List<Evenement> subList = new ArrayList<>(filtered.subList(fromIndex, toIndex));
+            subList.sort(currentComparator);
+            tableEvenements.setItems(FXCollections.observableArrayList(subList));
         }
 
-        return new AnchorPane(); // requis par la pagination
+        return new AnchorPane(); // requis pour la pagination
     }
+
+
 
 
     public void rafraichirTable() {
@@ -194,11 +273,8 @@ public class EvenementController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ajouter-evenement.fxml"));
             Parent root = loader.load();
-
-            // ✅ IMPORTANT : injecter le parentController dans le contrôleur du formulaire
             AjouterEvenementController controller = loader.getController();
-            controller.setParentController(this); // <--- C'est ça qui permet le rafraîchissement
-
+            controller.setParentController(this);
             Stage stage = new Stage();
             stage.setTitle("Ajouter un événement");
             stage.setScene(new Scene(root));
@@ -263,22 +339,10 @@ public class EvenementController {
         scale.play();
     }
     @FXML
-    private void reinitialiserFiltresEtTri() {
-        lancerAnimationChargement(loadingIcon);
-        searchField.clear();
-        tableEvenements.getSortOrder().clear();
-        colDate.setSortType(TableColumn.SortType.ASCENDING);
-        colPrix.setSortType(TableColumn.SortType.ASCENDING);
-        tableEvenements.getSortOrder().addAll(colDate, colPrix);
-        pagination.setPageFactory(this::createPage);
-        Toast.show((Stage) tableEvenements.getScene().getWindow(), "✔ Tri par date & prix effectué !");
-    }
-
-    @FXML
     private void trierDateAscendant() {
         lancerAnimationChargement(loadingIcon);
         allEvenements.sort(Comparator.comparing(Evenement::getDate));
-        pagination.setPageFactory(this::createPage);
+        pagination.setPageFactory(this::createPage); // recharge la page avec les événements triés
         Toast.show((Stage) tableEvenements.getScene().getWindow(), "✔ Tri par date (⬆️) effectué !");
     }
 
@@ -290,8 +354,16 @@ public class EvenementController {
         Toast.show((Stage) tableEvenements.getScene().getWindow(), "✔ Tri par date (⬇️) effectué !");
     }
 
+    @FXML
+    private void reinitialiserFiltresEtTri() {
+        lancerAnimationChargement(loadingIcon);
+        searchField.clear();
+        allEvenements.sort(Comparator.comparing(Evenement::getDate)); // reset default sort
+        pagination.setPageFactory(this::createPage);
+        Toast.show((Stage) tableEvenements.getScene().getWindow(), "✔ Tri par date effectué !");
+    }
 
-    /*@FXML
+    @FXML
     private void toggleTheme() {
         Scene scene = tableEvenements.getScene();//mode sombre et claire
         ObservableList<String> stylesheets = scene.getStylesheets();
@@ -308,7 +380,90 @@ public class EvenementController {
             btnTheme.setText("🌙");
             Toast.show((Stage) scene.getWindow(), "☀️ Thème clair activé !");
         }
-    }*/
+    }
+
+    @FXML
+    private void handleLogout() {
+        try {
+            SessionManager.getInstance().logout();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Connexion");
+            stage.centerOnScreen();
+
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    public void ouvrirCategorieView(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/categorie-view.fxml");
+    }
+
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }}
+
+
+    public void afficherEvenements(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
+    }
+
+    @FXML
+    private void ouvrirStatistiques() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/statistiques-view.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("📊 Statistiques");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+            System.out.println("✅ Statistiques ouvertes !");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("❌ Erreur ouverture statistiques : " + e.getMessage());
+        }
+    }
+    @FXML
+    public void goToUtilisateurs(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AdminDashboard.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Dashboard Admin");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Erreur d'ouverture du tableau admin").showAndWait();
+        }
+    }
     @FXML
     private void exporterPDF(ActionEvent event) {
         Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
@@ -322,7 +477,6 @@ public class EvenementController {
             }
         }
     }
-
     @FXML
     private void exporterEtEnvoyerPDF() {
         Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
@@ -347,8 +501,7 @@ public class EvenementController {
             Toast.show((Stage) tableEvenements.getScene().getWindow(), "❌ Sélectionnez un événement et entrez un email !");
         }
     }
-
-   /* @FXML
+    @FXML
     private void envoyerPDFParMail() {
         Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
         String email = txtEmail.getText();
@@ -379,90 +532,5 @@ public class EvenementController {
             Toast.show((Stage) tableEvenements.getScene().getWindow(),
                     "❌ Veuillez sélectionner un événement et entrer un email !");
         }
-    }*/
-    @FXML
-    private void payerEvenement(Evenement evenement) {
-        if (evenement != null) {
-            StripeLauncher.openStripeSession(
-                    evenement.getNom(),
-                    (int) (evenement.getPrix() * 100)
-            );
-            Toast.show((Stage) tableEvenements.getScene().getWindow(),
-                    "💳 Paiement ouvert dans le navigateur !");
-        } else {
-            Toast.show((Stage) tableEvenements.getScene().getWindow(),
-                    "❌ Sélectionnez un événement à payer !");
-        }
     }
-
-    public void ouvrirCategorieView(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/categorie-view.fxml");
-    }
-
-    @FXML
-    private void handleLogout() {
-        try {
-            SessionManager.getInstance().logout();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) logoutButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Connexion");
-            stage.centerOnScreen();
-            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    private void loadPage(ActionEvent event, String fxmlPath) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.centerOnScreen();
-            stage.setMaximized(true);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void goToMatiere(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
-    }
-
-    public void afficherEvenements(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
-    }
-
-    public void goToUtilisateurs(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
-    }
-
-    @FXML
-    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
-    }
-
-    @FXML
-    public void afficherJeux(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
-    }
-
 }

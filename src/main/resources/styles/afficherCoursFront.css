@@ -1,0 +1,216 @@
+/* Header */
+.header {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-background-radius: 15;
+    -fx-padding: 10;
+}
+
+.header-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #495057;
+    -fx-font-family: 'Comic Sans MS';
+}
+
+.header-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #495057;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Arial Rounded MT Bold';
+}
+
+.header-button:hover {
+    -fx-text-fill: #007bff;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    -fx-padding: 5 0;
+}
+
+.breadcrumb-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6c757d;
+}
+
+/* Tab Pane */
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #f8f9fa;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1 1 0 1;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+}
+
+.tab-content {
+    -fx-padding: 20;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);
+}
+
+/* Scroll Pane */
+.scroll-pane {
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Section Styles */
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #343a40;
+}
+
+.section-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: #6c757d;
+}
+
+.section-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #495057;
+}
+
+.section-text {
+    -fx-text-fill: #6c757d;
+    -fx-font-size: 14px;
+}
+
+/* Cours Box */
+.cours-box {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8;
+    -fx-padding: 15;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1;
+}
+
+.cours-box.free-course {
+    -fx-border-color: #28a745;
+}
+
+.cours-box.premium-course {
+    -fx-border-color: #ffc107;
+}
+
+/* Fichier Box */
+.fichier-box {
+    -fx-background-color: #f5f5f5;
+    -fx-background-radius: 5;
+    -fx-padding: 8;
+}
+
+/* Buttons */
+.action-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-font-size: 14px;
+}
+
+.action-button:hover {
+    -fx-background-color: #45a049;
+}
+
+.filter-button {
+    -fx-background-color: #e9ecef;
+    -fx-text-fill: #495057;
+    -fx-font-size: 12px;
+    -fx-background-radius: 5;
+}
+
+.filter-button:selected, .filter-button:hover {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+}
+
+/* Rating Styles */
+.rating-value {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #343a40;
+}
+
+.rating-star {
+    -fx-font-size: 16px;
+    -fx-text-fill: #ffc107;
+}
+
+.rating-star-empty {
+    -fx-font-size: 16px;
+    -fx-text-fill: #dee2e6;
+}
+
+.rating-bar {
+    -fx-background-color: #e9ecef;
+    -fx-background-radius: 5;
+    -fx-pref-height: 10;
+}
+
+.rating-bar-fill {
+    -fx-background-radius: 5;
+    -fx-pref-height: 10;
+}
+
+.rating-bar-fill.star-5 { -fx-background-color: #28a745; }
+.rating-bar-fill.star-4 { -fx-background-color: #007bff; }
+.rating-bar-fill.star-3 { -fx-background-color: #e83e8c; }
+.rating-bar-fill.star-2 { -fx-background-color: #17a2b8; }
+.rating-bar-fill.star-1 { -fx-background-color: #6c757d; }
+
+/* Comment Styles */
+.comment-box {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1;
+}
+
+/* Input Fields */
+.input-field {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ced4da;
+    -fx-border-width: 1;
+    -fx-background-radius: 5;
+    -fx-padding: 5;
+}
+
+.input-field:focused {
+    -fx-border-color: #007bff;
+}
+
+/* Footer */
+.footer {
+    -fx-background-color: rgba(255, 255, 255, 0.5);
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+}
+
+.footer-text {
+    -fx-text-fill: #495057;
+    -fx-font-family: 'Arial Rounded MT Bold';
+}
+
+.social-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #007bff;
+    -fx-font-size: 12px;
+}
+
+.social-button:hover {
+    -fx-text-fill: #0056b3;
+}

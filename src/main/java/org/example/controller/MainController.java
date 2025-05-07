@@ -46,23 +46,6 @@ public class MainController {
             e.printStackTrace();
         }
     }
-
-    @FXML
-    private void ouvrirCategorieView() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/firsttry/views/categorie-view.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = new Stage();
-            stage.setTitle("📂 Gestion des Catégories");
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("❌ Erreur ouverture catégories : " + e.getMessage());
-        }
-    }
     @FXML
     private void ouvrirStatistiques() {
         try {

@@ -54,6 +54,7 @@ public class ProfileApprenant {
         serviceApprenant = new ServiceApprenant();
         handleAcceuil.setOnAction(event -> loadAcceuil());
         handleProfile.setOnAction(event -> loadProfile());
+
         // Récupérer l'utilisateur connecté
         currentUser = SessionManager.getInstance().getCurrentUser();
 
@@ -72,21 +73,37 @@ public class ProfileApprenant {
 
             // Initialiser la ComboBox des niveaux
             niveauComboBox.getItems().addAll("Débutant", "Intermédiaire", "Avancé");
-
+            // Sélectionner le niveau actuel de l'utilisateur, si disponible
+            if (currentUser instanceof Apprenant && ((Apprenant) currentUser).getNiveau() != null) {
+                niveauComboBox.setValue(((Apprenant) currentUser).getNiveau());
+            }
 
             // Charger la photo de profil si elle existe
             if (currentUser.getPhotoProfil() != null && !currentUser.getPhotoProfil().isEmpty()) {
-                photoProfilField.setText(currentUser.getPhotoProfil());
-                try {
-                    Image image = new Image(new File(currentUser.getPhotoProfil()).toURI().toString());
-                    profileImageView.setImage(image);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                File imageFile = new File(currentUser.getPhotoProfil());
+                if (imageFile.exists()) {
+                    try {
+
+                        String imagePath =currentUser.getPhotoProfil();
+                        System.out.println(imagePath);
+                        Image image = new Image(currentUser.getPhotoProfil());
+                        profileImageView.setImage(image);
+                        photoProfilField.setText(currentUser.getPhotoProfil() );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        // Afficher une image par défaut si l'image ne peut pas être chargée
+                        profileImageView.setImage(new Image(getClass().getResourceAsStream("/images/event1.jpg")));
+                    }
+                } else {
+                    // Si le fichier n'existe pas, utiliser une image par défaut
+                    profileImageView.setImage(new Image(getClass().getResourceAsStream("/images/event1.jpg")));
                 }
+            } else {
+                // Si aucune photo n'est définie, utiliser une image par défaut
+                profileImageView.setImage(new Image(getClass().getResourceAsStream("/images/event1.jpg")));
             }
         }
     }
-
     @FXML
     private void handlePhotoUpload() {
         FileChooser fileChooser = new FileChooser();
@@ -117,35 +134,38 @@ public class ProfileApprenant {
             apprenant.setNom(nomField.getText());
             apprenant.setPrenom(prenomField.getText());
             apprenant.setEmail(emailField.getText());
-
-
-            apprenant.setTelephone(Integer.parseInt(telephoneField.getText()));
+            try {
+                apprenant.setTelephone(Integer.parseInt(telephoneField.getText()));
+            } catch (NumberFormatException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Téléphone invalide", "Veuillez entrer un numéro de téléphone valide.");
+                return;
+            }
             apprenant.setNiveau(niveauComboBox.getValue());
+            apprenant.setDateNaissance(dateNaissanceField.getText());
 
             if (!passwordField.getText().isEmpty()) {
                 apprenant.setPassword(passwordField.getText());
             }
 
             if (!photoProfilField.getText().isEmpty()) {
-                apprenant.setPhotoProfil(photoProfilField.getText());
+                File imageFile = new File(photoProfilField.getText());
+                if (imageFile.exists()) {
+                    apprenant.setPhotoProfil(photoProfilField.getText());
+                } else {
+                    showAlert(Alert.AlertType.WARNING, "Avertissement", "Image introuvable", "La photo de profil sélectionnée n'existe pas.");
+                }
             }
 
             try {
-                serviceApprenant.modifier(apprenant); // Maintenant on passe un Apprenant
+                serviceApprenant.modifier(apprenant);
+                // Mettre à jour l'utilisateur dans la session
+                SessionManager.getInstance().setCurrentUser(apprenant);
+                currentUser = apprenant;
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Succès");
-                alert.setHeaderText(null);
-                alert.setContentText("Profil mis à jour avec succès!");
-                alert.showAndWait();
+                showAlert(Alert.AlertType.INFORMATION, "Succès", null, "Profil mis à jour avec succès!");
             } catch (Exception e) {
                 e.printStackTrace();
-
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Erreur");
-                alert.setHeaderText(null);
-                alert.setContentText("Une erreur est survenue lors de la mise à jour du profil.");
-                alert.showAndWait();
+                showAlert(Alert.AlertType.ERROR, "Erreur", null, "Une erreur est survenue lors de la mise à jour du profil.");
             }
         }
     }

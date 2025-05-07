@@ -1,0 +1,17 @@
+/* Card animation */
+.matiere-card {
+    -fx-transition: all 0.3s ease;
+    -fx-cursor: hand;
+}
+
+/* Search field focus effect */
+.text-field:focused {
+    -fx-border-color: #4B5EAA !important;
+    -fx-border-width: 2 !important;
+}
+
+/* Pagination button hover effect */
+#prevButton:hover, #nextButton:hover {
+    -fx-background-color: #4B5EAA !important;
+    -fx-text-fill: #FFFFFF !important;
+}

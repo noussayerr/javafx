@@ -17,23 +17,40 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>21</version>
+        </dependency>
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
         </dependency>
-
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>17.0.12</version>            <classifier>win</classifier>
+            <version>21</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.2</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
+            <version>21</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
             <version>17.0.12</version>
-            <classifier>win</classifier>
         </dependency>
-        <!-- iText PDF 7 -->
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>kernel</artifactId>
@@ -49,28 +66,15 @@
             <artifactId>io</artifactId>
             <version>7.1.17</version>
         </dependency>
-        <!-- JavaMail -->
         <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>jakarta.mail</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-
-        <!-- iText Core -->
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>kernel</artifactId>
-            <version>7.1.17</version>
+            <groupId>jakarta.mail</groupId>
+            <artifactId>jakarta.mail-api</artifactId>
+            <version>2.1.3</version>
         </dependency>
         <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>layout</artifactId>
-            <version>7.1.17</version>
-        </dependency>
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>io</artifactId>
-            <version>7.1.17</version>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>angus-mail</artifactId>
+            <version>2.0.3</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -80,7 +84,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.18.0</version> <!-- Vérifie la version la plus récente -->
+            <version>2.18.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -98,14 +102,56 @@
             <version>0.4</version>
         </dependency>
         <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-media</artifactId>
-            <version>17.0.12</version>
-            <classifier>win</classifier>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
         </dependency>
+        <!-- FreeTTS Dependencies -->
+        <!-- FreeTTS Dependencies -->
+        <dependency>
+            <groupId>freetts</groupId>
+            <artifactId>freetts</artifactId>
+            <version>1.2.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/freetts.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>freetts</groupId>
+            <artifactId>cmulex</artifactId>
+            <version>1.2.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/cmulex.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>freetts</groupId>
+            <artifactId>cmu_us_kal</artifactId>
+            <version>1.2.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/cmu_us_kal.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>freetts</groupId>
+            <artifactId>en_us</artifactId>
+            <version>1.2.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/en_us.jar</systemPath>
+        </dependency>
+
 
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        <repository>
+            <id>freetts</id>
+            <name>FreeTTS Repository</name>
+            <url>https://maven.sourceforge.net/repo</url>
+        </repository>
+    </repositories>
     <build>
         <resources>
             <resource>
@@ -116,6 +162,8 @@
                     <include>**/*.png</include>
                     <include>**/*.jpg</include>
                     <include>**/*.jpeg</include>
+                    <include>**/*.html</include>
+                    <include>**/*.js</include>
                 </includes>
             </resource>
         </resources>
@@ -137,6 +185,25 @@
                 <configuration>
                     <mainClass>org.example.Main</mainClass>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                            <includeScope>system</includeScope> <!-- Ajoutez cette ligne -->
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

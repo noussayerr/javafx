@@ -173,4 +173,17 @@ public class ServiceMatiere implements IService<Matiere> {
         return null;
     }
 
+    public boolean checkNomExist(String nom) throws SQLException {
+        String req = "SELECT COUNT(*) FROM matiere WHERE nomM = ?";
+        try (PreparedStatement pst = connection.prepareStatement(req)) {
+            pst.setString(1, nom);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        return false;
+    }
+
+
 }

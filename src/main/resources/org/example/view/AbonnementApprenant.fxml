@@ -22,6 +22,7 @@
 
         <VBox spacing="10" style="-fx-padding: 20 0 0 0;">
             <Button text="Tableau de bord"
+                    onAction="#gotodash"
                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;">
                 <graphic>
                     <ImageView fitWidth="20" fitHeight="20">
@@ -31,9 +32,9 @@
             </Button>
 
             <Button text="Mes Abonnements"
-                    style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;">
-                    onAction="#handleAbonnementsNavigation"
-            </Button>
+                             style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;">
+            onAction="#handleAbonnementsNavigation"
+        </Button>
 
             <Button text="Progression"
                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;">
@@ -90,6 +91,10 @@
                     </HBox>
                 </ScrollPane>
             </VBox>
+
         </ScrollPane>
+        <HBox alignment="CENTER" style="-fx-padding: 20;">
+            <Button text="Voir mes transactions" onAction="#handleGoToTransactions" style="-fx-font-size: 14px; -fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 5;"/>
+        </HBox>
     </VBox>
 </AnchorPane>

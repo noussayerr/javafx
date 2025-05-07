@@ -120,7 +120,7 @@
         </VBox>
     </left>
 
-    <!-- ✅ CENTRE : FORMULAIRE -->
+
     <center>
         <VBox spacing="20" alignment="TOP_CENTER" style="-fx-padding: 30;">
             <Label text="📝 Modifier une catégorie"

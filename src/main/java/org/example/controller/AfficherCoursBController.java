@@ -16,7 +16,6 @@ import org.example.entity.Cours;
 import org.example.entity.Matiere;
 import org.example.services.ServiceCours;
 import org.example.services.ServiceMatiere;
-import org.example.utils.MyDatabase;
 import org.example.utils.SessionManager;
 
 import java.io.IOException;

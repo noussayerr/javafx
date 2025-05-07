@@ -11,9 +11,11 @@ import java.util.List;
 public class ServiceFichier implements IService<Fichier> {
 
     private Connection connection;
+    private final ServiceProgress serviceProgress;
 
     public ServiceFichier() {
         connection = MyDatabase.getInstance().getConnection();
+        serviceProgress = new ServiceProgress();
     }
 
     @Override
@@ -61,6 +63,10 @@ public class ServiceFichier implements IService<Fichier> {
 
     @Override
     public void supprimer(int id) throws SQLException {
+        // First, delete related progress records
+        serviceProgress.deleteByFichierId(id);
+
+        // Then, delete the fichier record
         String sql = "DELETE FROM fichier WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);

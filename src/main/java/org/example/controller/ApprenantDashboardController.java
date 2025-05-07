@@ -83,6 +83,8 @@ public class ApprenantDashboardController {
     }
 
     public void handleExploreCourses(ActionEvent actionEvent) {
+        System.out.println("Naviguer vers gestion des matières...");
+        loadPage(actionEvent, "/org/example/view/MatiereFrontA.fxml");
     }
     @FXML
     private void handleProfile() {
@@ -134,5 +136,30 @@ public class ApprenantDashboardController {
             e.printStackTrace();
         }
     }
+
+    public void goMatiereF(ActionEvent actionEvent) {
+        System.out.println("Naviguer vers gestion des matières...");
+        loadPage(actionEvent, "/org/example/view/MatiereFrontA.fxml");
+    }
+
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            System.out.println("Chargement du fichier : " + fxmlPath);
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace(); // ← affiche l'erreur exacte dans la console
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger la page", e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace(); // ← attrape aussi toute autre erreur de controller
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Exception générale", e.getMessage());
+        }
+    }
+
 
 }

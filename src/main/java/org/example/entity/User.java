@@ -18,8 +18,8 @@ public class User {
     private String verificationToken;
     private String photoProfil;
     private int interactionsCount = 0;
-    private Integer sessionsCount;
-    private LocalDateTime lastActivity;
+    private Integer sessionsCount=0;
+    private LocalDateTime lastActivity=LocalDateTime.now();
 
     // Constructeurs
     public User() {}

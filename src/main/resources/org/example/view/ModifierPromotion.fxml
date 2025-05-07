@@ -130,7 +130,7 @@
                 <Label text="Modifier Promotion" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
                 <!-- Form Grid -->
-                <GridPane hgap="15" vgap="15">
+                <GridPane hgap="15" vgap="10">
                     <columnConstraints>
                         <ColumnConstraints prefWidth="150" halignment="RIGHT"/>
                         <ColumnConstraints prefWidth="300"/>
@@ -139,38 +139,53 @@
                     <!-- Titre -->
                     <Label text="Titre:" GridPane.rowIndex="0" GridPane.columnIndex="0"
                            style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
-                    <TextField fx:id="titreField" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                               promptText="Titre de la promotion"
-                               style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;"/>
+                    <VBox GridPane.rowIndex="0" GridPane.columnIndex="1">
+                        <TextField fx:id="titreField"
+                                   promptText="Titre de la promotion"
+                                   style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;"/>
+                        <Label fx:id="titreError" text="" style="-fx-text-fill: red; -fx-font-size: 11px;"/>
+                    </VBox>
 
                     <!-- Description -->
                     <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0"
                            style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
-                    <TextArea fx:id="descriptionField" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                              promptText="Description"
-                              style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;"
-                              prefRowCount="3"/>
+                    <VBox GridPane.rowIndex="1" GridPane.columnIndex="1">
+                        <TextArea fx:id="descriptionField"
+                                  promptText="Description"
+                                  style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;"
+                                  prefRowCount="3"/>
+                        <Label fx:id="descriptionError" text="" style="-fx-text-fill: red; -fx-font-size: 11px;"/>
+                    </VBox>
 
                     <!-- Taux de réduction -->
                     <Label text="Taux de réduction:" GridPane.rowIndex="2" GridPane.columnIndex="0"
                            style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
-                    <TextField fx:id="reductionField" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                               promptText="Réduction (%)"
-                               style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;"/>
+                    <VBox GridPane.rowIndex="2" GridPane.columnIndex="1">
+                        <TextField fx:id="reductionField"
+                                   promptText="Réduction (%)"
+                                   style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 5;"/>
+                        <Label fx:id="reductionError" text="" style="-fx-text-fill: red; -fx-font-size: 11px;"/>
+                    </VBox>
 
                     <!-- Date de début -->
                     <Label text="Date de début:" GridPane.rowIndex="3" GridPane.columnIndex="0"
                            style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
-                    <DatePicker fx:id="dateDebutPicker" GridPane.rowIndex="3" GridPane.columnIndex="1"
-                                promptText="Date de début"
-                                style="-fx-background-radius: 5;"/>
+                    <VBox GridPane.rowIndex="3" GridPane.columnIndex="1">
+                        <DatePicker fx:id="dateDebutPicker"
+                                    promptText="Date de début"
+                                    style="-fx-background-radius: 5;"/>
+                        <Label fx:id="dateDebutError" text="" style="-fx-text-fill: red; -fx-font-size: 11px;"/>
+                    </VBox>
 
                     <!-- Date de fin -->
                     <Label text="Date de fin:" GridPane.rowIndex="4" GridPane.columnIndex="0"
                            style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
-                    <DatePicker fx:id="dateFinPicker" GridPane.rowIndex="4" GridPane.columnIndex="1"
-                                promptText="Date de fin"
-                                style="-fx-background-radius: 5;"/>
+                    <VBox GridPane.rowIndex="4" GridPane.columnIndex="1">
+                        <DatePicker fx:id="dateFinPicker"
+                                    promptText="Date de fin"
+                                    style="-fx-background-radius: 5;"/>
+                        <Label fx:id="dateFinError" text="" style="-fx-text-fill: red; -fx-font-size: 11px;"/>
+                    </VBox>
                 </GridPane>
 
                 <!-- Action Buttons -->
@@ -182,6 +197,7 @@
                 </HBox>
             </VBox>
         </VBox>
+
     </center>
 
     <!-- Bottom - Footer -->
