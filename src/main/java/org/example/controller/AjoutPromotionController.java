@@ -38,55 +38,85 @@ public class AjoutPromotionController implements Initializable {
 
     @FXML
     private TextField titreField;
+    @FXML
+    private Label titreError;
+    @FXML
+    private Label descriptionError;
+    @FXML
+    private Label reductionError;
+    @FXML
+    private Label dateDebutError;
+    @FXML
+    private Label dateFinError;
 
     @FXML
     void handleAjouterPromotion(ActionEvent event) throws SQLException {
+        // Reset des erreurs
+        titreError.setText("");
+        descriptionError.setText("");
+        reductionError.setText("");
+        dateDebutError.setText("");
+        dateFinError.setText("");
+
+        boolean valid = true;
+
         String titre = titreField.getText();
         String description = descriptionField.getText();
-        int reduction;
+        int reduction = 0;
 
-        try {
-            reduction = Integer.parseInt(reductionField.getText());
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur de saisie", "Réduction doit être un nombre entier.");
-            return;
-        }
         if (titre == null || titre.trim().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Champ invalide", "Le titre ne doit pas être vide.");
-            return;
+            titreError.setText("Le titre est obligatoire.");
+            valid = false;
         }
 
-        // Validation de la description
         if (description == null || description.trim().length() < 15) {
-            showAlert(Alert.AlertType.WARNING, "Description invalide", "La description doit contenir au moins 15 caractères.");
-            return;
+            descriptionError.setText("La description doit contenir au moins 15 caractères.");
+            valid = false;
+        }
+
+        if (reductionField.getText() == null || reductionField.getText().trim().isEmpty()) {
+            reductionError.setText("La réduction est obligatoire.");
+            valid = false;
+        } else {
+            try {
+                reduction = Integer.parseInt(reductionField.getText().trim());
+                if (reduction < 0 || reduction > 100) {
+                    reductionError.setText("La réduction doit être entre 0% et 100%.");
+                    valid = false;
+                }
+            } catch (NumberFormatException e) {
+                reductionError.setText("Veuillez entrer un nombre valide.");
+                valid = false;
+            }
         }
 
         LocalDate dateDebut = dateDebutPicker.getValue();
         LocalDate dateFin = dateFinPicker.getValue();
 
-        if (titre.isEmpty() || description.isEmpty() || dateDebut == null || dateFin == null) {
-            showAlert(Alert.AlertType.WARNING, "Champs manquants", "Veuillez remplir tous les champs.");
+        if (dateDebut == null) {
+            dateDebutError.setText("Veuillez choisir une date de début.");
+            valid = false;
+        }
+
+        if (dateFin == null) {
+            dateFinError.setText("Veuillez choisir une date de fin.");
+            valid = false;
+        }
+
+        if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin)) {
+            dateFinError.setText("La date de fin doit être après la date de début.");
+            valid = false;
+        }
+
+        if (!valid) {
             return;
         }
 
-        if (dateDebut.isAfter(dateFin)) {
-            showAlert(Alert.AlertType.ERROR, "Date invalide", "La date de début ne peut pas être après la date de fin.");
-            return;
-        }
-
-        Promotion promotion = new Promotion(titre,
-                description,
-                reduction,
-                dateDebut,
-                dateFin);
-
-
-         servicePromotion.ajouterPromo(promotion,this.selected.getId());
+        Promotion promotion = new Promotion(titre, description, reduction, dateDebut, dateFin);
+        servicePromotion.ajouterPromo(promotion, this.selected.getId());
 
         showAlert(Alert.AlertType.INFORMATION, "Succès", "Promotion ajoutée avec succès !");
-    this.goBackToListScene();
-
+        this.goBackToListScene();
     }
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);

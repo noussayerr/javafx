@@ -9,23 +9,30 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import org.example.entity.Abonnement;
 import org.example.services.ServiceAbonnement;
+import org.example.services.ServiceTransaction;
 import org.example.utils.SessionManager;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ListAbonnementController implements Initializable {
 
+    @FXML
+    private LineChart<String, Number> lineChart;
     @FXML
     private TableView<Abonnement> tableAbonnements;
     @FXML
@@ -43,6 +50,7 @@ public class ListAbonnementController implements Initializable {
     @FXML
     private TableColumn<Abonnement, Void> colPromotion;
     private ServiceAbonnement serviceAbonnement = new ServiceAbonnement();
+    private ServiceTransaction serviceTransaction = new ServiceTransaction();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -169,6 +177,7 @@ public class ListAbonnementController implements Initializable {
                 setGraphic(empty ? null : pane);
             }
         });
+        this.loadChartData();
     }
 
     // Méthode utilitaire pour afficher les erreurs
@@ -266,6 +275,25 @@ public class ListAbonnementController implements Initializable {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+    private void loadChartData() {
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Subscribers per Day");
+
+        try {
+            Map<String, Integer> dataMap = serviceTransaction.getSubscribersPerDay();
+
+            dataMap.forEach((date, count) -> {
+                series.getData().add(new XYChart.Data<>(date, count));
+            });
+
+            lineChart.getData().clear(); // In case of refresh
+            lineChart.getData().add(series);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Optionally handle error with UI alert
         }
     }
 }

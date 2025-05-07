@@ -34,6 +34,12 @@ public class ModifierAbonnementController {
     private TextField prixField;
     @FXML
     private TextArea descriptionField;
+    @FXML
+    private Label titreError;
+    @FXML
+    private Label prixError;
+    @FXML
+    private Label descriptionError;
 
 
     @FXML
@@ -55,28 +61,41 @@ public class ModifierAbonnementController {
         String prixText = prixField.getText();
 
         // === Contrôles de validation ===
-        if (titre == null || titre.trim().isEmpty()) {
-            showAlert("Erreur de validation", "Le titre ne doit pas être vide.");
-            return;
+        titreError.setText("");
+        prixError.setText("");
+        descriptionError.setText("");
+
+        boolean valid = true;
+
+        if (titreAbonnementField.getText().isEmpty()) {
+            titreError.setText("Le titre est obligatoire.");
+            valid = false;
         }
 
-        if (description == null || description.trim().length() < 15) {
-            showAlert("Erreur de validation", "La description doit contenir au moins 15 caractères.");
-            return;
-        }
-
-        int prix;
-        try {
-            prix = Integer.parseInt(prixText);
-            if (prix < 0) {
-                showAlert("Erreur de validation", "Le prix ne peut pas être négatif.");
-                return;
+        if (prixField.getText().isEmpty()) {
+            prixError.setText("Le prix est obligatoire.");
+            valid = false;
+        } else {
+            try {
+                int prix = Integer.parseInt(prixField.getText());
+                if (prix < 0) {
+                    prixError.setText("Le prix doit être positif.");
+                    valid = false;
+                }
+            } catch (NumberFormatException e) {
+                prixError.setText("Prix invalide.");
+                valid = false;
             }
-        } catch (NumberFormatException e) {
-            showAlert("Erreur de validation", "Le prix doit être un nombre entier valide.");
-            return;
         }
 
+        if (descriptionField.getText().length() < 15) {
+            descriptionError.setText("La description doit contenir au moins 15 caractères.");
+            valid = false;
+        }
+
+        if (!valid) {
+            return;
+        }
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Confirmation");
         confirmAlert.setHeaderText("Voulez-vous vraiment modifier cet abonnement ?");
