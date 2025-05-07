@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.AjoutReclamationController"
+            prefHeight="400.0" prefWidth="800.0">
+
+    <!-- Sidebar -->
+    <VBox prefWidth="220" style="-fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);"
+          AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+
+        <AnchorPane prefHeight="80" style="-fx-background-color: rgba(0,0,0,0.1);">
+            <Label text="Mon Apprentissage"
+                   style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"
+                   AnchorPane.leftAnchor="20" AnchorPane.topAnchor="25" />
+        </AnchorPane>
+
+        <VBox spacing="10" style="-fx-padding: 20 0 0 0;">
+            <Button text="Tableau de bord"
+                    onAction="#gotodash"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <Image url="@/icons/dashboard.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button text="Mes Abonnements"
+
+                    style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;" />
+
+            <Button text="Progression"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;">
+                <graphic>
+                    <ImageView fitWidth="20" fitHeight="20">
+                        <Image url="@/icons/progress.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS"/>
+
+        <Button fx:id="logoutbutton"
+                text="Déconnexion"
+                style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: baseline-left; -fx-padding: 10 20;">
+            <graphic>
+                <ImageView fitWidth="20" fitHeight="20">
+                    <Image url="@/icons/logout.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+    </VBox>
+
+    <!-- Main Content Area -->
+    <VBox AnchorPane.leftAnchor="220" AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0"
+          style="-fx-padding: 30;" spacing="20">
+        <Label text="Ajouter une Réclamation"
+               style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+        <VBox spacing="12">
+            <Label text="Titre de la réclamation" />
+            <ComboBox fx:id="comboTitreRec" promptText="Choisir un titre..." prefWidth="300" />
+            <Label fx:id="lblTitreErreur" textFill="red" visible="false" style="-fx-font-size: 12px;" />
+
+            <Label text="Description" />
+            <TextArea fx:id="txtDescription" promptText="Saisir la description..."
+                      wrapText="true" prefRowCount="5" prefWidth="500" />
+            <Label fx:id="lblDescriptionErreur" textFill="red" visible="false" style="-fx-font-size: 12px;" />
+        </VBox>
+
+        <Button text="Ajouter"
+                onAction="#ajouterReclamation"
+                style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 14px;"
+                maxWidth="150" />
+        <Button text="List Reclamation"
+                onAction="#gotoReclamation"
+                style="-fx-background-color: #2980b9; -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 14px;"
+                maxWidth="150" />
+    </VBox>
+</AnchorPane>

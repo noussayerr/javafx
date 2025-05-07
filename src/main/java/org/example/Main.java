@@ -17,7 +17,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Charger le fichier FXML
-        ServiceReclamation serviceReclamation = new ServiceReclamation();
+      /*  ServiceReclamation serviceReclamation = new ServiceReclamation();
         ServiceTransaction serviceTransaction = new ServiceTransaction();
 
         try {
@@ -38,7 +38,7 @@ public class Main extends Application {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+*/
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/home.fxml"));
         Parent root = loader.load();
 

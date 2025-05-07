@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.FailurePaiement"
+            prefHeight="400.0" prefWidth="600.0"
+            style="-fx-background-color: #f8d7da;">
+
+    <children>
+        <!-- Titre -->
+        <Label layoutX="200.0" layoutY="100.0" text="Échec du paiement"
+               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #721c24;" />
+
+
+        <Label layoutX="100.0" layoutY="160.0" wrapText="true" maxWidth="400"
+               text="Une erreur est survenue lors du traitement de votre paiement. Veuillez réessayer ou contacter le support technique."
+               style="-fx-font-size: 14px; -fx-text-fill: #721c24;" />
+
+
+
+    </children>
+</AnchorPane>
