@@ -17,7 +17,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Charger le fichier FXML
-        /*ServiceReclamation serviceReclamation = new ServiceReclamation();
+        ServiceReclamation serviceReclamation = new ServiceReclamation();
         ServiceTransaction serviceTransaction = new ServiceTransaction();
 
         try {
@@ -26,7 +26,7 @@ public class Main extends Application {
 
             for (int i = 1; i <= 6; i++) {
                 Reclamation rec = new Reclamation();
-                rec.setTitle("Problème en physique"); // Titre contenant "physique"
+                rec.setTitle("Problème en java"); // Titre contenant "physique"
                 rec.setDescription("Ceci est un test de recommandation pour physique. Description n°" + i);
                 rec.setEtat("en attente");
                 rec.setApprenant(currentApprenant);
@@ -37,9 +37,9 @@ public class Main extends Application {
             System.out.println("10 réclamations ajoutées avec succès.");
         } catch (SQLException e) {
             e.printStackTrace();
-        }*/
+        }
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ApprenantDashboard.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/home.fxml"));
         Parent root = loader.load();
 
         // Configurer la scène
@@ -48,9 +48,9 @@ public class Main extends Application {
         // Configurer la fenêtre principale
         primaryStage.setTitle("Dyscover - Plateforme d'apprentissage");
         primaryStage.setScene(scene);
-        primaryStage.setWidth(1200);  // Largeur de la fenêtre
-        primaryStage.setHeight(800);  // Hauteur de la fenêtre
-        primaryStage.setResizable(false); // Permettre le redimensionnement
+        primaryStage.setMinWidth(1050);
+        primaryStage.setMinHeight(700);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 

@@ -19,6 +19,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import org.example.entity.*;
 import org.example.services.ServiceAbonnement;
+import org.example.services.ServiceApprenant;
 import org.example.services.ServicePaiement;
 import org.example.services.ServiceTransaction;
 import org.example.utils.SessionManager;
@@ -40,9 +41,16 @@ public class AbonnementApprenant {
     private ServiceAbonnement serviceAbonnement = new ServiceAbonnement();
     private ServiceTransaction serviceTransaction=new ServiceTransaction();// Service to fetch abonnements
     private ServicePaiement servicePaiement = new ServicePaiement();
+    private ServiceApprenant serviceApprenant = new ServiceApprenant();
     @FXML
     public void initialize() {
         try {
+            User currentUser = SessionManager.getInstance().getCurrentUser();
+
+            Apprenant currentApprenant=serviceTransaction.getApprenantById(currentUser.getId());
+            Apprenant currentApprenant2=serviceTransaction.getApprenantById2(currentUser.getId());
+            System.out.println(currentApprenant2.toString());
+            System.out.println(currentApprenant.toString());
             // Fetch all abonnements
             List<Abonnement> abonnements = serviceAbonnement.afficher();
             Abonnement bestSellerId = serviceTransaction.getAbonnementLePlusVendu();
@@ -126,6 +134,7 @@ public class AbonnementApprenant {
     }
 
     private void handlePaiement(Abonnement abonnement) {
+
         int prix=abonnement.getPrix();
         if(abonnement.getPromotion() != null) {
             prix = (abonnement.getPrix()/100)*100-abonnement.getPromotion().getReduction();
@@ -175,7 +184,7 @@ public class AbonnementApprenant {
                 }
                 loadFXMLAfterSuccess("/org/example/view/SuccesPaiement.fxml");
             } else if (newLoc.startsWith("https://example.website.com/fail")) {
-
+                loadFXMLAfterSuccess("/org/example/view/FailurePaiement.fxml");
             }
         });
 
@@ -227,6 +236,9 @@ public class AbonnementApprenant {
         } else {
             System.out.println("Utilisateur non apprenant ou aucun utilisateur connecté.");
         }
+        //Apprenant currentApprenant2=serviceTransaction.getApprenantById2(currentUser.getId());
+        //System.out.println(currentApprenant2.toString());
+        //serviceApprenant.modifier(currentApprenant);
         serviceTransaction.ajouter(transaction);
     }
     public static String getPaymentIdFromUrl(String url) {

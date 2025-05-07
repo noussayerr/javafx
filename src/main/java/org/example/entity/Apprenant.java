@@ -33,4 +33,15 @@ public class Apprenant extends User {
 
     public List<Reclamation> getReclamations() { return reclamations; }
     public void setReclamations(List<Reclamation> reclamations) { this.reclamations = reclamations; }
+
+    @Override
+    public String toString() {
+        return "Apprenant{" +
+                "niveau='" + niveau + '\'' +
+                ", abonnement=" + abonnement +
+                ", evenements=" + evenements +
+                ", messages=" + messages +
+                ", reclamations=" + reclamations +
+                '}';
+    }
 }
