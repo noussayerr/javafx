@@ -33,7 +33,6 @@
     </top>
 
     <!-- MENU GAUCHE -->
-    <!-- MENU GAUCHE -->
     <left>
         <VBox prefWidth="200" spacing="15" style="-fx-background-color: #2c3e50; -fx-padding: 20px 10px;">
             <Label style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold; -fx-padding: 0 0 10 5;" text="NAVIGATION" />
@@ -42,6 +41,38 @@
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">
                         <Image url="@/images/users-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button onAction="#goToMatiere" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Matières">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/matiere-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button onAction="#handleAbonnementsNavigation" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Abonnements">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/stats-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button fx:id="btnEvenements" onAction="#afficherEvenements" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Événements">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/events-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button onAction="#afficherJeux" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Jeux">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/events-icon.png" />
                     </ImageView>
                 </graphic>
             </Button>
@@ -62,16 +93,17 @@
                 </graphic>
             </Button>
 
-            <Button fx:id="btnEvenements" onAction="#afficherEvenements" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Événements">
+            <Region VBox.vgrow="ALWAYS" />
+
+            <Button style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-font-size: 12px; -fx-alignment: CENTER_LEFT;" text="Aide">
                 <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/events-icon.png" />
+                    <ImageView fitHeight="16" fitWidth="16">
+                        <Image url="@/images/help-icon.png" />
                     </ImageView>
                 </graphic>
             </Button>
-        </VBox> <!-- ✅ FERMETURE MANQUANTE AJOUTÉE ICI -->
+        </VBox>
     </left>
-
     <!-- CONTENU CENTRAL : ta vue événement personnalisée -->
     <center>
         <HBox>

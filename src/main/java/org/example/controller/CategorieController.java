@@ -262,8 +262,16 @@ public class CategorieController {
         scale.play();
     }
 
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
     @FXML
-    private void handleLogout() {
+    void handleLogout(ActionEvent event) {
         try {
             SessionManager.getInstance().logout();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
@@ -278,16 +286,11 @@ public class CategorieController {
         }
     }
 
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
 
-    public void afficherEvenements(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
+
+    @FXML
+    public void goToMatiere(ActionEvent event) {
+        loadPage(event, "/org/example/view/ListeMatiere.fxml");
     }
 
     private void loadPage(ActionEvent event, String fxmlPath) {
@@ -303,4 +306,35 @@ public class CategorieController {
             e.printStackTrace();
         }
     }
+
+
+
+    public void goToUtilisateurs(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
+    }
+
+    public void afficherEvenements(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
+    }
+
+    @FXML
+    public void afficherJeux(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+    @FXML
+    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+
+
+
+
 }

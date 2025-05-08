@@ -379,6 +379,7 @@ public class AdminDashboardController {
     }
 
     public void goToMatiere(ActionEvent actionEvent) {
+
         loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
     }
 
@@ -398,5 +399,9 @@ public class AdminDashboardController {
     @FXML
     public void afficherJeux(ActionEvent event) {
         loadPage(event, "/org/example/view/jeuxIndex.fxml");
+    }
+
+    public void Statique(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/statistiques-view.fxml");
     }
 }

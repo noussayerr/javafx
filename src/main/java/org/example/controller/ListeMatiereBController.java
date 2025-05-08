@@ -318,6 +318,10 @@ public class ListeMatiereBController {
         updatePagination();
     }
 
+    public void handleAfficherAjoutMatiere(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/AjoutMatiere.fxml");
+    }
+
     private void afficherCours(Matiere matiere) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AfficherCoursB.fxml"));
@@ -381,9 +385,7 @@ public class ListeMatiereBController {
         }
     }
 
-    public void handleAfficherAjoutMatiere(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/AjoutMatiere.fxml");
-    }
+
 
     public void goToUtilisateurs(ActionEvent actionEvent) {
         loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");

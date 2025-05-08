@@ -1,12 +1,15 @@
 package org.example.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.entity.Apprenant;
@@ -48,6 +51,7 @@ public class ProfileApprenant {
 
     private ServiceApprenant serviceApprenant;
     private User currentUser;
+    @FXML private Button profileButton;
 
     public void initialize() {
         // Initialiser le service
@@ -187,7 +191,7 @@ public class ProfileApprenant {
         return apprenant;
     }
 
-    private void loadAcceuil() {
+    @FXML private void loadAcceuil() {
         try {
             // Chargement de la page ApprenantDashboard
             Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ApprenantDashboard.fxml"));
@@ -202,7 +206,7 @@ public class ProfileApprenant {
         }
     }
 
-    private void loadProfile() {
+     private void loadProfile() {
         try {
             // Chargement de la page Profil
             Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/Profil.fxml"));
@@ -252,4 +256,100 @@ public class ProfileApprenant {
         alert.showAndWait();
     }
 
+    @FXML
+    private void showGames(ActionEvent event) throws IOException {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/jeuxApprenant.fxml"));
+            AnchorPane listPane = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void ouvrirListeEvenements() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/evenement-list.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("📅 Liste des Événements");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @FXML
+    private void goAbonnement(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AbonnementApprenant.fxml"));
+            AnchorPane listPane = loader.load();
+
+            // Get the stage from the event source
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show(); // Show the new scene
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void goReclamation(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AjoutReclamation.fxml"));
+            AnchorPane listPane = loader.load();
+
+            // Get the stage from the event source
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show(); // Show the new scene
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void goMatiereF(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/MatiereFrontA.fxml");
+    }
+
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement de la page", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleProfile() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ProfileApprenant.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) profileButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Profil");
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement de la page de profil", e.getMessage());
+        }
+    }
+
+    public void goAccueil(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/ApprenantDashboard.fxml");
+    }
 }

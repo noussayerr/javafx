@@ -5,15 +5,20 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.shape.Circle?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.controller.StatistiquesController"
-            prefWidth="1200.0" prefHeight="900.0"
+            prefWidth="1366.0" prefHeight="768.0"
             stylesheets="@/styles/stats.css">
+
 
     <ScrollPane fitToWidth="true" fitToHeight="true"
                 AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
                 AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
                 style="-fx-background-color: transparent;">
+
         <content>
             <VBox spacing="30" alignment="TOP_CENTER" style="-fx-padding: 40;">
 

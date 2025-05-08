@@ -47,7 +47,39 @@
                 </graphic>
             </Button>
 
+            <Button onAction="#goToMatiere" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Matières">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/matiere-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
             <Button onAction="#handleAbonnementsNavigation" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Abonnements">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/stats-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button fx:id="btnEvenements" onAction="#afficherEvenements" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Événements">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/events-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button onAction="#afficherJeux" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Jeux">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/events-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Statistiques">
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">
                         <Image url="@/images/stats-icon.png" />
@@ -74,7 +106,6 @@
             </Button>
         </VBox>
     </left>
-
     <!-- Center - Main Content Area -->
     <center>
         <VBox spacing="20" style="-fx-padding: 20px;">

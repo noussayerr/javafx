@@ -263,6 +263,11 @@ public class ListeMatiereFController {
         loadPage(actionEvent, "/org/example/view/ListeMatiereF.fxml");
     }
 
+    @FXML
+    private void goAccueil(ActionEvent actionEvent) {
+        loadPage(actionEvent,"/org/example/view/EnseignantDashboard.fxml");
+    }
+
     private void loadPage(ActionEvent event, String fxmlPath) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
@@ -310,6 +315,8 @@ public class ListeMatiereFController {
             e.printStackTrace();
         }
     }
+
+
 
     public void effacerRecherche(ActionEvent actionEvent) {
         searchField.clear();

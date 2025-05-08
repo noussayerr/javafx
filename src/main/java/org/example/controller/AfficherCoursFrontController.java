@@ -51,6 +51,8 @@ public class AfficherCoursFrontController implements Initializable {
     private final ServiceMatiere serviceMatiere = new ServiceMatiere();
     private int selectedRating = 0;
 
+
+
     // Functional interface for listeners
     @FunctionalInterface
     interface RefreshListener {
@@ -529,6 +531,10 @@ public class AfficherCoursFrontController implements Initializable {
         loadPage("/org/example/view/ListeMatiereF.fxml", "Liste des Matières");
     }
 
+    @FXML
+    private void goAccueil() {
+        loadPage("/org/example/view/EnseignantDashboard.fxml", "Accueil");
+    }
     private void loadPage(String fxmlPath, String title) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
@@ -623,4 +629,6 @@ public class AfficherCoursFrontController implements Initializable {
             applyFilters();
         });
     }
+
+
 }

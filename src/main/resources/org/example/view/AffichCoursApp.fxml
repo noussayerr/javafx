@@ -39,18 +39,21 @@
         <Label style="-fx-text-fill: #3a4a6d; -fx-font-size: 24px; -fx-font-weight: bold;" text="DysCover" HBox.hgrow="ALWAYS" />
 
         <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-padding: 0 15 0 0;">
-            <Button style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Accueil" />
+            <Button onAction="#goAccueil" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Accueil" />
             <Button onAction="#goMatiereF" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Cours" />
             <Button fx:id="profileButton" onAction="#ouvrirListeEvenements" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="les Événements" />
+            <Button onAction="#showGames" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Jeux" />
+            <Button fx:id="btnAbonnement" onAction="#goAbonnement" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Abonnement" />
+            <Button fx:id="btnReclamation" onAction="#goReclamation" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Reclamations" />
             <Button fx:id="btnEvenements" onAction="#handleProfile" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Profil" />
-            <Button onAction="#showGames"   style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Jeux" />
             <Button fx:id="logoutButton" onAction="#logout" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Déconnexion">
+
                 <HBox.margin>
                     <Insets left="300.0" />
-                </HBox.margin>
-            </Button>
+                </HBox.margin></Button>
         </HBox>
     </HBox>
+
 
     <!-- Breadcrumbs -->
     <VBox alignment="TOP_CENTER" layoutX="-4.0" layoutY="78.0" prefHeight="118.0" prefWidth="1007.0" style="-fx-background-color: #4B5EAA;" AnchorPane.leftAnchor="-4.0" AnchorPane.rightAnchor="-3.0" AnchorPane.topAnchor="78.0">

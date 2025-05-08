@@ -802,4 +802,48 @@ public class AffichCoursAppController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Navigation échouée: " + e.getMessage());
         }
     }
+
+    @FXML
+    private void goAbonnement(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AbonnementApprenant.fxml"));
+            AnchorPane listPane = loader.load();
+
+            // Get the stage from the event source
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show(); // Show the new scene
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void goReclamation(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AjoutReclamation.fxml"));
+            AnchorPane listPane = loader.load();
+
+            // Get the stage from the event source
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show(); // Show the new scene
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void goAccueil(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ApprenantDashboard.fxml"));
+            AnchorPane listPane = loader.load();
+
+            // Get the stage from the event source
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show(); // Show the new scene
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -70,7 +70,7 @@
             <Button text="Événements"
                     fx:id="btnEvenements"
                     onAction="#afficherEvenements"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">
                         <Image url="@/images/events-icon.png"/>
@@ -153,6 +153,7 @@
                     <TableColumn fx:id="colNom" prefWidth="150" text="Nom" />
                     <TableColumn fx:id="colDescription" prefWidth="300" text="Description" />
                     <TableColumn fx:id="colImage" prefWidth="150" text="Image" />
+                    <TableColumn fx:id="colActions" prefWidth="200" text="Actions" />
                 </columns>
             </TableView>
 

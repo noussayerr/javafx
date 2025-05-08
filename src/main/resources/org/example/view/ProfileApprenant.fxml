@@ -34,18 +34,18 @@
                text="DysCover" HBox.hgrow="ALWAYS" />
 
         <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-padding: 0 15 0 0;">
-            <Button fx:id="handleAcceuil" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;"
-                    text="Accueil" />
-            <Button style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;"
-                    text="Cours" />
-            <Button fx:id="handleProfile" style="-fx-background-color: #4a6baf; -fx-text-fill: white; -fx-font-weight: bold;"
-                    text="Profil" />
-            <Button fx:id="logoutButton" onAction="#logout" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;"
-                    text="Déconnexion">
+            <Button onAction="#goAccueil" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Accueil" />
+            <Button onAction="#goMatiereF" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Cours" />
+            <Button fx:id="profileButton" onAction="#ouvrirListeEvenements" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="les Événements" />
+            <Button onAction="#showGames" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Jeux" />
+            <Button fx:id="btnAbonnement" onAction="#goAbonnement" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Abonnement" />
+            <Button fx:id="btnReclamation" onAction="#goReclamation" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Reclamations" />
+            <Button fx:id="btnEvenements" onAction="#handleProfile" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Profil" />
+            <Button fx:id="logoutButton" onAction="#logout" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Déconnexion">
+
                 <HBox.margin>
                     <Insets left="300.0" />
-                </HBox.margin>
-            </Button>
+                </HBox.margin></Button>
         </HBox>
     </HBox>
 

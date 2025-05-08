@@ -136,7 +136,6 @@ public class ListAbonnementController implements Initializable {
                             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ModifierAbonnement.fxml"));
                             ModifierAbonnementController controller = new ModifierAbonnementController(selected);
                             loader.setController(controller);
-
                             Scene modifierScene = new Scene(loader.load());
                             Stage stage = (Stage) getTableView().getScene().getWindow();
                             stage.setScene(modifierScene);
@@ -296,4 +295,41 @@ public class ListAbonnementController implements Initializable {
             // Optionally handle error with UI alert
         }
     }
+
+    @FXML
+    void handleLogout(ActionEvent event) {
+        try {
+            SessionManager.getInstance().logout();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Connexion");
+            stage.centerOnScreen();
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
+        }
+    }
+
+
+    @FXML
+    public void goToMatiere(ActionEvent event) {
+        loadPage(event, "/org/example/view/ListeMatiere.fxml");
+    }
+
+
+    @FXML
+    public void afficherJeux(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+    public void afficherEvenements(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
+    }
+
+
 }

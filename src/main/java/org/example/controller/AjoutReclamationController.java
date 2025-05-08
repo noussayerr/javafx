@@ -33,7 +33,7 @@ public class AjoutReclamationController implements Initializable {
     @FXML private TextArea txtDescription;
     @FXML private Label lblTitreErreur;
     @FXML private Label lblDescriptionErreur;
-
+    @FXML private TabPane tabPane;
     private ServiceTitreRec serviceTitreRec=new ServiceTitreRec();
     private ServiceReclamation serviceReclamation=new ServiceReclamation();
     private ServiceApprenant serviceApprenant=new ServiceApprenant();
@@ -190,6 +190,135 @@ public class AjoutReclamationController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+    public void goAccueil(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ApprenantDashboard.fxml"));
+            AnchorPane listPane = loader.load();
+
+            // Get the stage from the event source
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show(); // Show the new scene
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void goMatiereF(ActionEvent event) {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/MatiereFrontA.fxml"));
+            AnchorPane listPane = loader.load();
+
+            // Get the stage from the event source
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show(); // Show the new scene
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadPage(String fxmlPath, String title) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Stage stage = (Stage) tabPane.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle(title);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Navigation échouée: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void goAbonnement(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AbonnementApprenant.fxml"));
+            AnchorPane listPane = loader.load();
+
+            // Get the stage from the event source
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show(); // Show the new scene
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void goReclamation(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AjoutReclamation.fxml"));
+            AnchorPane listPane = loader.load();
+
+            // Get the stage from the event source
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show(); // Show the new scene
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showGames(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/jeuxApprenant.fxml"));
+            AnchorPane listPane = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show();
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement des jeux: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void logout() {
+        try {
+            SessionManager.getInstance().logout();
+            loadPage("/org/example/view/Login.fxml", "Connexion");
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion", "Déconnecté avec succès");
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de déconnexion: " + e.getMessage());
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void ouvrirListeEvenements(ActionEvent event) throws IOException {
+        loadView("Evenement-list.fxml", event);
+    }
+
+    private void loadView(String fxmlFile, ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/" + fxmlFile));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+    @FXML
+    private void handleProfile(ActionEvent event) throws IOException {
+        loadView("ProfileApprenant.fxml", event);
     }
 
 

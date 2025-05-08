@@ -132,4 +132,7 @@ public class EnseignantDashboardController implements Initializable {
         }
     }
 
+    public void goAccueil(ActionEvent event) {
+        loadPage(event, "/org/example/view/EnseignantDashboard.fxml");
+    }
 }

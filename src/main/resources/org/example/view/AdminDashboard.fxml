@@ -35,80 +35,71 @@
 
     <!-- Left Side - Navigation Menu -->
     <left>
-        <VBox style="-fx-background-color: #2c3e50; -fx-padding: 20px 10px;"
-              spacing="15" prefWidth="200">
-            <Label text="NAVIGATION" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold; -fx-padding: 0 0 10 5;"/>
+        <VBox prefWidth="200" spacing="15" style="-fx-background-color: #2c3e50; -fx-padding: 20px 10px;">
+            <Label style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold; -fx-padding: 0 0 10 5;" text="NAVIGATION" />
 
-            <Button text="Utilisateurs"
-                    onAction="#goToUtilisateurs"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
+            <Button onAction="#goToUtilisateurs" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Utilisateurs">
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/users-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button text="Abonnements"
-                    onAction="#handleAbonnementsNavigation"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/stats-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button text="Statistiques"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/stats-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button text="Paramètres"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/settings-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button text="Événements"
-                    fx:id="btnEvenements"
-                    onAction="#afficherEvenements"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/events-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button text="Jeux"
-                    onAction="#afficherJeux"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/events-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button text="Matières"
-                    onAction="#goToMatiere"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/matiere-icon.png"/>
+                        <Image url="@/images/users-icon.png" />
                     </ImageView>
                 </graphic>
             </Button>
 
-            <Region VBox.vgrow="ALWAYS"/>
+            <Button onAction="#goToMatiere" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Matières">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/matiere-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
 
-            <Button text="Aide"
-                    style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-font-size: 12px; -fx-alignment: CENTER_LEFT;">
+            <Button onAction="#handleAbonnementsNavigation" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Abonnements">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/stats-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button fx:id="btnEvenements" onAction="#afficherEvenements" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Événements">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/events-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button onAction="#afficherJeux" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Jeux">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/events-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button onAction="#Statique" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Statistiques">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/stats-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Paramètres">
+                <graphic>
+                    <ImageView fitHeight="20" fitWidth="20">
+                        <Image url="@/images/settings-icon.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <Button style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-font-size: 12px; -fx-alignment: CENTER_LEFT;" text="Aide">
                 <graphic>
                     <ImageView fitHeight="16" fitWidth="16">
-                        <Image url="@/images/help-icon.png"/>
+                        <Image url="@/images/help-icon.png" />
                     </ImageView>
                 </graphic>
             </Button>

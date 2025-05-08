@@ -188,4 +188,8 @@ public class ApprenantDashboardController {
             e.printStackTrace();
         }
     }
+
+    public void goAccueil(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/ApprenantDashboard.fxml");
+    }
 }

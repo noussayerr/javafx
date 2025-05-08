@@ -27,7 +27,7 @@
         </ImageView>
         <Label style="-fx-text-fill: #495057; -fx-font-size: 24px; -fx-font-weight: bold; -fx-font-family: 'Comic Sans MS';" text="DysCover" HBox.hgrow="ALWAYS" />
         <HBox alignment="CENTER" prefWidth="785.0" spacing="15.0" style="-fx-padding: 0 15 0 0;">
-            <Button style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Tableau de bord" />
+            <Button onAction="#goAccueil" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Tableau de bord" />
             <Button onAction="#goMatiereF" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Mes Cours" />
             <Button fx:id="studentsButton" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Étudiants" />
             <Button fx:id="profileButton" onAction="#handleProfile" style="-fx-background-color: transparent; -fx-text-fill: #495057; -fx-font-weight: bold; -fx-font-family: 'Arial Rounded MT Bold';" text="Profile" />
