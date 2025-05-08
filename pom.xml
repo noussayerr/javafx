@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.10.0</version> <!-- Use the latest version -->
+            <!-- Use the latest version -->
         </dependency>
         <dependency>
             <groupId>com.google.zxing</groupId>
@@ -142,6 +142,37 @@
             <artifactId>okhttp</artifactId>
             <version>4.9.3</version>
         </dependency>
+
+        <!-- FreeTTS Dependencies -->
+        <dependency>
+            <groupId>freetts</groupId>
+            <artifactId>freetts</artifactId>
+            <version>1.2.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/freetts.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>freetts</groupId>
+            <artifactId>cmulex</artifactId>
+            <version>1.2.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/cmulex.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>freetts</groupId>
+            <artifactId>cmu_us_kal</artifactId>
+            <version>1.2.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/cmu_us_kal.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>freetts</groupId>
+            <artifactId>en_us</artifactId>
+            <version>1.2.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/en_us.jar</systemPath>
+        </dependency>
+
     </dependencies>
 
     <build>
