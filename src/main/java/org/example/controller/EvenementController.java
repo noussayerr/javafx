@@ -401,8 +401,6 @@ public class EvenementController {
         }
     }
 
-
-
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -415,18 +413,6 @@ public class EvenementController {
         loadPage(actionEvent, "/org/example/view/categorie-view.fxml");
     }
 
-    private void loadPage(ActionEvent event, String fxmlPath) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.centerOnScreen();
-            stage.setMaximized(true);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }}
 
 
     public void afficherEvenements(ActionEvent actionEvent) {
@@ -450,20 +436,7 @@ public class EvenementController {
             System.out.println("❌ Erreur ouverture statistiques : " + e.getMessage());
         }
     }
-    @FXML
-    public void goToUtilisateurs(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AdminDashboard.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Dashboard Admin");
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "Erreur d'ouverture du tableau admin").showAndWait();
-        }
-    }
+
     @FXML
     private void exporterPDF(ActionEvent event) {
         Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
@@ -532,5 +505,65 @@ public class EvenementController {
             Toast.show((Stage) tableEvenements.getScene().getWindow(),
                     "❌ Veuillez sélectionner un événement et entrer un email !");
         }
+
     }
+    @FXML
+   /* private void payerEvenement(Evenement evenement) {
+        if (evenement != null) {
+            StripeLauncher.openStripeSession(
+                    evenement.getNom(),
+                    (int) (evenement.getPrix() * 100)
+            );
+            Toast.show((Stage) tableEvenements.getScene().getWindow(),
+                    "💳 Paiement ouvert dans le navigateur !");
+        } else {
+            Toast.show((Stage) tableEvenements.getScene().getWindow(),
+                    "❌ Sélectionnez un événement à payer !");
+        }
+    }*/
+
+
+
+
+
+
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void goToMatiere(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
+    }
+
+
+
+    public void goToUtilisateurs(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
+    }
+
+    @FXML
+    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+    @FXML
+    public void afficherJeux(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
 }

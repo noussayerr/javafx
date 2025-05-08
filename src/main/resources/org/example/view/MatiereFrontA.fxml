@@ -30,7 +30,7 @@
         <Label style="-fx-text-fill: #3a4a6d; -fx-font-size: 24px; -fx-font-weight: bold;" text="DysCover" HBox.hgrow="ALWAYS" />
 
         <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-padding: 0 15 0 0;">
-            <Button style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Accueil" />
+            <Button onAction="#goAccueil" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Accueil" />
             <Button onAction="#goMatiereF" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Cours" />
             <Button fx:id="profileButton" onAction="#ouvrirListeEvenements" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="les Événements" />
             <Button fx:id="btnEvenements" onAction="#handleProfile" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Profil" />

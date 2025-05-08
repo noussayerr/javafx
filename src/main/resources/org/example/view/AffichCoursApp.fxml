@@ -43,7 +43,7 @@
             <Button onAction="#goMatiereF" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Cours" />
             <Button fx:id="profileButton" onAction="#ouvrirListeEvenements" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="les Événements" />
             <Button fx:id="btnEvenements" onAction="#handleProfile" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Profil" />
-            <Button onAction="#showGames" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Jeux" />
+            <Button onAction="#showGames"   style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Jeux" />
             <Button fx:id="logoutButton" onAction="#logout" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Déconnexion">
                 <HBox.margin>
                     <Insets left="300.0" />
