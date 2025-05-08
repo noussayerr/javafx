@@ -39,6 +39,16 @@ public class ModifierPromotion implements Initializable {
 
     @FXML
     private TextField titreField;
+    @FXML
+    private Label titreError;
+    @FXML
+    private Label descriptionError;
+    @FXML
+    private Label reductionError;
+    @FXML
+    private Label dateDebutError;
+    @FXML
+    private Label dateFinError;
     public ModifierPromotion() {
     }
 
@@ -62,47 +72,66 @@ public class ModifierPromotion implements Initializable {
     void handleModifierPromotion(ActionEvent event) {
         if (selected == null || selected.getPromotion() == null) return;
 
+        // Réinitialiser tous les messages d'erreur avant validation
+        titreError.setText("");
+        descriptionError.setText("");
+        reductionError.setText("");
+        dateDebutError.setText("");
+        dateFinError.setText("");
+
+        boolean valid = true;
+
+        String titre = titreField.getText();
+        String description = descriptionField.getText();
+        String reductionText = reductionField.getText();
+        LocalDate dateDebut = dateDebutPicker.getValue();
+        LocalDate dateFin = dateFinPicker.getValue();
+
+        // === Validation ===
+        if (titre == null || titre.trim().isEmpty()) {
+            titreError.setText("Le titre ne doit pas être vide.");
+            valid = false;
+        }
+
+        if (description == null || description.trim().length() < 15) {
+            descriptionError.setText("La description doit contenir au moins 15 caractères.");
+            valid = false;
+        }
+
+        int reduction = 0;
         try {
-            String titre = titreField.getText();
-            String description = descriptionField.getText();
-            String reductionText = reductionField.getText();
-            LocalDate dateDebut = dateDebutPicker.getValue();
-            LocalDate dateFin = dateFinPicker.getValue();
-
-            // === Validation ===
-            if (titre == null || titre.trim().isEmpty()) {
-                showAlert("Champ invalide", "Le titre ne doit pas être vide.", Alert.AlertType.WARNING);
-                return;
+            reduction = Integer.parseInt(reductionText);
+            if (reduction < 0) {
+                reductionError.setText("La réduction ne peut pas être négative.");
+                valid = false;
             }
+        } catch (NumberFormatException e) {
+            reductionError.setText("La réduction doit être un nombre entier.");
+            valid = false;
+        }
 
-            if (description == null || description.trim().length() < 15) {
-                showAlert("Description invalide", "La description doit contenir au moins 15 caractères.", Alert.AlertType.WARNING);
-                return;
-            }
+        if (dateDebut == null) {
+            dateDebutError.setText("Veuillez sélectionner la date de début.");
+            valid = false;
+        }
 
-            int reduction;
-            try {
-                reduction = Integer.parseInt(reductionText);
-                if (reduction < 0) {
-                    showAlert("Valeur invalide", "La réduction ne peut pas être négative.", Alert.AlertType.WARNING);
-                    return;
-                }
-            } catch (NumberFormatException e) {
-                showAlert("Erreur de saisie", "La réduction doit être un nombre entier.", Alert.AlertType.ERROR);
-                return;
-            }
+        if (dateFin == null) {
+            dateFinError.setText("Veuillez sélectionner la date de fin.");
+            valid = false;
+        }
 
-            if (dateDebut == null || dateFin == null) {
-                showAlert("Champs manquants", "Veuillez sélectionner les dates de début et de fin.", Alert.AlertType.WARNING);
-                return;
-            }
+        if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin)) {
+            dateDebutError.setText("La date de début doit être avant la date de fin.");
+            dateFinError.setText("La date de fin doit être après la date de début.");
+            valid = false;
+        }
 
-            if (dateDebut.isAfter(dateFin)) {
-                showAlert("Date invalide", "La date de début ne peut pas être après la date de fin.", Alert.AlertType.WARNING);
-                return;
-            }
+        if (!valid) {
+            return; // Si une erreur existe, on arrête ici.
+        }
 
-            // === Mise à jour de la promotion ===
+        // === Mise à jour de la promotion ===
+        try {
             Promotion promo = selected.getPromotion();
             promo.setTitre(titre.trim());
             promo.setDescription(description.trim());
@@ -114,7 +143,6 @@ public class ModifierPromotion implements Initializable {
 
             showAlert("Succès", "Promotion modifiée avec succès.", Alert.AlertType.INFORMATION);
             this.goBackToListScene();
-
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert("Erreur", "Une erreur est survenue lors de la modification.", Alert.AlertType.ERROR);

@@ -247,19 +247,55 @@ public class EvenementController {
         if (fromIndex >= toIndex || filtered.isEmpty()) {
             tableEvenements.setItems(FXCollections.observableArrayList());
         } else {
-            // Tri de la sous-liste avec le comparateur actif
             List<Evenement> subList = new ArrayList<>(filtered.subList(fromIndex, toIndex));
             subList.sort(currentComparator);
             tableEvenements.setItems(FXCollections.observableArrayList(subList));
         }
 
-        return new AnchorPane(); // requis pour la pagination
+        // 🔁 TOUJOURS redéfinir la CellFactory (en dehors du if)
+        colActions.setCellFactory(param -> new TableCell<>() {
+            private final Button btnModifier = new Button("📝 Modifier");
+            private final Button btnSupprimer = new Button("🗑️ Supprimer");
+            private final HBox hBox = new HBox(10, btnModifier, btnSupprimer);
+
+            {
+                btnModifier.setStyle("-fx-background-color: linear-gradient(to right, #74ebd5, #acb6e5); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 25;");
+                btnSupprimer.setStyle("-fx-background-color: linear-gradient(to right, #8e44ad, #9b59b6); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 25;");
+                hBox.setStyle("-fx-alignment: center;");
+
+                btnModifier.setOnAction(e -> {
+                    Evenement evt = getTableView().getItems().get(getIndex());
+                    if (evt != null) {
+                        tableEvenements.getSelectionModel().select(evt);
+                        modifierEvenement();
+                    }
+                });
+
+                btnSupprimer.setOnAction(e -> {
+                    Evenement evt = getTableView().getItems().get(getIndex());
+                    if (evt != null) {
+                        tableEvenements.getSelectionModel().select(evt);
+                        supprimerEvenement();
+                    }
+                });
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(hBox);
+                }
+            }
+        });
+
+        return new AnchorPane();
     }
 
 
 
-
-    public void rafraichirTable() {
+            public void rafraichirTable() {
         EvenementDAO dao = new EvenementDAO();
         allEvenements.setAll(dao.getAllEvenements());
         pagination.setPageCount((int) Math.ceil((double) allEvenements.size() / ROWS_PER_PAGE));
@@ -401,6 +437,8 @@ public class EvenementController {
         }
     }
 
+
+
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -413,6 +451,18 @@ public class EvenementController {
         loadPage(actionEvent, "/org/example/view/categorie-view.fxml");
     }
 
+    private void loadPage(ActionEvent event, String fxmlPath) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }}
 
 
     public void afficherEvenements(ActionEvent actionEvent) {
@@ -436,7 +486,20 @@ public class EvenementController {
             System.out.println("❌ Erreur ouverture statistiques : " + e.getMessage());
         }
     }
-
+    @FXML
+    public void goToUtilisateurs(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AdminDashboard.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Dashboard Admin");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Erreur d'ouverture du tableau admin").showAndWait();
+        }
+    }
     @FXML
     private void exporterPDF(ActionEvent event) {
         Evenement selected = tableEvenements.getSelectionModel().getSelectedItem();
@@ -505,65 +568,5 @@ public class EvenementController {
             Toast.show((Stage) tableEvenements.getScene().getWindow(),
                     "❌ Veuillez sélectionner un événement et entrer un email !");
         }
-
     }
-    @FXML
-   /* private void payerEvenement(Evenement evenement) {
-        if (evenement != null) {
-            StripeLauncher.openStripeSession(
-                    evenement.getNom(),
-                    (int) (evenement.getPrix() * 100)
-            );
-            Toast.show((Stage) tableEvenements.getScene().getWindow(),
-                    "💳 Paiement ouvert dans le navigateur !");
-        } else {
-            Toast.show((Stage) tableEvenements.getScene().getWindow(),
-                    "❌ Sélectionnez un événement à payer !");
-        }
-    }*/
-
-
-
-
-
-
-    private void loadPage(ActionEvent event, String fxmlPath) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.centerOnScreen();
-            stage.setMaximized(true);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void goToMatiere(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
-    }
-
-
-
-    public void goToUtilisateurs(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
-    }
-
-    @FXML
-    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
-    }
-
-    @FXML
-    public void afficherJeux(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
-    }
-
 }

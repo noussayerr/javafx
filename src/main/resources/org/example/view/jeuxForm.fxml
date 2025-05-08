@@ -1,160 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.paint.*?>
 
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.shape.Circle?>
-<BorderPane xmlns:fx="http://javafx.com/fxml"
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.controller.JeuxController"
-            prefHeight="300" prefWidth="600">
-    <!-- Top Bar - Header (same as dashboard) -->
-    <top>
-        <HBox style="-fx-background-color: #34495e; -fx-padding: 15px;" alignment="CENTER_LEFT">
-            <ImageView fitHeight="40" fitWidth="40">
-                <Image url="@/images/admin-icon.png"/>
-            </ImageView>
-            <Label text="Gestion des Jeux"
-                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 0 0 0 10;"/>
+            style="-fx-background-color: linear-gradient(to bottom right, #f5f7fa, #c3cfe2);"
+            prefHeight="500" prefWidth="700">
 
-            <Region HBox.hgrow="ALWAYS"/>
+    <!-- Header -->
+    <StackPane layoutX="0" layoutY="0" prefWidth="700" style="-fx-background-color: rgba(0,0,0,0.1); -fx-padding: 15;">
+        <Label text="Gestion des Jeux"
+               style="-fx-text-fill: #2c3e50; -fx-font-size: 24px; -fx-font-weight: bold;">
+            <effect>
+                <DropShadow color="rgba(0,0,0,0.1)" radius="3" offsetX="2" offsetY="2"/>
+            </effect>
+        </Label>
+    </StackPane>
 
-            <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Button fx:id="logoutButton"
-                        text="Déconnexion"
-                        onAction="#handleLogout"
-                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Circle radius="20" fill="#3498db" stroke="#ecf0f1" strokeWidth="1"/>
-            </HBox>
-        </HBox>
-    </top>
+    <!-- Main Form -->
+    <VBox layoutX="50" layoutY="70" spacing="20" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);">
+        <GridPane hgap="15" vgap="15" alignment="CENTER">
+            <!-- Column constraints -->
+            <columnConstraints>
+                <ColumnConstraints halignment="RIGHT" prefWidth="150"/>
+                <ColumnConstraints halignment="LEFT" prefWidth="400"/>
+            </columnConstraints>
 
-    <!-- Left Side - Navigation Menu (same as dashboard) -->
-    <left>
-        <VBox style="-fx-background-color: #2c3e50; -fx-padding: 20px 10px;"
-              spacing="15" prefWidth="200">
-            <Label text="NAVIGATION" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold; -fx-padding: 0 0 10 5;"/>
+            <!-- Row 0: Nom -->
+            <Label text="Nom:" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="nomField" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Label fx:id="nomError" textFill="#e74c3c" style="-fx-font-size: 12px;" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.valignment="BASELINE"/>
 
-            <Button text="Utilisateurs"
-                    onAction="#goToUtilisateurs"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/users-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
+            <!-- Row 1: Description -->
+            <Label text="Description:" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextArea fx:id="descriptionField" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-pref-height: 80;" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label fx:id="descError" textFill="#e74c3c" style="-fx-font-size: 12px;" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="BASELINE"/>
 
-            <Button  text="Matières"
-                     style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;"
-                     onAction="#goToMatiere">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/matiere-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
+            <!-- Row 2: Type -->
+            <Label text="Type:" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <TextField fx:id="typeField" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8;" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <Label fx:id="typeError" textFill="#e74c3c" style="-fx-font-size: 12px;" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="BASELINE"/>
 
-            <Button text="Abonnements"
-                    onAction="#handleAbonnementsNavigation"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/stats-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
+            <!-- Row 3: Date de Création -->
+            <Label text="Date de Création:" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <DatePicker fx:id="docPicker" style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            <Label fx:id="docError" textFill="#e74c3c" style="-fx-font-size: 12px;" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="BASELINE"/>
 
-            <Button text="Événements"
-                    fx:id="btnEvenements"
-                    onAction="#afficherEvenements"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/events-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-
-            <Button text="Jeux"
-                    onAction="#afficherJeux"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/events-icon.png" />
-                    </ImageView>
-                </graphic>
-            </Button>
-
-
-            <Button text="Statistiques"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/stats-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-
-            <Button text="Paramètres"
-                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="20" fitWidth="20">
-                        <Image url="@/images/settings-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-
-            <Region VBox.vgrow="ALWAYS"/>
-
-            <Button text="Aide"
-                    style="-fx-background-color: transparent; -fx-text-fill: #bdc3c7; -fx-font-size: 12px; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <ImageView fitHeight="16" fitWidth="16">
-                        <Image url="@/images/help-icon.png"/>
-                    </ImageView>
-                </graphic>
-            </Button>
-        </VBox>
-    </left>
-    <center>
-    <VBox style="-fx-padding: 20px;" spacing="20">
-        <GridPane hgap="10" vgap="10">
-            <Label text="Nom:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <TextField fx:id="nomField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-            <Label fx:id="nomError" textFill="red"/>
-            <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <TextArea fx:id="descriptionField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-            <Label fx:id="descError" textFill="red"/>
-            <Label text="Type:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-            <TextField fx:id="typeField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-            <Label fx:id="typeError" textFill="red"/>
-            <Label text="Date de Création:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-            <DatePicker fx:id="docPicker" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-            <Label fx:id="docError" textFill="red"/>
-            <Label text="Game File:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <!-- Row 4: Game File -->
+            <Label text="Game File:" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
             <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                <TextField fx:id="filePathField" editable="false" promptText="No file selected"/>
-                <Button text="Browse" onAction="#handleBrowse"/>
+                <TextField fx:id="filePathField" editable="false" promptText="No file selected"
+                           style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-pref-width: 300;"/>
+                <Button text="Browse" onAction="#handleBrowse"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 8 15;"/>
             </HBox>
-            <Label fx:id="fileError" textFill="red"/>
-            <Label text="controller File:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+            <Label fx:id="fileError" textFill="#e74c3c" style="-fx-font-size: 12px;" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="BASELINE"/>
+
+            <!-- Row 5: Controller File -->
+            <Label text="Controller File:" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
             <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="5">
-                <TextField fx:id="controllerPathField" editable="false" promptText="No file selected"/>
-                <Button text="Browserrrr" onAction="#handleBrowseController"/>
+                <TextField fx:id="controllerPathField" editable="false" promptText="No file selected"
+                           style="-fx-background-radius: 5; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-padding: 8; -fx-pref-width: 300;"/>
+                <Button text="Browse" onAction="#handleBrowseController"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 8 15;"/>
             </HBox>
-            <Label fx:id="controllerError" textFill="red"/>
+            <Label fx:id="controllerError" textFill="#e74c3c" style="-fx-font-size: 12px;" GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.valignment="BASELINE"/>
         </GridPane>
 
-        <HBox spacing="10">
-            <Button text="Ajouter" onAction="#ajouterJeux"/>
-            <Button text="Modifier" onAction="#modifierJeux"/>
-            <Button text="Annuler" onAction="#goToList"/>
+        <!-- Action Buttons -->
+        <HBox spacing="15" alignment="CENTER">
+            <Button text="Ajouter" onAction="#ajouterJeux"
+                    style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 10 25; -fx-font-size: 14px;"/>
+            <Button text="Modifier" onAction="#modifierJeux"
+                    style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 10 25; -fx-font-size: 14px;"/>
+            <Button text="Annuler" onAction="#goToList"
+                    style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 10 25; -fx-font-size: 14px;"/>
         </HBox>
     </VBox>
-    </center>
-</BorderPane>
+</AnchorPane>

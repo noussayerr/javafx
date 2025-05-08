@@ -11,6 +11,7 @@ import java.util.List;
 
 public class ServiceAbonnement implements IService<Abonnement> {
     private Connection connection;
+    private ServicePromotion servicePromotion=new ServicePromotion();
     public ServiceAbonnement() {
         connection= MyDatabase.getInstance().getConnection();
     }
@@ -73,12 +74,41 @@ public class ServiceAbonnement implements IService<Abonnement> {
             a.setDescription(rs.getString("description"));
             a.setDuration(Duration.valueOf(rs.getString("duration").toUpperCase()));
 
-            // Vérifie si une promotion est liée
+
             int promoId = rs.getInt("promo_id");
+            Promotion p=servicePromotion.getById(promoId);
+            a.setPromotion(p);
 
             list.add(a);
         }
         return list;
+    }
+    public Abonnement getById(int id) throws SQLException {
+        String req = "SELECT * FROM abonnement WHERE id = ?";
+        PreparedStatement pst =connection.prepareStatement(req);
+        pst.setInt(1, id);
+        ResultSet rs = pst.executeQuery();
+
+        if (rs.next()) {
+            Abonnement abonnement = new Abonnement();
+            abonnement.setId(rs.getInt("id"));
+            abonnement.setTitreAbonnement(rs.getString("titre_abonnement"));
+            abonnement.setDescription(rs.getString("description"));
+            abonnement.setPrix(rs.getInt("prix"));
+            abonnement.setDuration(Duration.valueOf(rs.getString("duration").toUpperCase()));
+
+            // Si tu gères les promotions :
+            int promoId = rs.getInt("promotion_id");
+            if (promoId != 0) {
+                ServicePromotion servicePromotion = new ServicePromotion();
+                Promotion promo = servicePromotion.getById(promoId); // Crée cette méthode si nécessaire
+                abonnement.setPromotion(promo);
+            }
+
+            return abonnement;
+        }
+
+        return null;
     }
 
 }

@@ -1,33 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.util.*?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.controller.ScoreController"
-            prefHeight="400.0" prefWidth="600.0">
-    <VBox spacing="10">
-        <HBox spacing="10">
-            <Label text="Filtrer par ID utilisateur ou jeu:" />
-            <TextField fx:id="filterField" />
-            <Button text="Afficher" onAction="#loadScores"/>
+            style="-fx-background-color: linear-gradient(to bottom right, #2c3e50, #4ca1af);"
+            prefHeight="600.0" prefWidth="900.0">
+
+    <!-- Header with title and back button -->
+    <StackPane layoutX="0.0" layoutY="0.0" prefWidth="900.0" style="-fx-background-color: rgba(0,0,0,0.3); -fx-padding: 15;">
+        <HBox alignment="CENTER_LEFT" spacing="20">
+            <Button text="← Retour" onAction="#goBack"
+                    style="-fx-background-color: #ff9a8b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 15; -fx-padding: 8 15;">
+                <effect>
+                    <DropShadow color="#00000060" radius="3" offsetX="2" offsetY="2"/>
+                </effect>
+            </Button>
+            <Label text="Classement des Scores"
+                   style="-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;">
+                <effect>
+                    <DropShadow color="#00000080" radius="5" offsetX="2" offsetY="2"/>
+                </effect>
+            </Label>
         </HBox>
-        <HBox spacing="10">
-            <RadioButton fx:id="byUserRadio" text="Utilisateur"/>
-            <RadioButton fx:id="byGameRadio" text="Jeu"/>
+    </StackPane>
+
+    <!-- Main content area -->
+    <VBox layoutX="50.0" layoutY="80.0" spacing="20" style="-fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 15; -fx-padding: 25;">
+        <!-- Filter controls -->
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <Label text="Filtrer par jeu:"
+                   style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+            <ComboBox fx:id="gameFilter"
+                      promptText="Sélectionnez un jeu"
+                      style="-fx-background-color: rgba(255,255,255,0.8); -fx-background-radius: 20; -fx-padding: 8 15; -fx-font-size: 14px; -fx-pref-width: 250;"/>
+
+            <Button text="Afficher"
+                    onAction="#loadScores"
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 25; -fx-font-size: 14px; -fx-cursor: hand;">
+                <effect>
+                    <DropShadow color="#00000060" radius="3" offsetX="2" offsetY="2"/>
+                </effect>
+            </Button>
         </HBox>
 
-        <TableView fx:id="scoreTable" prefHeight="500">
+        <!-- Table view -->
+        <TableView fx:id="scoreTable" prefHeight="400.0" prefWidth="800.0"
+                   style="-fx-background-color: transparent; -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 10;">
             <columns>
-                <TableColumn fx:id="idColumn" text="ID"/>
-                <TableColumn fx:id="usernameColumn" text="Utilisateur"/>
-                <TableColumn fx:id="jeuColumn" text="Jeu"/>
-                <TableColumn fx:id="scoreColumn" text="High Score"/>
+                <TableColumn fx:id="idColumn" text="ID" prefWidth="80"
+                             style="-fx-background-color: rgba(255,255,255,0.1);"/>
+                <TableColumn fx:id="usernameColumn" text="Utilisateur" prefWidth="200"
+                             style="-fx-background-color: rgba(255,255,255,0.1);"/>
+                <TableColumn fx:id="jeuColumn" text="Jeu" prefWidth="200"
+                             style="-fx-background-color: rgba(255,255,255,0.1);"/>
+                <TableColumn fx:id="scoreColumn" text="High Score" prefWidth="150"
+                             style="-fx-background-color: rgba(255,255,255,0.1);"/>
             </columns>
         </TableView>
     </VBox>
+
+    <!-- Footer decoration -->
+    <HBox alignment="CENTER" layoutY="550.0" prefWidth="900.0">
+        <Label text="© 2023 Game Leaderboard"
+               style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-style: italic;"/>
+    </HBox>
 </AnchorPane>

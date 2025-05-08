@@ -134,7 +134,12 @@ public class ModifierCategorieController {
         // ✅ Mise à jour
         selectedCategorie.setNom(nom);
         selectedCategorie.setDescription(description);
-        selectedCategorie.setImage(imagePathFinal);
+        if (imagePathFinal != null && !imagePathFinal.isEmpty()) {
+            selectedCategorie.setImage(imagePathFinal);
+        } else {
+            selectedCategorie.setImage(selectedCategorie.getImage());
+        }
+
 
         CategorieDAO dao = new CategorieDAO();
         dao.modifierCategorie(selectedCategorie);

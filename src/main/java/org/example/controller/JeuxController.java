@@ -2,15 +2,21 @@ package org.example.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.entity.Jeux;
@@ -20,16 +26,23 @@ import org.example.utils.SessionManager;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
 public class JeuxController {
 
+    // Search and Filter components
+    @FXML private TextField searchField;
+    @FXML private ComboBox<String> typeFilter;
+    @FXML private FlowPane gamesContainer;
+
+    // Game data
+    private ObservableList<Jeux> allGames;
+    private FilteredList<Jeux> filteredGames;
+    private final ServiceJeux serviceJeux = new ServiceJeux();
     @FXML private TextField nomField;
     @FXML private TextArea descriptionField;
     @FXML private TextField typeField;
@@ -59,22 +72,19 @@ public class JeuxController {
     @FXML private Button launchButton;
 
     @FXML
-    public void initialize() {
+    private void initialize() {
+        // Common initialization for both views
         if (jeuxTable != null) {
+            // Initialize table columns (common for both views)
             idColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getId()).asObject());
             nomColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getNom()));
             descriptionColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getDescription()));
             typeColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getType()));
             docColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getDoC()));
-            loadJeux();
-        }
 
-        // Disable action buttons only if they are present
-        if (deleteButton != null) deleteButton.setDisable(true);
-        if (modifyButton != null) modifyButton.setDisable(true);
-        if (launchButton != null) launchButton.setDisable(true);
+            loadJeux(); // Load data for admin view
 
-        if (jeuxTable != null) {
+            // Setup selection listener (common for both views)
             jeuxTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
                 if (newSelection != null) {
                     selectedJeux = newSelection;
@@ -89,8 +99,13 @@ public class JeuxController {
                 }
             });
         }
-    }
 
+        // Only initialize apprenant-specific components if they exist
+        if (searchField != null && typeFilter != null && gamesContainer != null) {
+            setupSearchAndFilter();
+            loadGames();
+        }
+    }
     public void setSelectedJeux(Jeux jeux) {
         this.selectedJeux = jeux;
         nomField.setText(jeux.getNom());
@@ -99,7 +114,6 @@ public class JeuxController {
         docPicker.setValue(jeux.getDoC());
     }
 
-    private final ServiceJeux serviceJeux = new ServiceJeux();
 
     @FXML
     private void handleBrowse(ActionEvent event) {
@@ -145,52 +159,110 @@ public class JeuxController {
     @FXML
     private void ajouterJeux(ActionEvent event) {
         String nom = nomField.getText().trim();
-        String fxmlFileName = nom + ".fxml";
-        String controllerFileName = capitalize(nom) + "Controller.java"; // Convention: Match game name
+        String description = descriptionField.getText().trim();
+        String type = typeField.getText().trim();
+        LocalDate date = docPicker.getValue();
 
-        if (selectedGameFile == null || selectedControllerFile == null) {
-            fileError.setText("Please select both FXML and Controller files.");
+        // Vérification champs vides
+        if (nom.isEmpty() || description.isEmpty() || type.isEmpty() || date == null) {
+            fileError.setText("Tous les champs sont obligatoires.");
             return;
         }
 
-        // Copy FXML into org.example.view
+        // Vérification fichiers sélectionnés
+        if (selectedGameFile == null || selectedControllerFile == null) {
+            fileError.setText("Veuillez sélectionner les fichiers FXML et Controller.");
+            return;
+        }
+
+        // Vérification doublon
+        if (serviceJeux.jeuExiste(nom)) {
+            fileError.setText("Erreur : Ce jeu existe déjà.");
+            return;
+        }
+
+        // Préparation noms de fichiers
+        String fxmlFileName = nom + ".fxml";
+        String controllerClassName = capitalize(nom) + "Controller.java";
         Path fxmlDestPath = Paths.get("src/main/resources/org/example/view/", fxmlFileName);
-        // Copy Controller into org.example.controller
-        Path controllerDestPath = Paths.get("src/main/java/org/example/controller/", controllerFileName);
+        Path controllerDestPath = Paths.get("src/main/java/org/example/controller/", controllerClassName);
 
         try {
+            // Copie du fichier FXML
             Files.copy(selectedGameFile.toPath(), fxmlDestPath, StandardCopyOption.REPLACE_EXISTING);
-            Files.copy(selectedControllerFile.toPath(), controllerDestPath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Modification du nom de classe dans le controller
+            String content = new String(Files.readAllBytes(selectedControllerFile.toPath()), StandardCharsets.UTF_8);
+            content = content.replaceFirst("public class .*?\\s", "public class " + capitalize(nom) + "Controller ");
+            Files.write(controllerDestPath, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
         } catch (IOException e) {
-            fileError.setText("Failed to copy files.");
+            fileError.setText("Erreur lors de la copie des fichiers.");
             e.printStackTrace();
             return;
         }
 
-        // Persist the game info (we only store metadata, not files)
+        // Création du jeu
         Jeux newGame = new Jeux();
         newGame.setNom(nom);
-        newGame.setDescription(descriptionField.getText().trim());
-        newGame.setType(typeField.getText().trim());
-        newGame.setDoC(docPicker.getValue());
+        newGame.setDescription(description);
+        newGame.setType(type);
+        newGame.setDoC(date);
 
         try {
             serviceJeux.ajouter(newGame);
-            clearFields();
+            clearFields(); // Méthode à toi pour réinitialiser les champs
+            fileError.setText("Jeu ajouté avec succès !");
         } catch (SQLException e) {
+            fileError.setText("Erreur SQL lors de l'ajout du jeu.");
             e.printStackTrace();
         }
     }
 
 
-
     @FXML
     void modifierJeux(ActionEvent event) {
         if (selectedJeux != null && validateFields()) {
-            selectedJeux.setNom(nomField.getText());
+            String oldName = selectedJeux.getNom();
+            String newName = nomField.getText().trim();
+
+            selectedJeux.setNom(newName);
             selectedJeux.setDescription(descriptionField.getText());
             selectedJeux.setType(typeField.getText());
             selectedJeux.setDoC(docPicker.getValue());
+
+            if (!oldName.equals(newName)) {
+                String oldFxmlFile = oldName + ".fxml";
+                String newFxmlFile = newName + ".fxml";
+
+                String oldControllerFile = capitalize(oldName) + "Controller.java";
+                String newControllerFile = capitalize(newName) + "Controller.java";
+
+                Path oldFxmlPath = Paths.get("src/main/resources/org/example/view/", oldFxmlFile);
+                Path newFxmlPath = Paths.get("src/main/resources/org/example/view/", newFxmlFile);
+
+                Path oldControllerPath = Paths.get("src/main/java/org/example/controller/", oldControllerFile);
+                Path newControllerPath = Paths.get("src/main/java/org/example/controller/", newControllerFile);
+
+                try {
+                    // Rename FXML file
+                    if (Files.exists(oldFxmlPath)) {
+                        Files.move(oldFxmlPath, newFxmlPath, StandardCopyOption.REPLACE_EXISTING);
+                    }
+
+                    // Rename Controller file
+                    if (Files.exists(oldControllerPath)) {
+                        String content = new String(Files.readAllBytes(oldControllerPath), StandardCharsets.UTF_8);
+                        content = content.replaceFirst("public class .*?\\s", "public class " + capitalize(newName) + "Controller ");
+                        Files.write(newControllerPath, content.getBytes(StandardCharsets.UTF_8));
+                        Files.delete(oldControllerPath);
+                    }
+                } catch (IOException e) {
+                    fileError.setText("Failed to rename files.");
+                    e.printStackTrace();
+                    return;
+                }
+            }
 
             try {
                 serviceJeux.modifier(selectedJeux);
@@ -341,7 +413,7 @@ public class JeuxController {
     public void goToList(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
-            AnchorPane listPane = loader.load();
+            Parent listPane = loader.load(); // Use Parent instead of AnchorPane
 
             // Get the stage from the event source
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -351,6 +423,7 @@ public class JeuxController {
             e.printStackTrace();
         }
     }
+
     @FXML
     public void launchGame() {
         if (selectedJeux == null) {
@@ -394,109 +467,220 @@ public class JeuxController {
             stage.setScene(new Scene(root));
             stage.setTitle("Connexion");
             stage.centerOnScreen();
-            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
+            showAlertAdmin(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
+            showAlertAdmin(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", e.getMessage());
             e.printStackTrace();
         }
     }
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+    private void setupSearchAndFilter() {
+        try {
+            // Get distinct game types from database
+            List<String> gameTypes = serviceJeux.getDistinctGameTypes();
+
+            // Add "Tous" option first
+            gameTypes.add(0, "Tous");
+
+            // Initialize type filter with actual categories from database
+            typeFilter.getItems().addAll(gameTypes);
+            typeFilter.getSelectionModel().selectFirst();
+
+            // Set up listeners for search and filter
+            searchField.textProperty().addListener((obs, oldVal, newVal) -> filterGames());
+            typeFilter.valueProperty().addListener((obs, oldVal, newVal) -> filterGames());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Fallback to default types if database fails
+            typeFilter.getItems().addAll("Tous", "Mémoire", "Vocabulaire", "Orthographe", "Logique");
+            typeFilter.getSelectionModel().selectFirst();
+        }
+    }
+    private void loadGames() {
+        try {
+            List<Jeux> gamesList = serviceJeux.afficher();
+            allGames = FXCollections.observableArrayList(gamesList);
+            filteredGames = new FilteredList<>(allGames);
+
+            filterGames(); // Initial display with all games
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Erreur de chargement", "Impossible de charger les jeux.");
+        }
+    }
+
+    private void filterGames() {
+        String searchText = searchField.getText().toLowerCase();
+        String selectedType = typeFilter.getValue();
+
+        filteredGames.setPredicate(game -> {
+            // Check if game matches search text
+            boolean matchesSearch = game.getNom().toLowerCase().contains(searchText) ||
+                    game.getDescription().toLowerCase().contains(searchText);
+
+            // Check if game matches selected type
+            boolean matchesType = selectedType.equals("Tous") ||
+                    game.getType().equalsIgnoreCase(selectedType);
+
+            return matchesSearch && matchesType;
+        });
+
+        displayGames();
+    }
+
+    private void displayGames() {
+        gamesContainer.getChildren().clear();
+
+        for (Jeux game : filteredGames) {
+            VBox card = createGameCard(game);
+            gamesContainer.getChildren().add(card);
+        }
+    }
+    private VBox createGameCard(Jeux game) {
+        // Card container
+        VBox card = new VBox(10);
+        card.setStyle("-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 15;");
+        card.setEffect(new javafx.scene.effect.DropShadow(10, Color.gray(0.5)));
+        card.setPrefWidth(250);
+        card.setMinHeight(300);
+
+        // Game image
+        ImageView imageView = new ImageView();
+        try {
+            Image image = new Image(getClass().getResourceAsStream(
+                    "/org/example/images/games/" + game.getNom().replaceAll("\\s+", "") + ".png"));
+            imageView.setImage(image);
+        } catch (Exception e) {
+            // Use placeholder if no image found
+            imageView.setImage(new Image(getClass().getResourceAsStream(
+                    "/org/example/data/img.png")));
+        }
+        imageView.setFitWidth(220);
+        imageView.setFitHeight(150);
+        imageView.setPreserveRatio(true);
+
+        // Game name - THIS WAS THE ISSUE - you had type here instead of name
+        Label nameLabel = new Label(game.getNom());  // Changed from game.getType() to game.getNom()
+        nameLabel.setWrapText(true);
+        nameLabel.setStyle("-fx-text-fill: #4a6baf; -fx-font-weight: bold;");
+
+        // Game type - THIS WAS SHOWING THE NAME INSTEAD OF TYPE
+        Label typeLabel = new Label(game.getType());  // Make sure this is game.getType() not game.getNom()
+        typeLabel.setStyle("-fx-text-fill: #4a6baf; -fx-font-weight: light;");
+
+        // Game description (truncated)
+        Label descLabel = new Label(game.getDescription());
+        descLabel.setWrapText(true);
+        descLabel.setMaxHeight(40);
+        descLabel.setStyle("-fx-font-size: 12px;");
+
+        // Play button
+        Button playButton = new Button("Jouer");
+        playButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+        playButton.setOnAction(e -> launchGameApp(game));
+        playButton.setMaxWidth(Double.MAX_VALUE);
+
+        // Leaderboard button
+        Button leaderboardButton = new Button("Classement");
+        leaderboardButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold;");
+        leaderboardButton.setOnAction(e -> goToLeaderboard(game));
+        leaderboardButton.setMaxWidth(Double.MAX_VALUE);
+
+        VBox buttonBox = new VBox(5, playButton, leaderboardButton);
+        buttonBox.setPadding(new Insets(10, 0, 0, 0));
+
+        card.getChildren().addAll(imageView, nameLabel, typeLabel, descLabel, buttonBox);
+        card.setAlignment(javafx.geometry.Pos.TOP_CENTER);
+
+        return card;
+    }
+    private void launchGameApp(Jeux game) {
+        try {
+            String fxmlFile = "/org/example/view/" + game.getNom().replaceAll("\\s+", "") + ".fxml";
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle(game.getNom());
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Jeu non disponible", "Impossible de charger ce jeu.");
+        }
+    }
+
+    private void goToLeaderboard(Jeux game) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/score.fxml"));
+            Parent root = loader.load();
+
+            // You can pass game information to the leaderboard controller if needed
+            // ScoreController controller = loader.getController();
+            // controller.setGame(game);
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Classement - " + game.getNom());
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Existing navigation methods (keep all your original methods)
+    @FXML
+    private void showHome(ActionEvent event) throws IOException {
+        loadView("EnseignantDashboard.fxml", event);
+    }
+
+    @FXML
+    private void showCourses(ActionEvent event) throws IOException {
+        loadView("CoursApprenant.fxml", event);
+    }
+
+    @FXML
+    private void ouvrirListeEvenements(ActionEvent event) throws IOException {
+        loadView("Evenement-list.fxml", event);
+    }
+
+    @FXML
+    private void handleProfile(ActionEvent event) throws IOException {
+        loadView("ProfileApprenant.fxml", event);
+    }
+
+
+
+    private void loadView(String fxmlFile, ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/" + fxmlFile));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    private void showAlertAdmin(Alert.AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
     }
-    // Navigation methods
     @FXML
-    private void showHome(ActionEvent event) throws IOException {
+    private void goToLeaderboard(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/EnseignantDashboard.fxml"));
-            AnchorPane listPane = loader.load();
-
-            // Get the stage from the event source
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/score.fxml"));
+            Parent listPane = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(listPane));
-            stage.show(); // Show the new scene
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    
-
-    @FXML
-    private void showGames() throws IOException {
-        loadView("jeuxApprenant.fxml");
-    }
-
-
-
-    @FXML
-    private void handleProfile(ActionEvent event) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ProfileApprenant.fxml"));
-            AnchorPane listPane = loader.load();
-
-            // Get the stage from the event source
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(listPane));
-            stage.show(); // Show the new scene
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    @FXML
-    private AnchorPane rootPane;
-    private void loadView(String fxmlFile) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/" + fxmlFile));
-        Stage stage = (Stage) rootPane.getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
-    }
-
-
-
-
-    private void loadPage(ActionEvent event, String fxmlPath) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.centerOnScreen();
-            stage.setMaximized(true);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    public void goToMatiere(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/ListeMatiere.fxml");
-    }
-
-    public void afficherEvenements(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/evenements-view.fxml");
-    }
-
-    public void goToUtilisateurs(ActionEvent actionEvent) {
-        loadPage(actionEvent, "/org/example/view/AdminDashboard.fxml");
-    }
-
-    @FXML
-    private void handleAbonnementsNavigation(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/ListAbonnement.fxml"));
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
-    }
-
-    @FXML
-    public void afficherJeux(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/org/example/view/jeuxIndex.fxml"));
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
-    }
-
 }

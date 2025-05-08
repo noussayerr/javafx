@@ -17,7 +17,8 @@ import org.example.utils.SessionManager;
 import java.io.IOException;
 
 public class ApprenantDashboardController {
-
+    @FXML
+    public Button btnReclamation;
     // Éléments du FXML
     @FXML
     private Button logoutButton;
@@ -48,30 +49,27 @@ public class ApprenantDashboardController {
     @FXML
     private void logout() {
         try {
-            // Effacer la session utilisateur
+            // Clear the session
             SessionManager.getInstance().logout();
 
-            // Charger la vue de connexion
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Login.fxml"));
+            // Load the login screen
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Home.fxml"));
             Parent root = loader.load();
-
-            // Obtenir la scène actuelle depuis le bouton existant
             Stage stage = (Stage) logoutButton.getScene().getWindow();
-
-            // Changer la scène
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
             stage.setTitle("Connexion");
             stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
 
-            // Afficher un message de confirmation
-            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie",
-                    "Vous avez été déconnecté avec succès.", "");
-
+            // Show logout confirmation
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Erreur lors de la déconnexion", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", "Impossible de charger l'écran de connexion: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
 
     private void showAlert(Alert.AlertType type, String title, String header, String content) {
@@ -162,4 +160,32 @@ public class ApprenantDashboardController {
     }
 
 
+    @FXML
+    private void goAbonnement(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AbonnementApprenant.fxml"));
+            AnchorPane listPane = loader.load();
+
+            // Get the stage from the event source
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show(); // Show the new scene
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void goReclamation(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/AjoutReclamation.fxml"));
+            AnchorPane listPane = loader.load();
+
+            // Get the stage from the event source
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(listPane));
+            stage.show(); // Show the new scene
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -172,3 +172,14 @@
     -fx-font-family: "Segoe UI", sans-serif;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0.5, 1, 2);
 }
+.map-label {
+    -fx-font-size: 10px; /* Taille de police plus petite */
+    -fx-font-family: "Arial"; /* Police stylée */
+    -fx-text-fill: black; /* Couleur du texte */
+    -fx-background-color: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+    -fx-padding: 2px 4px; /* Espacement interne */
+    -fx-border-color: black; /* Bordure noire */
+    -fx-border-width: 1px; /* Épaisseur de la bordure */
+    -fx-border-radius: 3px; /* Bordures arrondies */
+    -fx-background-radius: 3px; /* Fond arrondi */
+}

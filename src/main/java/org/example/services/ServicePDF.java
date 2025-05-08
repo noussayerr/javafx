@@ -1,4 +1,5 @@
 package org.example.services;
+
 import org.example.entity.Evenement;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -16,7 +17,6 @@ import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
 
-
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,7 +33,7 @@ public class ServicePDF {
         Document doc = new Document(pdf);
         doc.setMargins(50, 50, 50, 50);
 
-        // ✅ Logo watermark
+        // Logo watermark
         URL logoUrl = ServicePDF.class.getResource("/images/logo.png");
         if (logoUrl != null) {
             ImageData imageData = ImageDataFactory.create(logoUrl);
@@ -45,7 +45,7 @@ public class ServicePDF {
             doc.add(logo);
         }
 
-        // ✅ Titre du document
+        // Document title
         Paragraph titre = new Paragraph("📋 Détails de l'Événement")
                 .setFontSize(24)
                 .setBold()
@@ -54,12 +54,12 @@ public class ServicePDF {
                 .setMarginBottom(15);
         doc.add(titre);
 
-        // ✅ Ligne de séparation
+        // Separation line
         SolidLine solidLine = new SolidLine(1f);
         solidLine.setColor(new DeviceGray(0.6f));
         doc.add(new LineSeparator(solidLine).setMarginBottom(20));
 
-        // ✅ Sous-titre
+        // Subtitle
         Paragraph sousTitre = new Paragraph("Informations essentielles sur l'événement")
                 .setFontSize(12)
                 .setFontColor(new DeviceGray(0.4f))
@@ -67,7 +67,7 @@ public class ServicePDF {
                 .setMarginBottom(10);
         doc.add(sousTitre);
 
-        // ✅ Tableau d'informations
+        // Information table
         float[] colWidths = {150, 350};
         Table table = new Table(colWidths);
         table.setWidth(500);
@@ -83,7 +83,6 @@ public class ServicePDF {
         table.addCell(getStyledCell("Date", true));
         table.addCell(getStyledCell(event.getDate().toString(), false));
 
-
         table.addCell(getStyledCell("Heure de début", true));
         table.addCell(getStyledCell(event.getHeureDebut().toString(), false));
 
@@ -92,14 +91,14 @@ public class ServicePDF {
 
         doc.add(table);
 
-        // ✅ Séparateur en pointillés
+        // Dashed separator
         Table dashedSeparator = new Table(1);
         dashedSeparator.setWidth(500);
         dashedSeparator.setBorder(new DashedBorder(new DeviceGray(0.7f), 0.8f));
         dashedSeparator.setMarginBottom(20);
         doc.add(dashedSeparator);
 
-        // ✅ Conditions
+        // Terms and conditions
         doc.add(new Paragraph("📝 Termes et conditions")
                 .setFontSize(14)
                 .setBold()
@@ -126,7 +125,7 @@ public class ServicePDF {
         }
         doc.add(condBox);
 
-        // ✅ Footer
+        // Footer
         doc.add(new Paragraph("\n\n"));
         doc.add(new Paragraph("📅 Généré le : " + getCurrentDate())
                 .setFontSize(9)
@@ -140,7 +139,113 @@ public class ServicePDF {
         doc.close();
     }
 
-    // ✅ Cellule stylisée
+    public static void generateRapportPDF(String path, String body) throws FileNotFoundException, MalformedURLException {
+        PdfWriter writer = new PdfWriter(path);
+        PdfDocument pdf = new PdfDocument(writer);
+        pdf.setDefaultPageSize(PageSize.A4);
+        Document doc = new Document(pdf);
+        doc.setMargins(50, 50, 50, 50);
+
+        // Logo watermark
+        URL logoUrl = ServicePDF.class.getResource("/images/logo.png");
+        if (logoUrl != null) {
+            ImageData imageData = ImageDataFactory.create(logoUrl);
+            Image logo = new Image(imageData);
+            float x = pdf.getDefaultPageSize().getWidth() / 2;
+            float y = pdf.getDefaultPageSize().getHeight() / 2;
+            logo.setFixedPosition(x - 200, y - 370);
+            logo.setOpacity(0.08f);
+            doc.add(logo);
+        }
+
+        // Document title
+        Paragraph titre = new Paragraph("📊 Rapport de Connectivité Utilisateur")
+                .setFontSize(24)
+                .setBold()
+                .setFontColor(new DeviceRgb(26, 102, 255))
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginBottom(15);
+        doc.add(titre);
+
+        // Separation line
+        SolidLine solidLine = new SolidLine(1f);
+        solidLine.setColor(new DeviceGray(0.6f));
+        doc.add(new LineSeparator(solidLine).setMarginBottom(20));
+
+        // Subtitle
+        Paragraph sousTitre = new Paragraph("Analyse de l'engagement et de l'activité de l'utilisateur")
+                .setFontSize(12)
+                .setFontColor(new DeviceGray(0.4f))
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginBottom(20);
+        doc.add(sousTitre);
+
+        // Report content
+        Table contentBox = new Table(1);
+        contentBox.setWidth(500);
+        contentBox.setBackgroundColor(new DeviceGray(0.95f));
+        contentBox.setBorder(new SolidBorder(new DeviceGray(0.7f), 0.5f));
+        contentBox.setMarginBottom(20);
+        contentBox.setHorizontalAlignment(HorizontalAlignment.CENTER);
+
+        Paragraph content = new Paragraph(body)
+                .setFontSize(11)
+                .setFontColor(new DeviceGray(0.2f))
+                .setMargin(10)
+                .setMultipliedLeading(1.2f);
+        contentBox.addCell(new Cell().add(content).setBorder(Border.NO_BORDER));
+
+        doc.add(contentBox);
+
+        // Dashed separator
+        Table dashedSeparator = new Table(1);
+        dashedSeparator.setWidth(500);
+        dashedSeparator.setBorder(new DashedBorder(new DeviceGray(0.7f), 0.8f));
+        dashedSeparator.setMarginBottom(20);
+        doc.add(dashedSeparator);
+
+        // Notes section
+        doc.add(new Paragraph("📝 Notes")
+                .setFontSize(14)
+                .setBold()
+                .setFontColor(new DeviceGray(0.2f))
+                .setMarginBottom(10));
+
+        List<String> notes = List.of(
+                "1. Les données sont basées sur l'activité enregistrée dans la plateforme.",
+                "2. Les recommandations doivent être validées par un administrateur.",
+                "3. Contactez le support pour toute question sur ce rapport."
+        );
+
+        Table notesBox = new Table(1);
+        notesBox.setWidth(500);
+        notesBox.setBackgroundColor(new DeviceGray(0.95f));
+        notesBox.setBorder(new SolidBorder(new DeviceGray(0.7f), 0.5f));
+
+        for (String note : notes) {
+            Paragraph p = new Paragraph(note)
+                    .setFontSize(10)
+                    .setMargin(5)
+                    .setFontColor(new DeviceGray(0.2f));
+            notesBox.addCell(new Cell().add(p).setBorder(Border.NO_BORDER));
+        }
+        doc.add(notesBox);
+
+        // Footer
+        doc.add(new Paragraph("\n\n"));
+        doc.add(new Paragraph("📅 Généré le : " + getCurrentDate())
+                .setFontSize(9)
+                .setFontColor(new DeviceGray(0.4f))
+                .setTextAlignment(TextAlignment.RIGHT));
+        doc.add(new Paragraph("© CMC Tunisia – Tous droits réservés")
+                .setFontSize(9)
+                .setFontColor(new DeviceGray(0.4f))
+                .setTextAlignment(TextAlignment.RIGHT));
+
+        doc.close();
+    }
+
+    // Styled cell
     private static Cell getStyledCell(String text, boolean isBold) {
         Paragraph p = new Paragraph(text)
                 .setFontSize(11)

@@ -7,6 +7,8 @@ import java.util.Locale;
 
 public class Evenement {
     private int id;
+    private double latitude;
+    private double longitude;
 
     private int categoryId;
     private String nomCategorie;

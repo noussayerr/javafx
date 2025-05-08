@@ -38,47 +38,70 @@ public class AjoutAbonnement implements Initializable {
     @FXML
     private TextField titreAbonnement;
 
+    @FXML
+    private Label titreError;
+    @FXML
+    private Label descriptionError;
+    @FXML
+    private Label prixError;
+    @FXML
+    private Label periodeError;
+
     private ServiceAbonnement serviceAbonnement=new ServiceAbonnement();
     @FXML
     void AjouterPersonneAction(ActionEvent event) throws SQLException {
+        // Clear all previous errors
+        titreError.setText("");
+        descriptionError.setText("");
+        prixError.setText("");
+        periodeError.setText("");
+
         String titre = titreAbonnement.getText();
         String description = descriptionAbonnement.getText();
         String prixText = prixAbonnement.getText();
         Duration duration = periode.getValue();
 
-        // Validate inputs
+        boolean hasError = false;
+
         if (titre == null || titre.trim().isEmpty()) {
-            showAlert("Erreur", "Le titre ne doit pas être vide.");
-            return;
+            titreError.setText("Le titre ne doit pas être vide.");
+            hasError = true;
         }
 
         if (description == null || description.trim().length() < 15) {
-            showAlert("Erreur", "La description doit contenir au moins 15 caractères.");
-            return;
+            descriptionError.setText("La description doit contenir au moins 15 caractères.");
+            hasError = true;
         }
 
-        int prix;
+        int prix = 0;
         try {
             prix = Integer.parseInt(prixText);
             if (prix < 0) {
-                showAlert("Erreur", "Le prix ne peut pas être négatif.");
-                return;
+                prixError.setText("Le prix ne peut pas être négatif.");
+                hasError = true;
             }
         } catch (NumberFormatException e) {
-            showAlert("Erreur", "Le prix doit être un nombre valide.");
-            return;
+            prixError.setText("Le prix doit être un nombre valide.");
+            hasError = true;
         }
 
         if (duration == null) {
-            showAlert("Erreur", "Veuillez sélectionner une période.");
-            return;
+            periodeError.setText("Veuillez sélectionner une période.");
+            hasError = true;
         }
-        Abonnement abonnement=new Abonnement();
+
+        if (hasError) {
+            return; // Stop execution if there are errors
+        }
+
+        // Otherwise continue
+        Abonnement abonnement = new Abonnement();
         abonnement.setDescription(description);
         abonnement.setTitreAbonnement(titre);
         abonnement.setDuration(duration);
         abonnement.setPrix(prix);
         serviceAbonnement.ajouter(abonnement);
+
         showAlert("Succès", "Abonnement ajouté avec succès.");
 
         // Navigation vers la page ListAbonnement.fxml
@@ -92,8 +115,8 @@ public class AjoutAbonnement implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 

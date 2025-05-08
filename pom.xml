@@ -19,8 +19,14 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
-            <version>21</version>
+            <version>17</version>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+        </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -29,13 +35,21 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>21</version>
+            <version>17.0.12</version>
+            <classifier>win</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.10.0</version> <!-- Use the latest version -->
         </dependency>
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
             <version>3.5.2</version>
         </dependency>
+
+        <!-- ZXing JavaSE -->
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
@@ -44,13 +58,16 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>21</version>
+            <version>17.0.12</version>
+            <classifier>win</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
             <version>17.0.12</version>
+            <classifier>win</classifier>
         </dependency>
+        <!-- iText PDF 7 -->
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>kernel</artifactId>
@@ -66,6 +83,13 @@
             <artifactId>io</artifactId>
             <version>7.1.17</version>
         </dependency>
+        <dependency>
+            <groupId>com.sothawo</groupId>     <!--  Map -->
+            <artifactId>mapjfx</artifactId>
+            <version>2.13.0</version>
+        </dependency>
+
+        <!-- Jakarta Mail -->
         <dependency>
             <groupId>jakarta.mail</groupId>
             <artifactId>jakarta.mail-api</artifactId>
@@ -102,56 +126,24 @@
             <version>0.4</version>
         </dependency>
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20231013</version>
-        </dependency>
-        <!-- FreeTTS Dependencies -->
-        <!-- FreeTTS Dependencies -->
-        <dependency>
-            <groupId>freetts</groupId>
-            <artifactId>freetts</artifactId>
-            <version>1.2.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/freetts.jar</systemPath>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.13</version>
         </dependency>
         <dependency>
-            <groupId>freetts</groupId>
-            <artifactId>cmulex</artifactId>
-            <version>1.2.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/cmulex.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>freetts</groupId>
-            <artifactId>cmu_us_kal</artifactId>
-            <version>1.2.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/cmu_us_kal.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>freetts</groupId>
-            <artifactId>en_us</artifactId>
-            <version>1.2.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/en_us.jar</systemPath>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itext7-core</artifactId>
+            <version>8.0.5</version>
+            <type>pom</type>
         </dependency>
 
-
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.9.3</version>
+        </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>central</id>
-            <name>Maven Central Repository</name>
-            <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
-        <repository>
-            <id>freetts</id>
-            <name>FreeTTS Repository</name>
-            <url>https://maven.sourceforge.net/repo</url>
-        </repository>
-    </repositories>
     <build>
         <resources>
             <resource>
@@ -164,6 +156,8 @@
                     <include>**/*.jpeg</include>
                     <include>**/*.html</include>
                     <include>**/*.js</include>
+
+                    <include>**/*.json</include>  <!-- Add this line -->
                 </includes>
             </resource>
         </resources>
@@ -174,36 +168,29 @@
                 <version>3.11.0</version>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
-            </plugin>
-            <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>org.example.Main</mainClass>
+                    <options>
+                        <option>--add-exports</option>
+                        <option>javafx.graphics/com.sun.javafx.sg.prism=ALL-UNNAMED</option>
+                        <option>--add-exports</option>
+                        <option>javafx.graphics/com.sun.javafx.tk.quantum=ALL-UNNAMED</option>
+                        <option>--add-exports</option>
+                        <option>javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED</option>
+                        <option>--add-exports</option>
+                        <option>javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED</option>
+                    </options>
+
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
+                <artifactId>maven-jar-plugin</artifactId>
                 <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <includeScope>runtime</includeScope>
-                            <includeScope>system</includeScope> <!-- Ajoutez cette ligne -->
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

@@ -55,4 +55,38 @@ public class ServiceScore {
         }
         return scores;
     }
+    public void ajouter(Score score) throws SQLException {
+
+        String sql = "INSERT INTO score (high_score, user_id, jeu_id) VALUES (?, ?, ?)";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, score.getHighScore());
+        stmt.setInt(2, score.getUser().getId());
+        stmt.setInt(3, score.getJeux().getId());
+        stmt.executeUpdate();
+    }
+    public Score findByUserAndGame(int userId, int jeuId) throws SQLException {
+        String query = "SELECT * FROM score WHERE user_id = ? AND jeu_id = ?";
+        PreparedStatement pst = conn.prepareStatement(query);
+        pst.setInt(1, userId);
+        pst.setInt(2, jeuId);
+        ResultSet rs = pst.executeQuery();
+
+        if (rs.next()) {
+            Score s = new Score();
+            s.setId(rs.getInt("id"));
+            s.setHighScore(rs.getInt("high_score"));
+            // You can also set User and Jeux objects if needed
+            return s;
+        }
+        return null;
+    }
+
+    public void modifier(Score s) throws SQLException {
+        String query = "UPDATE score SET high_score = ? WHERE id = ?";
+        PreparedStatement pst = conn.prepareStatement(query);
+        pst.setInt(1, s.getHighScore());
+        pst.setInt(2, s.getId());
+        pst.executeUpdate();
+    }
+
 }

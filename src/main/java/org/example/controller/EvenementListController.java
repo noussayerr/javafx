@@ -1,7 +1,7 @@
 package org.example.controller;
 
 import javafx.animation.*;
-import javafx.event.EventHandler;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
@@ -12,10 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -25,28 +22,21 @@ import org.example.dao.EvenementDAO;
 import org.example.dao.FavoriDAO;
 import org.example.entity.CalendarView;
 import org.example.entity.Evenement;
-import org.example.entity.Favori;
 import org.example.utils.SessionManager;
-
-import java.awt.*;
 import javafx.event.ActionEvent;
-
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
-
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.Region;;
+import javafx.scene.layout.Region;
 import javafx.animation.ScaleTransition;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
-
-
+import org.example.dao.CommentReactionDAO;
 import org.example.dao.CommentDAO;
 import org.example.entity.Comment;
 
-import javafx.scene.control.Button;
 
 
 public class EvenementListController {
@@ -154,6 +144,7 @@ public class EvenementListController {
             });
 
             CommentDAO commentDAO = new CommentDAO();
+            CommentReactionDAO commentReactionDAO = new CommentReactionDAO();
             TextArea commentInput = new TextArea();
             commentInput.setPromptText("📝 Écrivez votre commentaire ici...");
             commentInput.setPrefRowCount(2);
@@ -180,30 +171,25 @@ public class EvenementListController {
             VBox commentBox = new VBox();
             commentBox.setSpacing(6);
             commentBox.setStyle("-fx-padding: 4 0 0 0;");
+
             List<Comment> anciensCommentaires = commentDAO.getCommentairesByEvent(event.getId());
 
             for (Comment c : anciensCommentaires) {
-                Label commentLabel = new Label("👤 " + c.getNomUtilisateur() + " : " + c.getContent());
-                commentLabel.setWrapText(true);
-                commentLabel.setStyle("""
-        -fx-background-color: #f5f6fa;
-        -fx-padding: 10;
-        -fx-background-radius: 10;
-        -fx-border-color: #dcdde1;
-        -fx-font-size: 13px;
-        -fx-text-fill: #2d3436;
-    """);
-
-                HBox commentRow = new HBox(commentLabel);
-                commentRow.setSpacing(10);
-                commentRow.setStyle("-fx-alignment: CENTER_LEFT;");
-                commentBox.getChildren().add(commentRow);
+                afficherCommentaireAvecReactions(c, commentBox, commentDAO, commentReactionDAO);
             }
-
 
             List<String> grosMots = List.of("merde", "con", "putain", "enculé", "salope", "nique", "batard", "fdp", "ta gueule");
 
             commentBtn.setOnAction(ev -> {
+                ScaleTransition bounce = new ScaleTransition(Duration.seconds(0.1), commentBtn);
+                bounce.setFromX(1);
+                bounce.setFromY(1);
+                bounce.setToX(1.1);
+                bounce.setToY(1.1);
+                bounce.setAutoReverse(true);
+                bounce.setCycleCount(2);
+                bounce.play();
+
                 String commentText = commentInput.getText().trim();
                 boolean contientGrosMot = grosMots.stream().anyMatch(mot -> commentText.toLowerCase().contains(mot));
                 if (contientGrosMot) {
@@ -214,56 +200,12 @@ public class EvenementListController {
                     int currentUserId = SessionManager.getInstance().getCurrentUser().getId();
                     String nomUtilisateur = SessionManager.getInstance().getCurrentUser().getNom();
                     Comment newComment = new Comment(event.getId(), currentUserId, commentText, nomUtilisateur);
-                    commentDAO.ajouter(newComment);
+                    int generatedId = commentDAO.ajouter(newComment);
+                    newComment.setId(generatedId); // ✅ C'est ici que tu corriges le problème
+                    afficherCommentaireAvecReactions(newComment, commentBox, commentDAO, commentReactionDAO);
 
-                    Label commentLabel = new Label("👤 " + nomUtilisateur + " : " + commentText);
-                    commentLabel.setWrapText(true);
-                    commentLabel.setStyle("""
-                    -fx-background-color: #f5f6fa;
-                    -fx-padding: 10;
-                    -fx-background-radius: 10;
-                    -fx-border-color: #dcdde1;
-                    -fx-font-size: 13px;
-                    -fx-text-fill: #2d3436;
-                """);
-
-                    Button deleteBtn = new Button("🗑️");
-                    deleteBtn.setStyle("""
-                    -fx-background-color: transparent;
-                    -fx-text-fill: #e74c3c;
-                    -fx-font-size: 14px;
-                    -fx-cursor: hand;
-                    -fx-padding: 2 6;
-                """);
-
-                    HBox commentRow = new HBox(commentLabel, deleteBtn);
-                    commentRow.setSpacing(10);
-                    commentRow.setStyle("-fx-alignment: CENTER_LEFT;");
-                    commentRow.setOpacity(0);
-                    commentRow.setTranslateY(10);
-
-                    deleteBtn.setOnAction(e -> {
-                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "🗑️ Supprimer ce commentaire ?", ButtonType.YES, ButtonType.NO);
-                        alert.setHeaderText(null);
-                        alert.showAndWait().ifPresent(response -> {
-                            if (response == ButtonType.YES) {
-                                commentBox.getChildren().remove(commentRow);
-                                commentDAO.supprimer(newComment);
-                                showAnimatedToast("💬 Commentaire supprimé !");
-                            }
-                        });
-                    });
-
-                    commentBox.getChildren().add(commentRow);
                     commentInput.clear();
-
-                    FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.5), commentRow);
-                    fadeIn.setFromValue(0);
-                    fadeIn.setToValue(1);
-                    TranslateTransition slideUp = new TranslateTransition(Duration.seconds(0.5), commentRow);
-                    slideUp.setFromY(10);
-                    slideUp.setToY(0);
-                    new ParallelTransition(fadeIn, slideUp).play();
+                    showAnimatedToast("💬 Commentaire ajouté !");
                 }
             });
 
@@ -279,70 +221,316 @@ public class EvenementListController {
             playCardEntranceAnimation(content, delayMillis);
             setupModernHoverEffects(card);
             eventContainer.getChildren().add(content);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    private static final String BUTTON_STYLE_NORMAL = """
+    -fx-background-color: #dcd0ff;
+    -fx-text-fill: #6c5ce7;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-padding: 6 14;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(108, 92, 231, 0.2), 8, 0.3, 0, 3);
+""";
+
+    private static final String BUTTON_STYLE_SELECTED = """
+    -fx-background-color: #b388eb;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-padding: 6 14;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(179, 136, 235, 0.5), 10, 0.4, 0, 4);
+""";
+
 
     private void launchHeartExplosion(Node origin, Pane container) {
-        String[] colors = {"#e74c3c", "#f39c12", "#8e44ad", "#3498db", "#1abc9c", "#e84393", "#fd79a8", "#6c5ce7", "#00cec9"};
+        String[] colors = {
+                "#e74c3c", "#f39c12", "#8e44ad", "#3498db",
+                "#1abc9c", "#e84393", "#fd79a8", "#6c5ce7", "#00cec9"
+        };
         Random rand = new Random();
 
-        Bounds bounds = origin.localToScene(origin.getBoundsInLocal());
-        Bounds localBounds = container.sceneToLocal(bounds);
-
-        double startX = localBounds.getMinX() + localBounds.getWidth() / 2;
-        double startY = localBounds.getMinY() + localBounds.getHeight() / 2;
-
-        // 💥 Générer plusieurs cœurs
         for (int i = 0; i < 18; i++) {
-            Label heart = new Label("❤");
-            heart.setStyle("-fx-font-size: 22px;");
-            heart.setTextFill(Color.web(colors[rand.nextInt(colors.length)]));
-            heart.setTranslateX(startX - 10);
-            heart.setTranslateY(startY - 10);
-            heart.setOpacity(0.8);
+            Platform.runLater(() -> {
+                Bounds bounds = origin.localToScene(origin.getBoundsInLocal());
+                Bounds localBounds = container.sceneToLocal(bounds);
 
-            DropShadow glow = new DropShadow();
-            glow.setRadius(10);
-            glow.setColor(Color.web(colors[rand.nextInt(colors.length)]));
-            heart.setEffect(glow);
+                double startX = localBounds.getMinX() + localBounds.getWidth() / 2;
+                double startY = localBounds.getMinY() + localBounds.getHeight() / 2;
 
-            container.getChildren().add(heart);
+                Label heart = new Label("❤");
+                heart.setStyle("-fx-font-size: 22px;");
+                heart.setTextFill(Color.web(colors[rand.nextInt(colors.length)]));
+                heart.setTranslateX(startX - 10);
+                heart.setTranslateY(startY - 10);
+                heart.setOpacity(0.8);
 
-            // 🔀 Calcul de direction et trajectoire
-            double angle = rand.nextDouble() * 2 * Math.PI;
-            double distance = 100 + rand.nextDouble() * 80;
-            double dx = Math.cos(angle) * distance;
-            double dy = Math.sin(angle) * distance;
+                DropShadow glow = new DropShadow();
+                glow.setRadius(10);
+                glow.setColor(Color.web(colors[rand.nextInt(colors.length)]));
+                heart.setEffect(glow);
 
-            TranslateTransition move = new TranslateTransition(Duration.seconds(1.5), heart);
-            move.setByX(dx);
-            move.setByY(dy);
+                container.getChildren().add(heart);
+                heart.toFront(); // ✅ le cœur passe DEVANT tous les autres enfants du container
 
-            RotateTransition rotate = new RotateTransition(Duration.seconds(1.5), heart);
-            rotate.setByAngle(180 + rand.nextDouble() * 180);
+                double angle = rand.nextDouble() * 2 * Math.PI;
+                double distance = 100 + rand.nextDouble() * 80;
+                double dx = Math.cos(angle) * distance;
+                double dy = Math.sin(angle) * distance;
 
-            ScaleTransition scale = new ScaleTransition(Duration.seconds(0.4), heart);
-            scale.setFromX(1);
-            scale.setFromY(1);
-            scale.setToX(1.6);
-            scale.setToY(1.6);
-            scale.setAutoReverse(true);
-            scale.setCycleCount(2);
+                TranslateTransition move = new TranslateTransition(Duration.seconds(1.5), heart);
+                move.setByX(dx);
+                move.setByY(dy);
 
-            FadeTransition fade = new FadeTransition(Duration.seconds(1.5), heart);
-            fade.setFromValue(1.0);
-            fade.setToValue(0.0);
+                RotateTransition rotate = new RotateTransition(Duration.seconds(1.5), heart);
+                rotate.setByAngle(180 + rand.nextDouble() * 180);
 
-            ParallelTransition animation = new ParallelTransition(heart, move, rotate, fade, scale);
-            animation.setOnFinished(e -> container.getChildren().remove(heart));
-            animation.play();
+                ScaleTransition scale = new ScaleTransition(Duration.seconds(0.4), heart);
+                scale.setFromX(1);
+                scale.setFromY(1);
+                scale.setToX(1.6);
+                scale.setToY(1.6);
+                scale.setAutoReverse(true);
+                scale.setCycleCount(2);
+
+                FadeTransition fade = new FadeTransition(Duration.seconds(1.5), heart);
+                fade.setFromValue(1.0);
+                fade.setToValue(0.0);
+
+                ParallelTransition animation = new ParallelTransition(heart, move, rotate, fade, scale);
+                animation.setOnFinished(e -> container.getChildren().remove(heart));
+                animation.play();
+            });
         }
 
-        // 🔊 Effet sonore magique
         playPopSound();
     }
+    private void showSpecialToast(String message) {
+        Label toast = new Label(message);
+        toast.setStyle("""
+        -fx-background-color: #6c5ce7;
+        -fx-text-fill: white;
+        -fx-padding: 12px 20px;
+        -fx-background-radius: 20px;
+        -fx-font-size: 14px;
+        -fx-font-weight: bold;
+        -fx-effect: dropshadow(gaussian, black, 5, 0.3, 0, 2);
+    """);
+
+        StackPane root = (StackPane) commentBox.getScene().getRoot();
+        root.getChildren().add(toast);
+
+        toast.setTranslateY(-150);
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.5), toast);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        PauseTransition stay = new PauseTransition(Duration.seconds(2.5));
+
+        FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.5), toast);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+
+        fadeOut.setOnFinished(e -> root.getChildren().remove(toast));
+
+        SequentialTransition sequence = new SequentialTransition(fadeIn, stay, fadeOut);
+        sequence.play();
+    }
+    private void afficherCommentaireAvecReactions(Comment c, VBox commentBox, CommentDAO commentDAO, CommentReactionDAO commentReactionDAO) {
+        Label commentLabel = new Label("👤 " + c.getNomUtilisateur() + " : " + c.getContent());
+        commentLabel.setWrapText(true);
+        commentLabel.setStyle("""
+        -fx-background-color: #f5f6fa;
+        -fx-padding: 10;
+        -fx-background-radius: 10;
+        -fx-border-color: #dcdde1;
+        -fx-font-size: 13px;
+        -fx-text-fill: #2d3436;
+    """);
+
+        Button likeBtn = new Button();
+        Button dislikeBtn = new Button();
+        likeBtn.setStyle(BUTTON_STYLE_NORMAL);
+        dislikeBtn.setStyle(BUTTON_STYLE_NORMAL);
+
+        // Création de la ligne commentaire
+        HBox commentRow = new HBox(commentLabel, likeBtn, dislikeBtn);
+        commentRow.setSpacing(10);
+        commentRow.setStyle("-fx-alignment: CENTER_LEFT;");
+
+        // Ajouter bouton "supprimer" uniquement si c'est SON commentaire
+        int currentUserId = SessionManager.getInstance().getCurrentUser().getId();
+        if (currentUserId == c.getUserId()) {
+            Button deleteBtn = new Button("🗑️");
+            deleteBtn.setStyle("""
+            -fx-background-color: transparent;
+            -fx-text-fill: #e74c3c;
+            -fx-font-size: 14px;
+            -fx-cursor: hand;
+            -fx-padding: 2 6;
+        """);
+
+            commentRow.getChildren().add(deleteBtn);
+
+            deleteBtn.setOnAction(e -> {
+
+                if (currentUserId != c.getUserId()) {
+                    deleteBtn.setVisible(false);
+                    return;
+                }
+
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "🗑️ Supprimer ce commentaire ?", ButtonType.YES, ButtonType.NO);
+                alert.setHeaderText(null);
+                alert.showAndWait().ifPresent(response -> {
+                    if (response == ButtonType.YES) {
+                        FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.5), commentRow);
+                        fadeOut.setFromValue(1);
+                        fadeOut.setToValue(0);
+                        fadeOut.setOnFinished(ev -> {
+                            commentBox.getChildren().remove(commentRow);
+
+                            // 👉 Ici on n'a plus besoin de redéclarer `currentUserId` !!
+                            CommentDAO freshCommentDAO = new CommentDAO();
+                            freshCommentDAO.supprimer(c);
+
+                            showAnimatedToast("💬 Commentaire supprimé !");
+                        });
+                        fadeOut.play();
+                    }
+                });
+            });
+
+        }
+
+        // Rafraîchir stats (likes/dislikes)
+        Runnable refreshStats = () -> {
+            try {
+                int likes = commentReactionDAO.countReactions(c.getId(), "like");
+                int dislikes = commentReactionDAO.countReactions(c.getId(), "dislike");
+
+                likeBtn.setText("👍 " + likes);
+                dislikeBtn.setText("👎 " + dislikes);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        };
+        refreshStats.run();
+
+        likeBtn.setOnAction(e -> {
+            animateModernButton(likeBtn);
+            int userId = SessionManager.getInstance().getCurrentUser().getId();
+            try {
+                if (commentReactionDAO.aDéjàRéagi(userId, c.getId())) {
+                    String currentReaction = commentReactionDAO.getReactionType(userId, c.getId());
+                    if ("like".equals(currentReaction)) {
+                        commentReactionDAO.supprimerReaction(userId, c.getId());
+                        showAnimatedToast("👍 Like retiré !");
+                        likeBtn.setStyle(BUTTON_STYLE_NORMAL);
+                        dislikeBtn.setStyle(BUTTON_STYLE_NORMAL);
+                    } else {
+                        commentReactionDAO.enregistrerReaction(userId, c.getId(), "like");
+                        showAnimatedToast("👍 Like changé !");
+                        likeBtn.setStyle(BUTTON_STYLE_SELECTED);
+                        dislikeBtn.setStyle(BUTTON_STYLE_NORMAL);
+                    }
+                } else {
+                    commentReactionDAO.enregistrerReaction(userId, c.getId(), "like");
+                    showAnimatedToast("👍 Like ajouté !");
+                    likeBtn.setStyle(BUTTON_STYLE_SELECTED);
+                    dislikeBtn.setStyle(BUTTON_STYLE_NORMAL);
+                }
+                refreshStats.run();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        dislikeBtn.setOnAction(e -> {
+            animateModernButton(dislikeBtn);
+            int userId = SessionManager.getInstance().getCurrentUser().getId();
+            try {
+                if (commentReactionDAO.aDéjàRéagi(userId, c.getId())) {
+                    String currentReaction = commentReactionDAO.getReactionType(userId, c.getId());
+                    if ("dislike".equals(currentReaction)) {
+                        commentReactionDAO.supprimerReaction(userId, c.getId());
+                        showAnimatedToast("👎 Dislike retiré !");
+                        likeBtn.setStyle(BUTTON_STYLE_NORMAL);
+                        dislikeBtn.setStyle(BUTTON_STYLE_NORMAL);
+                    } else {
+                        commentReactionDAO.enregistrerReaction(userId, c.getId(), "dislike");
+                        showAnimatedToast("👎 Dislike changé !");
+                        likeBtn.setStyle(BUTTON_STYLE_NORMAL);
+                        dislikeBtn.setStyle(BUTTON_STYLE_SELECTED);
+                    }
+                } else {
+                    commentReactionDAO.enregistrerReaction(userId, c.getId(), "dislike");
+                    showAnimatedToast("👎 Dislike ajouté !");
+                    likeBtn.setStyle(BUTTON_STYLE_NORMAL);
+                    dislikeBtn.setStyle(BUTTON_STYLE_SELECTED);
+                }
+                refreshStats.run();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        commentBox.getChildren().add(commentRow);
+    }
+
+
+    private void animateModernButton(Button btn) {
+        ScaleTransition scaleUp = new ScaleTransition(Duration.seconds(0.15), btn);
+        scaleUp.setToX(1.1);
+        scaleUp.setToY(1.1);
+
+        ScaleTransition scaleDown = new ScaleTransition(Duration.seconds(0.15), btn);
+        scaleDown.setToX(1.0);
+        scaleDown.setToY(1.0);
+
+        SequentialTransition bounce = new SequentialTransition(scaleUp, scaleDown);
+        bounce.play();
+    }
+    private void envoyerCommentaire(ActionEvent actionEvent, Evenement event, TextArea commentInput, VBox commentBox) {
+        String commentText = commentInput.getText().trim();
+        List<String> grosMots = List.of("merde", "con", "putain", "enculé", "salope", "nique", "batard", "fdp", "ta gueule");
+
+        if (grosMots.stream().anyMatch(mot -> commentText.toLowerCase().contains(mot))) {
+            showAnimatedToast("🚫 Les gros mots sont interdits !");
+            return;
+        }
+
+        if (!commentText.isEmpty()) {
+            int eventId = event.getId();
+            int currentUserId = SessionManager.getInstance().getCurrentUser().getId();
+            String currentUserNom = SessionManager.getInstance().getCurrentUser().getNom();
+
+            Comment newComment = new Comment(eventId, currentUserId, commentText, currentUserNom);
+            CommentDAO commentDAO = new CommentDAO();
+            CommentReactionDAO commentReactionDAO = new CommentReactionDAO();
+
+            commentDAO.ajouter(newComment);
+
+            // 🔄 Recharge tous les commentaires (juste une fois)
+            commentBox.getChildren().clear();
+            List<Comment> updatedComments = commentDAO.getCommentairesByEvent(eventId);
+            for (Comment c : updatedComments) {
+                afficherCommentaireAvecReactions(c, commentBox, commentDAO, commentReactionDAO);
+            }
+
+            commentInput.clear();
+            showAnimatedToast("💬 Commentaire ajouté !");
+        }
+    }
+
+
 
     private void playPopSound() {
         try {
@@ -597,50 +785,32 @@ public class EvenementListController {
         }
     }
     @FXML
-    private void envoyerCommentaire(ActionEvent actionEvent) {
-        String commentText = commentInput.getText().trim();
+    private void ouvrirTraduction(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/translate-view.fxml"));
+            Parent root = loader.load();
 
-        // Liste de mots interdits
-        List<String> grosMots = List.of("merde", "con", "putain", "enculé", "salope", "nique", "batard", "fdp", "ta gueule");
+            Stage stage = new Stage();
+            stage.setTitle("🌍 Traduction");
+            stage.setScene(new Scene(root));
+            stage.show();
 
-        boolean contientGrosMot = grosMots.stream().anyMatch(mot -> commentText.toLowerCase().contains(mot));
-        if (contientGrosMot) {
-            showAnimatedToast("🚫 Les gros mots sont interdits !");
-            return;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
 
-        if (!commentText.isEmpty() && currentEvent != null) {
-            int eventId = currentEvent.getId();
-            int currentUserId = SessionManager.getInstance().getCurrentUser().getId();
-            String currentUserNom = SessionManager.getInstance().getCurrentUser().getNom();
-
-            Comment newComment = new Comment(eventId, currentUserId, commentText, currentUserNom);
-            CommentDAO commentDAO = new CommentDAO();
-            commentDAO.ajouter(newComment);
-
-            // 🔄 Recharge tous les commentaires après ajout
-            commentBox.getChildren().clear();
-            List<Comment> updatedComments = commentDAO.getCommentairesByEvent(eventId);
-
-            for (Comment c : updatedComments) {
-                Label commentLabel = new Label("👤 " + c.getNomUtilisateur() + " : " + c.getContent());
-                commentLabel.setWrapText(true);
-                commentLabel.setStyle("""
-                -fx-background-color: #f5f6fa;
-                -fx-padding: 10;
-                -fx-background-radius: 10;
-                -fx-border-color: #dcdde1;
-                -fx-font-size: 13px;
-                -fx-text-fill: #2d3436;
-            """);
-
-                HBox commentRow = new HBox(commentLabel);
-                commentRow.setSpacing(10);
-                commentRow.setStyle("-fx-alignment: CENTER_LEFT;");
-                commentBox.getChildren().add(commentRow);
-            }
-
-            commentInput.clear();
+    @FXML
+    private void ouvrirMap() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/map-view.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Carte des événements");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
