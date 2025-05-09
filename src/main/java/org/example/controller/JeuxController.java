@@ -865,14 +865,27 @@ public class JeuxController {
     @FXML
     private void logout() {
         try {
+            // Clear the session
             SessionManager.getInstance().logout();
-            loadPage("/org/example/view/Login.fxml", "Connexion");
-            showAlert(Alert.AlertType.INFORMATION, "Déconnexion", "Déconnecté avec succès");
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur de déconnexion: " + e.getMessage());
+
+            // Load the login screen
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/Home.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Connexion");
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+
+            // Show logout confirmation
+            showAlert(Alert.AlertType.INFORMATION, "Déconnexion réussie", "Vous avez été déconnecté avec succès.", "");
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la déconnexion", "Impossible de charger l'écran de connexion: " + e.getMessage());
+            e.printStackTrace();
         }
     }
-
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
