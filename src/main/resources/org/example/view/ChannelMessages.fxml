@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controller.ChannelMessagesController"
+      style="-fx-background-color: linear-gradient(to bottom right, #dfe9f3, #ffffff); -fx-font-family: 'Arial';"
+      spacing="20"
+      alignment="CENTER"
+      prefWidth="600"
+      prefHeight="500">
+
+    <!-- Title with a subtle shadow effect -->
+    <Label fx:id="titleLabel"
+           text="Discussion"
+           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);"/>
+
+    <!-- ScrollPane for messages with a modern look -->
+    <ScrollPane fx:id="messagesScrollPane"
+                fitToWidth="true"
+                style="-fx-background-color: transparent; -fx-border-color: #d1d9e6; -fx-border-radius: 10; -fx-background-radius: 10;">
+        <content>
+            <VBox fx:id="messagesContainer"
+                  spacing="15"
+                  style="-fx-padding: 20; -fx-background-color: transparent;"/>
+        </content>
+    </ScrollPane>
+
+    <!-- Input area with a modern design -->
+    <HBox spacing="15" style="-fx-padding: 15; -fx-background-color: #f5f7fa; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #d1d9e6;">
+        <TextField fx:id="messageInput"
+                   promptText="Tapez votre message..."
+                   HBox.hgrow="ALWAYS"
+                   style="-fx-background-color: white; -fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: #d1d9e6; -fx-padding: 12; -fx-font-size: 14px;"/>
+        <Button fx:id="sendButton"
+                text="Envoyer"
+                onAction="#sendMessage"
+                style="-fx-background-color: #4a6baf; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 10 20;"/>
+    </HBox>
+
+    <!-- Close button with hover effect -->
+    <Button fx:id="closeButton"
+            text="Fermer"
+            onAction="#handleClose"
+            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10px 20px; -fx-background-radius: 5;"/>
+</VBox>

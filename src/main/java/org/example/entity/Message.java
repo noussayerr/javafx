@@ -9,7 +9,7 @@ public class Message {
     private Channel channel;
     private LocalDateTime createdAt; // Utilisation de LocalDateTime au lieu de DateTimeImmutable
     private int likes;
-    private Apprenant apprenant;
+    private User apprenant;
 
     // Constructeur par défaut
     public Message() {
@@ -22,7 +22,7 @@ public class Message {
     }
 
     // Constructeur avec paramètres principaux
-    public Message(String content, Channel channel, Apprenant apprenant) {
+    public Message(String content, Channel channel, User apprenant) {
         this.id = 0;
         this.content = content;
         this.channel = channel;
@@ -72,7 +72,7 @@ public class Message {
         this.likes = likes;
     }
 
-    public Apprenant getApprenant() {
+    public User getApprenant() {
         return apprenant;
     }
 

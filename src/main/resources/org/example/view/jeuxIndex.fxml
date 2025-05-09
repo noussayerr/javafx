@@ -78,7 +78,7 @@
                 </graphic>
             </Button>
 
-            <Button style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Statistiques">
+            <Button onAction="#Statique" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT;" text="Statistiques">
                 <graphic>
                     <ImageView fitHeight="20" fitWidth="20">
                         <Image url="@/images/stats-icon.png" />

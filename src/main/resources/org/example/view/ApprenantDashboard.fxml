@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -34,97 +35,106 @@
         <HBox alignment="CENTER_RIGHT" spacing="15.0" style="-fx-padding: 0 15 0 0;">
             <Button onAction="#goAccueil" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Accueil" />
             <Button onAction="#goMatiereF" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Cours" />
-            <Button fx:id="profileButton" onAction="#ouvrirListeEvenements" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="les Événements" />
+            <Button fx:id="forumsButton" onAction="#showForums" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Forums" />
+            <Button fx:id="profileButton" onAction="#ouvrirListeEvenements" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Événements" />
             <Button onAction="#showGames" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Jeux" />
             <Button fx:id="btnAbonnement" onAction="#goAbonnement" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Abonnement" />
             <Button fx:id="btnReclamation" onAction="#goReclamation" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Reclamations" />
-            <Button fx:id="btnEvenements" onAction="#handleProfile" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Profil" />
+            <Button onAction="#handleProfile" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Profil" />
             <Button fx:id="logoutButton" onAction="#logout" style="-fx-background-color: transparent; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Déconnexion">
-
                 <HBox.margin>
-               <Insets left="300.0" />
-            </HBox.margin></Button>
+                    <Insets left="150.0" />
+                </HBox.margin>
+            </Button>
         </HBox>
     </HBox>
 
     <!-- Contenu principal -->
-    <VBox alignment="TOP_CENTER" spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="100.0">
-
-        <!-- Carte de bienvenue -->
-        <StackPane prefHeight="150.0" prefWidth="900.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 20;">
-            <effect>
-                <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
-            </effect>
-
-            <VBox alignment="CENTER_LEFT" spacing="10">
-                <Label style="-fx-font-size: 24px; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Bienvenue sur notre plateforme !" />
-                <Label style="-fx-font-size: 14px; -fx-text-fill: #7a7a7a;" text="Commencez votre parcours d'apprentissage dès aujourd'hui" />
-                <Button onAction="#handleExploreCourses" style="-fx-background-color: #4a6baf; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="Explorer les cours" />
-            </VBox>
-
-            <Circle fill="rgba(74,107,175,0.1)" layoutX="700" layoutY="75" radius="60" />
-        </StackPane>
-
-        <!-- Grille de cartes -->
-        <GridPane hgap="20" vgap="20">
-            <columnConstraints>
-                <ColumnConstraints percentWidth="33" />
-                <ColumnConstraints percentWidth="33" />
-                <ColumnConstraints percentWidth="33" />
-            </columnConstraints>
-
-            <!-- Carte 1 -->
-            <StackPane style="-fx-background-color: white; -fx-background-radius: 15;" GridPane.columnIndex="0">
+    <StackPane fx:id="contentPane" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="100.0">
+        <!-- Dashboard Content -->
+        <VBox fx:id="dashboardContent" alignment="TOP_CENTER" spacing="20.0" visible="true" managed="true">
+            <!-- Carte de bienvenue -->
+            <StackPane prefHeight="150.0" prefWidth="900.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 20;">
                 <effect>
                     <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
                 </effect>
-                <VBox alignment="CENTER" spacing="15" style="-fx-padding: 20;">
-                    <ImageView fitHeight="80" fitWidth="80">
-                        <image>
-                            <Image url="@/images/admin-icon.png" />
-                        </image>
-                    </ImageView>
-                    <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Développement Web" />
-                    <Button style="-fx-background-color: #4a6baf; -fx-text-fill: white; -fx-background-radius: 5;" text="Voir" />
+                <VBox alignment="CENTER_LEFT" spacing="10">
+                    <Label style="-fx-font-size: 24px; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" text="Bienvenue sur notre plateforme !" />
+                    <Label style="-fx-font-size: 14px; -fx-text-fill: #7a7a7a;" text="Commencez votre parcours d'apprentissage dès aujourd'hui" />
+                    <Button onAction="#handleExploreCourses" style="-fx-background-color: #4a6baf; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="Explorer les cours" />
                 </VBox>
+                <Circle fill="rgba(74,107,175,0.1)" layoutX="700" layoutY="75" radius="60" />
             </StackPane>
 
-            <!-- Carte 2 -->
-            <StackPane style="-fx-background-color: white; -fx-background-radius: 15;" GridPane.columnIndex="1">
-                <effect>
-                    <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
-                </effect>
-                <VBox alignment="CENTER" spacing="15" style="-fx-padding: 20;">
-                    <ImageView fitHeight="80" fitWidth="80">
-                        <image>
-                            <Image url="@/images/admin-icon.png" />
-                        </image>
-                    </ImageView>
-                    <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Data Science" />
-                    <Button style="-fx-background-color: #4a6baf; -fx-text-fill: white; -fx-background-radius: 5;" text="Voir" />
-                </VBox>
-            </StackPane>
+            <!-- Grille de cartes -->
+            <GridPane hgap="20" vgap="20">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="33" />
+                    <ColumnConstraints percentWidth="33" />
+                    <ColumnConstraints percentWidth="33" />
+                </columnConstraints>
 
-            <!-- Carte 3 -->
-            <StackPane style="-fx-background-color: white; -fx-background-radius: 15;" GridPane.columnIndex="2">
-                <effect>
-                    <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
-                </effect>
-                <VBox alignment="CENTER" spacing="15" style="-fx-padding: 20;">
-                    <ImageView fitHeight="80" fitWidth="80">
-                        <image>
-                            <Image url="@/images/admin-icon.png" />
-                        </image>
-                    </ImageView>
-                    <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Mobile Development" />
-                    <Button style="-fx-background-color: #4a6baf; -fx-text-fill: white; -fx-background-radius: 5;" text="Voir" />
-                </VBox>
-            </StackPane>
-         <rowConstraints>
-            <RowConstraints />
-         </rowConstraints>
-        </GridPane>
-    </VBox>
+                <!-- Carte 1 -->
+                <StackPane style="-fx-background-color: white; -fx-background-radius: 15;" GridPane.columnIndex="0">
+                    <effect>
+                        <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
+                    </effect>
+                    <VBox alignment="CENTER" spacing="15" style="-fx-padding: 20;">
+                        <ImageView fitHeight="80" fitWidth="80">
+                            <image>
+                                <Image url="@/images/admin-icon.png" />
+                            </image>
+                        </ImageView>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Développement Web" />
+                        <Button style="-fx-background-color: #4a6baf; -fx-text-fill: white; -fx-background-radius: 5;" text="Voir" />
+                    </VBox>
+                </StackPane>
+
+                <!-- Carte 2 -->
+                <StackPane style="-fx-background-color: white; -fx-background-radius: 15;" GridPane.columnIndex="1">
+                    <effect>
+                        <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
+                    </effect>
+                    <VBox alignment="CENTER" spacing="15" style="-fx-padding: 20;">
+                        <ImageView fitHeight="80" fitWidth="80">
+                            <image>
+                                <Image url="@/images/admin-icon.png" />
+                            </image>
+                        </ImageView>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Data Science" />
+                        <Button style="-fx-background-color: #4a6baf; -fx-text-fill: white; -fx-background-radius: 5;" text="Voir" />
+                    </VBox>
+                </StackPane>
+
+                <!-- Carte 3 -->
+                <StackPane style="-fx-background-color: white; -fx-background-radius: 15;" GridPane.columnIndex="2">
+                    <effect>
+                        <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.1)" height="10" radius="10" width="10" />
+                    </effect>
+                    <VBox alignment="CENTER" spacing="15" style="-fx-padding: 20;">
+                        <ImageView fitHeight="80" fitWidth="80">
+                            <image>
+                                <Image url="@/images/admin-icon.png" />
+                            </image>
+                        </ImageView>
+                        <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Mobile Development" />
+                        <Button style="-fx-background-color: #4a6baf; -fx-text-fill: white; -fx-background-radius: 5;" text="Voir" />
+                    </VBox>
+                </StackPane>
+                <rowConstraints>
+                    <RowConstraints />
+                </rowConstraints>
+            </GridPane>
+        </VBox>
+
+        <!-- Forums Content -->
+        <VBox fx:id="forumsContent" alignment="TOP_CENTER" spacing="20.0" visible="false" managed="false">
+            <Label text="Liste des Forums" style="-fx-font-size: 24px; -fx-text-fill: #3a4a6d; -fx-font-weight: bold;" />
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+                <VBox fx:id="forumsContainer" spacing="15" style="-fx-padding: 10;" />
+            </ScrollPane>
+        </VBox>
+    </StackPane>
 
     <!-- Footer -->
     <HBox alignment="CENTER" style="-fx-background-color: rgba(255,255,255,0.5); -fx-background-radius: 10; -fx-padding: 10;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">

@@ -3,7 +3,7 @@ package org.example.utils;
 import javafx.stage.Stage;
 import org.example.entity.User;
 import java.util.prefs.Preferences;
-
+import org.example.entity.Apprenant;
 public class SessionManager {
     private static SessionManager instance;
     private User currentUser;
@@ -32,4 +32,14 @@ public class SessionManager {
         prefs.remove("remembered_email");
         prefs.remove("remembered_token");
     }
+
+    private Apprenant currentApprenant;
+    public Apprenant getCurrentApprenant() {
+        return currentApprenant;
+    }
+
+    public void setCurrentApprenant(Apprenant apprenant) {
+        this.currentApprenant = apprenant;
+    }
+
 }

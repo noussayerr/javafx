@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controller.ForumChannelsController"
+      style="-fx-background-color: #f5f7fa;"
+      spacing="20"
+      alignment="CENTER"
+      prefWidth="500"
+      prefHeight="400">
+
+    <Label fx:id="titleLabel"
+           text="Channels"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+    <ScrollPane fx:id="channelsScrollPane"
+                fitToWidth="true"
+                style="-fx-background-color: transparent;">
+        <content>
+            <VBox fx:id="channelsContainer"
+                  spacing="15"
+                  style="-fx-padding: 15;"/>
+        </content>
+    </ScrollPane>
+
+    <Button fx:id="closeButton"
+            text="Fermer"
+            onAction="#handleClose"
+            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10px 20px; -fx-background-radius: 5;"/>
+</VBox>

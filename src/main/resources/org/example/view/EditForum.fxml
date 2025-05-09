@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/16"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controller.EditForumController"
+      style="-fx-background-color: #f5f7fa;"
+      spacing="20"
+      alignment="CENTER"
+      prefWidth="400"
+      prefHeight="250">
+
+    <Label text="Modifier le Forum"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+    <VBox spacing="15" style="-fx-padding: 20px; -fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);">
+        <Label text="Nouveau nom du Forum"
+               style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;"/>
+        <TextField fx:id="forumNameField"
+                   promptText="Entrez le nouveau nom du forum"
+                   style="-fx-pref-width: 300px; -fx-padding: 10px;"/>
+
+        <HBox spacing="10" alignment="CENTER">
+            <Button fx:id="saveButton"
+                    text="Enregistrer"
+                    onAction="#handleSave"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10px;"/>
+            <Button fx:id="cancelButton"
+                    text="Annuler"
+                    onAction="#handleCancel"
+                    style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10px;"/>
+        </HBox>
+    </VBox>
+</VBox>

@@ -70,7 +70,8 @@ public class JeuxController {
     @FXML private Button deleteButton;
     @FXML private Button modifyButton;
     @FXML private Button launchButton;
-
+    @FXML
+    private Button profileButton;
     @FXML
     private void initialize() {
         // Common initialization for both views
@@ -628,24 +629,46 @@ public class JeuxController {
     }
 
     // Existing navigation methods (keep all your original methods)
-    @FXML
-    private void showHome(ActionEvent event) throws IOException {
-        loadView("EnseignantDashboard.fxml", event);
+
+    public void showHome(ActionEvent event) throws IOException {
+        loadView("ApprenantDashboard.fxml", event);
     }
 
-    @FXML
-    private void showCourses(ActionEvent event) throws IOException {
-        loadView("CoursApprenant.fxml", event);
+    public void showCourses(ActionEvent event) throws IOException {
+        loadView("MatiereFrontA.fxml", event);
     }
 
-    @FXML
-    private void ouvrirListeEvenements(ActionEvent event) throws IOException {
-        loadView("Evenement-list.fxml", event);
+    public void ouvrirListeEvenements(ActionEvent event) throws IOException {
+        //loadView("evenement-list.fxml", event);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/evenement-list.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("📅 Liste des Événements");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    @FXML
-    private void handleProfile(ActionEvent event) throws IOException {
-        loadView("ProfileApprenant.fxml", event);
+
+    public void handleProfile(ActionEvent event) throws IOException {
+       // loadView("ProfileApprenant.fxml", event);
+        try {
+            // Load the profile page
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/ProfileApprenant.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) profileButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Profil");
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors du chargement de la page de profil", e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
@@ -710,18 +733,7 @@ public class JeuxController {
 
     @FXML
     public void goToMatiere(ActionEvent event) {
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/view/MatiereFrontA.fxml"));
-            AnchorPane listPane = loader.load();
-
-            // Get the stage from the event source
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(listPane));
-            stage.show(); // Show the new scene
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadPage(event, "/org/example/view/ListeMatiere.fxml");
     }
 
     private void loadPage(ActionEvent event, String fxmlPath) {
@@ -868,5 +880,9 @@ public class JeuxController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+    public void Statique(ActionEvent actionEvent) {
+        loadPage(actionEvent, "/org/example/view/statistiques-view.fxml");
+    }
+
 
 }
