@@ -10,10 +10,13 @@ import org.example.utils.SceneController;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class AdminDashboardController {
+public class UserDashboardController {
 
     @FXML
-    private Label adminNameLabel;
+    private Label userNameLabel;
+
+    @FXML
+    private Label roleLabel;
 
     @FXML
     private Text welcomeText;
@@ -21,32 +24,22 @@ public class AdminDashboardController {
     @FXML
     private Label dateLabel;
 
-    private org.example.entity.User currentUser;
-
     @FXML
     public void initialize() {
         dateLabel.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy")));
     }
 
     public void setUser(org.example.entity.User user) {
-        this.currentUser = user;
         if (user != null) {
-            adminNameLabel.setText(user.getName());
+            userNameLabel.setText(user.getName());
+            roleLabel.setText(user.getRoleType().toUpperCase());
             welcomeText.setText("Welcome back, " + user.getName() + "!");
         }
     }
 
     @FXML
-    void handleUserManagement(MouseEvent event) {
-        Stage stage = (Stage) adminNameLabel.getScene().getWindow();
-        javafx.fxml.FXMLLoader loader = SceneController.switchTo("userManagement.fxml", stage, "User Management");
-        UserManagementController controller = loader.getController();
-        controller.setUser(currentUser);
-    }
-
-    @FXML
     void handleLogout(MouseEvent event) {
-        Stage stage = (Stage) adminNameLabel.getScene().getWindow();
+        Stage stage = (Stage) userNameLabel.getScene().getWindow();
         SceneController.switchTo("login.fxml", stage, "Login");
     }
 }

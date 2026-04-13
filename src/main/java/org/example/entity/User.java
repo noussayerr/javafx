@@ -1,96 +1,151 @@
 package org.example.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class User {
     private int id;
     private String email;
-    private List<String> roles = new ArrayList<>();
+    private String roles; // Store as JSON or comma-separated string
     private String password;
-    private String nom;
-    private String prenom;
-    private transient  String dateNaissance;
-    private String etat = "actif";
-    private int telephone;
-    private boolean isVerified = false;
-    private String verificationToken;
-    private String photoProfil;
-    private int interactionsCount = 0;
-    private Integer sessionsCount=0;
-    private LocalDateTime lastActivity=LocalDateTime.now();
+    private String name;
+    private String roleType; // athlete, coach, admin
+    private LocalDateTime createdAt;
+    private boolean isVerified;
+    private String verificationCode;
+    private LocalDateTime verificationCodeExpiresAt;
+    private String passwordResetCode;
+    private LocalDateTime passwordResetCodeExpiresAt;
+    private String waterIntake; // Store as JSON string
 
-    // Constructeurs
-    public User() {}
+    public User() {
+        this.createdAt = LocalDateTime.now();
+        this.isVerified = false;
+        this.roles = "[\"ROLE_USER\"]";
+    }
 
-    public User(int id, String email, String password, String nom, String prenom) {
+    public User(int id, String email, String roles, String password, String name, String roleType) {
         this.id = id;
         this.email = email;
+        this.roles = roles;
         this.password = password;
-        this.nom = nom;
-        this.prenom = prenom;
-        this.roles=new ArrayList<>();
+        this.name = name;
+        this.roleType = roleType;
+        this.createdAt = LocalDateTime.now();
     }
-    public User(int id, String nom) {
+
+    // Getters and Setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
         this.id = id;
-        this.nom = nom;
-
-    }
-    // Getters et setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public List<String> getRoles() { return roles; }
-    public void setRoles(List<String> roles) { this.roles = roles; }
-
-    public void addRole(String role) {
-        this.roles.add(role);
     }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-
-    public String getNom() { return nom; }
-    public void setNom(String nom) { this.nom = nom; }
-
-    public String getPrenom() { return prenom; }
-    public void setPrenom(String prenom) { this.prenom = prenom; }
-
-    public void setDateNaissance(String dateNaissance) {
-        this.dateNaissance = dateNaissance;
+    public String getEmail() {
+        return email;
     }
 
-    public String getDateNaissance() {
-        return dateNaissance;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getEtat() { return etat; }
-    public void setEtat(String etat) { this.etat = etat; }
+    public String getRoles() {
+        return roles;
+    }
 
-    public int getTelephone() { return telephone; }
-    public void setTelephone(int telephone) { this.telephone = telephone; }
+    public void setRoles(String roles) {
+        this.roles = roles;
+    }
 
-    public boolean isVerified() { return isVerified; }
-    public void setVerified(boolean verified) { isVerified = verified; }
+    public String getPassword() {
+        return password;
+    }
 
-    public String getVerificationToken() { return verificationToken; }
-    public void setVerificationToken(String verificationToken) { this.verificationToken = verificationToken; }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-    public String getPhotoProfil() { return photoProfil; }
-    public void setPhotoProfil(String photoProfil) { this.photoProfil = photoProfil; }
+    public String getName() {
+        return name;
+    }
 
-    public int getInteractionsCount() { return interactionsCount; }
-    public void setInteractionsCount(int interactionsCount) { this.interactionsCount = interactionsCount; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public Integer getSessionsCount() { return sessionsCount; }
-    public void setSessionsCount(Integer sessionsCount) { this.sessionsCount = sessionsCount; }
+    public String getRoleType() {
+        return roleType;
+    }
 
-    public LocalDateTime getLastActivity() { return lastActivity; }
-    public void setLastActivity(LocalDateTime lastActivity) { this.lastActivity = lastActivity; }
+    public void setRoleType(String roleType) {
+        this.roleType = roleType;
+    }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public LocalDateTime getVerificationCodeExpiresAt() {
+        return verificationCodeExpiresAt;
+    }
+
+    public void setVerificationCodeExpiresAt(LocalDateTime verificationCodeExpiresAt) {
+        this.verificationCodeExpiresAt = verificationCodeExpiresAt;
+    }
+
+    public String getPasswordResetCode() {
+        return passwordResetCode;
+    }
+
+    public void setPasswordResetCode(String passwordResetCode) {
+        this.passwordResetCode = passwordResetCode;
+    }
+
+    public LocalDateTime getPasswordResetCodeExpiresAt() {
+        return passwordResetCodeExpiresAt;
+    }
+
+    public void setPasswordResetCodeExpiresAt(LocalDateTime passwordResetCodeExpiresAt) {
+        this.passwordResetCodeExpiresAt = passwordResetCodeExpiresAt;
+    }
+
+    public String getWaterIntake() {
+        return waterIntake;
+    }
+
+    public void setWaterIntake(String waterIntake) {
+        this.waterIntake = waterIntake;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                ", roleType='" + roleType + '\'' +
+                ", isVerified=" + isVerified +
+                '}';
+    }
 }
