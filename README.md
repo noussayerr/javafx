@@ -57,3 +57,23 @@ Set-Location "C:\xampp\htdocs\Forum1"
 - Service commentaires: `src/main/java/javafx/forum1/service/CommentaireService.java`
 - DAO commentaires: `src/main/java/javafx/forum1/dao/CommentaireDao.java`
 
+## Matrice de couverture (regle -> test)
+
+| Service | Regle protegee | Methode service | Test(s) associe(s) | Etat |
+| --- | --- | --- | --- | --- |
+| `PosteService` | Titre obligatoire (non null / non blanc) | `createPoste` | `PosteServiceTest#createPoste_shouldRejectBlankTitre` | Couvert |
+| `PosteService` | Titre longueur max (`TITRE_MAX_LENGTH`) | `createPoste` | `PosteServiceTest#createPoste_shouldRejectTitreTooLong` | Couvert |
+| `PosteService` | Description longueur min (`DESCRIPTION_MIN_LENGTH`) | `createPoste` | `PosteServiceTest#createPoste_shouldRejectDescriptionTooShort` | Couvert |
+| `PosteService` | Normalisation `trim()` avant insertion | `createPoste` | `PosteServiceTest#createPoste_shouldTrimAndInsert` | Couvert |
+| `PosteService` | ID poste valide (`id > 0`) | `updatePoste`, `deletePoste` | `PosteServiceTest#updatePoste_shouldRejectInvalidId`, `PosteServiceTest#deletePoste_shouldRejectInvalidId` | Couvert |
+| `CommentaireService` | Poste cible valide (`posteId > 0`) | `createCommentaire`, `listByPosteId` | `CommentaireServiceTest#createCommentaire_shouldRejectInvalidPosteId`, `CommentaireServiceTest#listByPosteId_shouldRejectInvalidPosteId` | Couvert |
+| `CommentaireService` | Contenu obligatoire (non null / non blanc) | `createCommentaire` | `CommentaireServiceTest#createCommentaire_shouldRejectBlankContenu` | Couvert |
+| `CommentaireService` | Contenu longueur max (`CONTENU_MAX_LENGTH`) | `createCommentaire` | `CommentaireServiceTest#createCommentaire_shouldRejectContenuTooLong` | Couvert |
+| `CommentaireService` | Normalisation `trim()` avant insertion | `createCommentaire` | `CommentaireServiceTest#createCommentaire_shouldTrimAndInsert` | Couvert |
+| `CommentaireService` | ID commentaire valide (`commentaireId > 0`) | `updateCommentaire` | `CommentaireServiceTest#updateCommentaire_shouldRejectInvalidCommentaireId` | Couvert |
+
+Notes rapides:
+
+- Les tests unitaires sont dans `src/test/java/javafx/forum1/service/PosteServiceTest.java` et `src/test/java/javafx/forum1/service/CommentaireServiceTest.java`.
+- Cette matrice est volontairement compacte: elle couvre les regles critiques de validation et la normalisation des saisies.
+

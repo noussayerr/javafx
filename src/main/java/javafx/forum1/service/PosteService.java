@@ -7,7 +7,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class PosteService {
-    private static final int TITRE_MIN_LENGTH = 3;
+    public static final int TITRE_MIN_LENGTH = 3;
+    public static final int TITRE_MAX_LENGTH = 150;
+    public static final int DESCRIPTION_MIN_LENGTH = 10;
+    public static final int DESCRIPTION_MAX_LENGTH = 5000;
 
     private final PosteDao posteDao;
 
@@ -24,26 +27,30 @@ public class PosteService {
     }
 
     public Poste createPoste(String titre, String description) throws SQLException, ValidationException {
-        validate(titre, description);
-        return posteDao.insert(titre.trim(), description.trim());
+        String[] normalized = validateAndNormalize(titre, description);
+        return posteDao.insert(normalized[0], normalized[1]);
     }
 
     public void updatePoste(long id, String titre, String description) throws SQLException, ValidationException {
-        validate(titre, description);
-        boolean updated = posteDao.update(id, titre.trim(), description.trim());
+        validateId(id);
+        String[] normalized = validateAndNormalize(titre, description);
+        boolean updated = posteDao.update(id, normalized[0], normalized[1]);
         if (!updated) {
             throw new SQLException("Le poste a modifier est introuvable.");
         }
     }
 
     public void deletePoste(long id) throws SQLException {
+        if (id <= 0) {
+            throw new SQLException("Selectionnez un poste valide.");
+        }
         boolean deleted = posteDao.deleteById(id);
         if (!deleted) {
             throw new SQLException("Le poste a supprimer est introuvable.");
         }
     }
 
-    private void validate(String titre, String description) throws ValidationException {
+    private String[] validateAndNormalize(String titre, String description) throws ValidationException {
         if (titre == null || titre.isBlank()) {
             throw new ValidationException("Le titre est obligatoire.");
         }
@@ -55,6 +62,24 @@ public class PosteService {
         if (normalizedTitle.length() < TITRE_MIN_LENGTH) {
             throw new ValidationException("Le titre doit contenir au moins " + TITRE_MIN_LENGTH + " caracteres.");
         }
+        if (normalizedTitle.length() > TITRE_MAX_LENGTH) {
+            throw new ValidationException("Le titre ne doit pas depasser " + TITRE_MAX_LENGTH + " caracteres.");
+        }
+
+        String normalizedDescription = description.trim();
+        if (normalizedDescription.length() < DESCRIPTION_MIN_LENGTH) {
+            throw new ValidationException("La description doit contenir au moins " + DESCRIPTION_MIN_LENGTH + " caracteres.");
+        }
+        if (normalizedDescription.length() > DESCRIPTION_MAX_LENGTH) {
+            throw new ValidationException("La description ne doit pas depasser " + DESCRIPTION_MAX_LENGTH + " caracteres.");
+        }
+
+        return new String[]{normalizedTitle, normalizedDescription};
+    }
+
+    private void validateId(long id) throws ValidationException {
+        if (id <= 0) {
+            throw new ValidationException("Selectionnez un poste valide.");
+        }
     }
 }
-

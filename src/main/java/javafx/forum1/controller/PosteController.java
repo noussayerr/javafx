@@ -18,12 +18,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.control.ToggleButton;
 
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 public class PosteController {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -39,6 +42,9 @@ public class PosteController {
 
     @FXML
     private TextArea commentaireArea;
+
+    @FXML
+    private Button ajouterButton;
 
     @FXML
     private Button modifierButton;
@@ -92,6 +98,8 @@ public class PosteController {
 
     @FXML
     public void initialize() {
+        setupInputValidation();
+
         idColumn.setCellValueFactory(cell -> new ReadOnlyLongWrapper(cell.getValue().id()));
         titreColumn.setCellValueFactory(cell -> new ReadOnlyStringWrapper(cell.getValue().titre()));
         descriptionColumn.setCellValueFactory(cell -> new ReadOnlyStringWrapper(cell.getValue().description()));
@@ -116,9 +124,6 @@ public class PosteController {
 
         posteTable.getSelectionModel().selectedItemProperty().addListener((obs, oldPoste, newPoste) -> {
             boolean selected = newPoste != null;
-            modifierButton.setDisable(!selected);
-            supprimerButton.setDisable(!selected);
-            ajouterCommentaireButton.setDisable(!selected);
             if (selected) {
                 titreField.setText(newPoste.titre());
                 descriptionArea.setText(newPoste.description());
@@ -127,29 +132,35 @@ public class PosteController {
                 commentaireItems.clear();
             }
             clearCommentaireForm();
+            updatePosteButtonsState();
+            updateCommentaireButtonsState();
         });
 
         commentaireTable.getSelectionModel().selectedItemProperty().addListener((obs, oldCommentaire, newCommentaire) -> {
-            boolean selected = newCommentaire != null;
-            modifierCommentaireButton.setDisable(!selected);
-            supprimerCommentaireButton.setDisable(!selected);
-            if (selected) {
+            if (newCommentaire != null) {
                 commentaireArea.setText(newCommentaire.contenu());
             }
+            updateCommentaireButtonsState();
         });
 
-        modifierButton.setDisable(true);
-        supprimerButton.setDisable(true);
-        ajouterCommentaireButton.setDisable(true);
-        modifierCommentaireButton.setDisable(true);
-        supprimerCommentaireButton.setDisable(true);
+        titreField.textProperty().addListener((obs, oldValue, newValue) -> updatePosteButtonsState());
+        descriptionArea.textProperty().addListener((obs, oldValue, newValue) -> updatePosteButtonsState());
+
         triCommentairesToggle.setSelected(false);
         triCommentairesToggle.setText("Tri: plus recents");
+        updatePosteButtonsState();
+        updateCommentaireButtonsState();
         refreshPostes();
     }
 
     @FXML
     private void onAjouterClick() {
+        String posteHelp = getPosteInputHelpMessage();
+        if (posteHelp != null) {
+            messageLabel.setText(posteHelp);
+            return;
+        }
+
         try {
             posteService.createPoste(titreField.getText(), descriptionArea.getText());
             refreshPostes();
@@ -165,6 +176,12 @@ public class PosteController {
         Poste selected = posteTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             messageLabel.setText("Selectionnez un poste a modifier.");
+            return;
+        }
+
+        String posteHelp = getPosteInputHelpMessage();
+        if (posteHelp != null) {
+            messageLabel.setText(posteHelp);
             return;
         }
 
@@ -220,6 +237,12 @@ public class PosteController {
             return;
         }
 
+        String commentaireHelp = getCommentaireInputHelpMessage();
+        if (commentaireHelp != null) {
+            messageLabel.setText(commentaireHelp);
+            return;
+        }
+
         try {
             commentaireService.createCommentaire(selectedPoste.id(), commentaireArea.getText());
             refreshCommentaires(selectedPoste.id());
@@ -235,6 +258,12 @@ public class PosteController {
         Commentaire selectedCommentaire = commentaireTable.getSelectionModel().getSelectedItem();
         if (selectedCommentaire == null) {
             messageLabel.setText("Selectionnez un commentaire a modifier.");
+            return;
+        }
+
+        String commentaireHelp = getCommentaireInputHelpMessage();
+        if (commentaireHelp != null) {
+            messageLabel.setText(commentaireHelp);
             return;
         }
 
@@ -325,18 +354,103 @@ public class PosteController {
         titreField.clear();
         descriptionArea.clear();
         posteTable.getSelectionModel().clearSelection();
-        modifierButton.setDisable(true);
-        supprimerButton.setDisable(true);
         commentaireItems.clear();
         clearCommentaireForm();
-        ajouterCommentaireButton.setDisable(true);
+        updatePosteButtonsState();
+        updateCommentaireButtonsState();
     }
 
     private void clearCommentaireForm() {
         commentaireArea.clear();
         commentaireTable.getSelectionModel().clearSelection();
-        modifierCommentaireButton.setDisable(true);
-        supprimerCommentaireButton.setDisable(true);
+        updateCommentaireButtonsState();
     }
+
+    private void setupInputValidation() {
+        limitInputLength(titreField, PosteService.TITRE_MAX_LENGTH);
+        limitInputLength(descriptionArea, PosteService.DESCRIPTION_MAX_LENGTH);
+        limitInputLength(commentaireArea, CommentaireService.CONTENU_MAX_LENGTH);
+    }
+
+    private void limitInputLength(TextInputControl input, int maxLength) {
+        UnaryOperator<TextFormatter.Change> filter = change -> {
+            String nextText = change.getControlNewText();
+            return nextText.length() <= maxLength ? change : null;
+        };
+        input.setTextFormatter(new TextFormatter<>(filter));
+    }
+
+    private void updatePosteButtonsState() {
+        boolean hasPosteSelected = posteTable.getSelectionModel().getSelectedItem() != null;
+
+        // On garde la validation stricte dans le service pour eviter de bloquer le CRUD cote UI.
+        ajouterButton.setDisable(false);
+        modifierButton.setDisable(!hasPosteSelected);
+        supprimerButton.setDisable(!hasPosteSelected);
+    }
+
+    private void updateCommentaireButtonsState() {
+        boolean hasPosteSelected = posteTable.getSelectionModel().getSelectedItem() != null;
+        boolean hasCommentaireSelected = commentaireTable.getSelectionModel().getSelectedItem() != null;
+
+        // Meme logique UX que les postes: ne pas bloquer l'action sur la saisie cote UI.
+        ajouterCommentaireButton.setDisable(!hasPosteSelected);
+        modifierCommentaireButton.setDisable(!hasCommentaireSelected);
+        supprimerCommentaireButton.setDisable(!hasCommentaireSelected);
+    }
+
+    private String getCommentaireInputHelpMessage() {
+        String contenu = commentaireArea.getText();
+        if (contenu == null || contenu.isBlank()) {
+            return "Aide: saisissez un commentaire avant de continuer.";
+        }
+
+        int longueur = contenu.trim().length();
+        if (longueur < CommentaireService.CONTENU_MIN_LENGTH) {
+            return "Aide: le commentaire doit contenir au moins "
+                    + CommentaireService.CONTENU_MIN_LENGTH + " caracteres.";
+        }
+        if (longueur > CommentaireService.CONTENU_MAX_LENGTH) {
+            return "Aide: le commentaire ne doit pas depasser "
+                    + CommentaireService.CONTENU_MAX_LENGTH + " caracteres.";
+        }
+
+        return null;
+    }
+
+    private String getPosteInputHelpMessage() {
+        String titre = titreField.getText();
+        String description = descriptionArea.getText();
+
+        if (titre == null || titre.isBlank()) {
+            return "Aide: saisissez un titre avant de continuer.";
+        }
+        if (description == null || description.isBlank()) {
+            return "Aide: saisissez une description avant de continuer.";
+        }
+
+        int titreLength = titre.trim().length();
+        if (titreLength < PosteService.TITRE_MIN_LENGTH) {
+            return "Aide: le titre doit contenir au moins "
+                    + PosteService.TITRE_MIN_LENGTH + " caracteres.";
+        }
+        if (titreLength > PosteService.TITRE_MAX_LENGTH) {
+            return "Aide: le titre ne doit pas depasser "
+                    + PosteService.TITRE_MAX_LENGTH + " caracteres.";
+        }
+
+        int descriptionLength = description.trim().length();
+        if (descriptionLength < PosteService.DESCRIPTION_MIN_LENGTH) {
+            return "Aide: la description doit contenir au moins "
+                    + PosteService.DESCRIPTION_MIN_LENGTH + " caracteres.";
+        }
+        if (descriptionLength > PosteService.DESCRIPTION_MAX_LENGTH) {
+            return "Aide: la description ne doit pas depasser "
+                    + PosteService.DESCRIPTION_MAX_LENGTH + " caracteres.";
+        }
+
+        return null;
+    }
+
 }
 

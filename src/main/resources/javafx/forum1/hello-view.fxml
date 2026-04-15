@@ -41,7 +41,7 @@
                     <TextArea fx:id="descriptionArea" prefRowCount="3" promptText="Saisir une description" styleClass="field" wrapText="true"/>
 
                     <HBox spacing="8.0">
-                        <Button onAction="#onAjouterClick" styleClass="btn btn-primary" text="Ajouter"/>
+                        <Button fx:id="ajouterButton" onAction="#onAjouterClick" styleClass="btn btn-primary" text="Ajouter"/>
                         <Button fx:id="modifierButton" onAction="#onModifierClick" styleClass="btn btn-secondary" text="Modifier"/>
                         <Button fx:id="supprimerButton" onAction="#onSupprimerClick" styleClass="btn btn-danger" text="Supprimer"/>
                         <Button onAction="#onNouveauClick" styleClass="btn btn-ghost" text="Nouveau"/>

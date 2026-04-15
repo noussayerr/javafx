@@ -7,7 +7,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CommentaireService {
-    private static final int CONTENU_MIN_LENGTH = 2;
+    public static final int CONTENU_MIN_LENGTH = 2;
+    public static final int CONTENU_MAX_LENGTH = 5000;
 
     private final CommentaireDao commentaireDao;
 
@@ -20,6 +21,9 @@ public class CommentaireService {
     }
 
     public List<Commentaire> listByPosteId(long posteId) throws SQLException {
+        if (posteId <= 0) {
+            throw new SQLException("Selectionnez un poste valide.");
+        }
         return commentaireDao.findByPosteId(posteId);
     }
 
@@ -30,6 +34,7 @@ public class CommentaireService {
     }
 
     public void updateCommentaire(long commentaireId, String contenu) throws SQLException, ValidationException {
+        validateCommentaireId(commentaireId);
         validateContenu(contenu);
         boolean updated = commentaireDao.update(commentaireId, contenu.trim());
         if (!updated) {
@@ -38,6 +43,9 @@ public class CommentaireService {
     }
 
     public void deleteCommentaire(long commentaireId) throws SQLException {
+        if (commentaireId <= 0) {
+            throw new SQLException("Selectionnez un commentaire valide.");
+        }
         boolean deleted = commentaireDao.deleteById(commentaireId);
         if (!deleted) {
             throw new SQLException("Le commentaire a supprimer est introuvable.");
@@ -54,8 +62,18 @@ public class CommentaireService {
         if (contenu == null || contenu.isBlank()) {
             throw new ValidationException("Le contenu du commentaire est obligatoire.");
         }
-        if (contenu.trim().length() < CONTENU_MIN_LENGTH) {
+        String normalizedContent = contenu.trim();
+        if (normalizedContent.length() < CONTENU_MIN_LENGTH) {
             throw new ValidationException("Le commentaire doit contenir au moins " + CONTENU_MIN_LENGTH + " caracteres.");
+        }
+        if (normalizedContent.length() > CONTENU_MAX_LENGTH) {
+            throw new ValidationException("Le commentaire ne doit pas depasser " + CONTENU_MAX_LENGTH + " caracteres.");
+        }
+    }
+
+    private void validateCommentaireId(long commentaireId) throws ValidationException {
+        if (commentaireId <= 0) {
+            throw new ValidationException("Selectionnez un commentaire valide.");
         }
     }
 }
