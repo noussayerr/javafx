@@ -18,8 +18,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
@@ -52,6 +54,9 @@ public class PosteController {
 
     @FXML
     private Button supprimerCommentaireButton;
+
+    @FXML
+    private ToggleButton triCommentairesToggle;
 
     @FXML
     private TableView<Poste> posteTable;
@@ -138,6 +143,8 @@ public class PosteController {
         ajouterCommentaireButton.setDisable(true);
         modifierCommentaireButton.setDisable(true);
         supprimerCommentaireButton.setDisable(true);
+        triCommentairesToggle.setSelected(false);
+        triCommentairesToggle.setText("Tri: plus recents");
         refreshPostes();
     }
 
@@ -275,6 +282,16 @@ public class PosteController {
         messageLabel.setText("Saisie du commentaire reinitialisee.");
     }
 
+    @FXML
+    private void onToggleTriCommentairesClick() {
+        applyCommentaireSort();
+        if (triCommentairesToggle.isSelected()) {
+            triCommentairesToggle.setText("Tri: plus anciens");
+        } else {
+            triCommentairesToggle.setText("Tri: plus recents");
+        }
+    }
+
     private void refreshPostes() {
         try {
             posteItems.setAll(posteService.listPostes());
@@ -286,9 +303,22 @@ public class PosteController {
     private void refreshCommentaires(long posteId) {
         try {
             commentaireItems.setAll(commentaireService.listByPosteId(posteId));
+            applyCommentaireSort();
         } catch (SQLException e) {
             messageLabel.setText("Erreur chargement commentaires: " + e.getMessage());
         }
+    }
+
+    private void applyCommentaireSort() {
+        Comparator<Commentaire> comparator = Comparator
+                .comparing(Commentaire::createdAt, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(Commentaire::id);
+
+        if (!triCommentairesToggle.isSelected()) {
+            comparator = comparator.reversed();
+        }
+
+        FXCollections.sort(commentaireItems, comparator);
     }
 
     private void clearForm() {
