@@ -13,7 +13,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="javafx.forum1.controller.PosteController" styleClass="app-root">
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="javafx.forum1.controller.PosteController"
+            styleClass="app-root">
     <top>
         <VBox spacing="6.0" styleClass="header-box">
             <padding>
