@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import java.net.URL?>
+
+<HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.ProfilController">
+    <stylesheets>
+        <URL value="@styles/style.css" />
+    </stylesheets>
+    
+    <!-- Sidebar (Consistent with Dashboard) -->
+    <VBox prefWidth="280.0" styleClass="sidebar" style="-fx-background-color: #1a2e35;">
+        <VBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 30; -fx-border-color: rgba(255,255,255,0.1); -fx-border-width: 0 0 1 0;">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Text fill="#10b981" style="-fx-font-size: 24;" text="⚡" />
+                <Text fill="WHITE" style="-fx-font-size: 20; -fx-font-weight: bold;" text="SportsPanel" />
+            </HBox>
+        </VBox>
+        
+        <VBox spacing="10" style="-fx-padding: 20;">
+            <VBox spacing="5" style="-fx-padding: 20 0 0 0;">
+                <HBox alignment="CENTER_LEFT" spacing="15" styleClass="nav-item" onMouseClicked="#handleBackToDashboardClick">
+
+                    <Text fill="#9ca3af" text="📊" />
+                    <Label styleClass="nav-text" text="Dashboard" />
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="15" styleClass="nav-item, nav-item-active" style="-fx-background-color: #10b981;">
+                    <Text fill="WHITE" text="👤" />
+                    <Label styleClass="nav-text-active" text="My Profile" />
+                </HBox>
+            </VBox>
+        </VBox>
+        
+        <Region VBox.vgrow="ALWAYS" />
+        
+        <VBox style="-fx-padding: 20;">
+            <HBox alignment="CENTER_LEFT" onMouseClicked="#handleLogout" spacing="15" styleClass="nav-item">
+                <Text fill="#ff6b6b" text="🚪" />
+                <Label style="-fx-text-fill: #ff6b6b;" text="Logout" />
+            </HBox>
+        </VBox>
+    </VBox>
+    
+    <!-- Main Content -->
+    <VBox style="-fx-background-color: #f8f9fa;" HBox.hgrow="ALWAYS">
+        <HBox alignment="CENTER_LEFT" style="-fx-padding: 30 40;">
+            <VBox>
+                <Text style="-fx-font-size: 28; -fx-font-weight: bold; -fx-fill: #1a2e35;" text="Profile Settings" />
+                <Text fill="#6b7280" text="Manage your account information" />
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleBackToDashboardAction" style="-fx-background-color: white; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-text-fill: #4b5563; -fx-padding: 8 20; -fx-cursor: hand;" text="Back to Dashboard" />
+
+        </HBox>
+        
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
+            <VBox alignment="TOP_CENTER" spacing="30" style="-fx-padding: 0 40 40 40;">
+                <!-- Profile Form Card -->
+                <VBox maxWidth="600.0" spacing="25" style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 15, 0, 0, 0);">
+                    <VBox alignment="CENTER" spacing="15">
+                        <StackPane style="-fx-background-color: #10b981; -fx-background-radius: 50; -fx-padding: 25; -fx-max-width: 100;">
+                            <Text fill="WHITE" style="-fx-font-size: 40;" text="👤" />
+                        </StackPane>
+                        <Label fx:id="profileHeaderName" style="-fx-font-size: 20; -fx-font-weight: bold;" text="User Name" />
+                    </VBox>
+
+                    <Separator />
+
+                    <VBox spacing="20">
+                        <VBox spacing="8">
+                            <Label style="-fx-font-weight: bold; -fx-text-fill: #374151;" text="Full Name" />
+                            <TextField fx:id="nameField" promptText="Enter your full name" styleClass="text-field" />
+                        </VBox>
+
+                        <VBox spacing="8">
+                            <Label style="-fx-font-weight: bold; -fx-text-fill: #374151;" text="Email Address" />
+                            <TextField fx:id="emailField" promptText="Enter your email" styleClass="text-field" />
+                        </VBox>
+                    </VBox>
+                    
+                    <VBox spacing="15" alignment="CENTER">
+                        <Label fx:id="statusLabel" visible="false" managed="false" />
+                        <Button onAction="#handleUpdateProfile" prefWidth="200.0" styleClass="btn-primary" text="Save Changes" />
+                    </VBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </VBox>
+</HBox>

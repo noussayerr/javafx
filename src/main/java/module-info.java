@@ -2,6 +2,9 @@ module javafx.forum1 {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
+    requires jbcrypt;
+    requires com.google.zxing;
+    requires com.google.zxing.javase;
 
 
 
