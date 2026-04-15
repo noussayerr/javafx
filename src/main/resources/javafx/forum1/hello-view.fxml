@@ -40,5 +40,23 @@
         </columns>
     </TableView>
 
+    <Label style="-fx-font-size: 15px; -fx-font-weight: bold;" text="Commentaires du poste selectionne"/>
+    <TextArea fx:id="commentaireArea" prefRowCount="3" promptText="Saisir un commentaire" wrapText="true"/>
+
+    <HBox spacing="8.0">
+        <Button fx:id="ajouterCommentaireButton" onAction="#onAjouterCommentaireClick" text="Ajouter commentaire"/>
+        <Button fx:id="modifierCommentaireButton" onAction="#onModifierCommentaireClick" text="Modifier commentaire"/>
+        <Button fx:id="supprimerCommentaireButton" onAction="#onSupprimerCommentaireClick" text="Supprimer commentaire"/>
+        <Button onAction="#onNouveauCommentaireClick" text="Nouveau commentaire"/>
+    </HBox>
+
+    <TableView fx:id="commentaireTable" prefHeight="190.0" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="commentaireIdColumn" prefWidth="80.0" text="ID"/>
+            <TableColumn fx:id="commentaireContenuColumn" prefWidth="510.0" text="Contenu"/>
+            <TableColumn fx:id="commentaireDateColumn" prefWidth="160.0" text="Date creation"/>
+        </columns>
+    </TableView>
+
     <Label fx:id="messageLabel" style="-fx-text-fill: #1f4b99;" text="Pret"/>
 </VBox>

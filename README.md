@@ -7,12 +7,21 @@ Cette application JavaFX implemente un module MVC pour l'entite `Poste` avec les
 - `description`
 - `date_creation`
 
+Entite `Commentaire` liee a `Poste`:
+
+- `id`
+- `poste_id`
+- `contenu`
+- `created_at`
+
 Fonctionnalites disponibles:
 
 - Ajouter un poste
 - Afficher la liste des postes
 - Modifier un poste selectionne
 - Supprimer un poste avec confirmation
+- Afficher les commentaires lies au poste selectionne dans un second tableau
+- Ajouter, modifier et supprimer les commentaires du poste selectionne
 - Validations serveur (titre/description obligatoires, longueur minimale du titre)
 
 ## Configuration DB
@@ -45,4 +54,6 @@ Set-Location "C:\xampp\htdocs\Forum1"
 - Controleur: `src/main/java/javafx/forum1/controller/PosteController.java`
 - Service: `src/main/java/javafx/forum1/service/PosteService.java`
 - DAO JDBC: `src/main/java/javafx/forum1/dao/PosteDao.java`
+- Service commentaires: `src/main/java/javafx/forum1/service/CommentaireService.java`
+- DAO commentaires: `src/main/java/javafx/forum1/dao/CommentaireDao.java`
 

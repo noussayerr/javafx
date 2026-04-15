@@ -4,6 +4,7 @@ import javafx.forum1.db.DatabaseConnection;
 import javafx.forum1.model.Poste;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,10 +19,6 @@ import java.util.Optional;
 import java.util.Set;
 
 public class PosteDao {
-    private static final String SQL_COLUMNS = "SELECT COLUMN_NAME, DATA_TYPE, ORDINAL_POSITION, COLUMN_KEY, EXTRA "
-            + "FROM INFORMATION_SCHEMA.COLUMNS "
-            + "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'poste'";
-
     private static final Set<String> TEXT_TYPES = Set.of("varchar", "char", "text", "tinytext", "mediumtext", "longtext");
     private static final Set<String> DATE_TYPES = Set.of("timestamp", "datetime", "date");
     private static final Set<String> NUMERIC_TYPES = Set.of("bigint", "int", "integer", "smallint", "mediumint", "tinyint", "decimal", "numeric");
@@ -158,24 +155,13 @@ public class PosteDao {
     private ColumnMapping resolveColumns(Connection connection) throws SQLException {
         Set<String> cols = new HashSet<>();
         List<ColumnInfo> details = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(SQL_COLUMNS);
-             ResultSet rs = statement.executeQuery()) {
-            while (rs.next()) {
-                String name = rs.getString("COLUMN_NAME");
-                String dataType = rs.getString("DATA_TYPE");
-                int ordinal = rs.getInt("ORDINAL_POSITION");
-                String key = rs.getString("COLUMN_KEY");
-                String extra = rs.getString("EXTRA");
+        DatabaseMetaData metaData = connection.getMetaData();
+        int ordinal = 1;
 
-                cols.add(name.toLowerCase());
-                details.add(new ColumnInfo(
-                        name,
-                        dataType == null ? "" : dataType.toLowerCase(),
-                        ordinal,
-                        key == null ? "" : key.toLowerCase(),
-                        extra == null ? "" : extra.toLowerCase()
-                ));
-            }
+        // `poste` est tente en minuscule puis majuscule selon la configuration du serveur.
+        boolean found = readColumns(metaData, "poste", cols, details, ordinal);
+        if (!found) {
+            readColumns(metaData, "POSTE", cols, details, ordinal);
         }
 
         String id = pickIdColumn(cols, details);
@@ -194,6 +180,61 @@ public class PosteDao {
         }
 
         return new ColumnMapping(id, titre, description, dateCreation);
+    }
+
+    private boolean readColumns(DatabaseMetaData metaData,
+                                String tableName,
+                                Set<String> cols,
+                                List<ColumnInfo> details,
+                                int startOrdinal) throws SQLException {
+        boolean foundAny = false;
+        int ordinal = startOrdinal;
+
+        try (ResultSet rs = metaData.getColumns(null, null, tableName, null)) {
+            while (rs.next()) {
+                foundAny = true;
+
+                String name = rs.getString("COLUMN_NAME");
+                String rawType = rs.getString("TYPE_NAME");
+                String dataType = normalizeType(rawType);
+                String auto = safeGet(rs, "IS_AUTOINCREMENT");
+
+                cols.add(name.toLowerCase());
+                details.add(new ColumnInfo(
+                        name,
+                        dataType.toLowerCase(),
+                        ordinal,
+                        "",
+                        auto.equalsIgnoreCase("YES") ? "auto_increment" : ""
+                ));
+                ordinal++;
+            }
+        }
+
+        // Marque les cles primaires pour conserver l'heuristique de detection de l'id.
+        try (ResultSet pk = metaData.getPrimaryKeys(null, null, tableName)) {
+            while (pk.next()) {
+                String pkName = pk.getString("COLUMN_NAME");
+                for (int i = 0; i < details.size(); i++) {
+                    ColumnInfo c = details.get(i);
+                    if (c.name.equalsIgnoreCase(pkName)) {
+                        details.set(i, new ColumnInfo(c.name, c.dataType, c.ordinal, "pri", c.extra));
+                        break;
+                    }
+                }
+            }
+        }
+
+        return foundAny;
+    }
+
+    private String safeGet(ResultSet rs, String column) {
+        try {
+            String value = rs.getString(column);
+            return value == null ? "" : value;
+        } catch (SQLException ignored) {
+            return "";
+        }
     }
 
     private String pickIdColumn(Set<String> cols, List<ColumnInfo> details) {
@@ -268,13 +309,6 @@ public class PosteDao {
                 .orElse(null);
     }
 
-    private String pickRequired(Set<String> cols, String... candidates) throws SQLException {
-        String value = pickOptional(cols, candidates);
-        if (value == null) {
-            throw new SQLException("Colonne requise introuvable dans `poste`. Candidats: " + String.join(", ", candidates));
-        }
-        return value;
-    }
 
     private String pickOptional(Set<String> cols, String... candidates) {
         for (String candidate : candidates) {
@@ -287,6 +321,15 @@ public class PosteDao {
 
     private String q(String column) {
         return "`" + column + "`";
+    }
+
+    private String normalizeType(String rawType) {
+        if (rawType == null || rawType.isBlank()) {
+            return "";
+        }
+        String lower = rawType.toLowerCase();
+        int paren = lower.indexOf('(');
+        return paren >= 0 ? lower.substring(0, paren) : lower;
     }
 
     private Poste mapPoste(ResultSet rs) throws SQLException {

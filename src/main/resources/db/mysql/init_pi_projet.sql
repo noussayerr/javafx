@@ -44,3 +44,19 @@ CREATE TABLE IF NOT EXISTS `poste` (
 
 CREATE INDEX `idx_poste_date_creation` ON `poste` (`date_creation`);
 
+-- Table des commentaires lies aux postes.
+CREATE TABLE IF NOT EXISTS `commentaires` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `poste_id` BIGINT UNSIGNED NOT NULL,
+  `contenu` TEXT NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (`id`),
+  KEY `idx_commentaires_poste_id` (`poste_id`),
+  CONSTRAINT `fk_commentaires_poste`
+    FOREIGN KEY (`poste_id`) REFERENCES `poste` (`id`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+

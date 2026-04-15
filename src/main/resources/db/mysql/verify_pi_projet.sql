@@ -10,4 +10,8 @@ SHOW CREATE TABLE `poste`;
 
 DESCRIBE `poste`;
 
+SHOW CREATE TABLE `commentaires`;
+
+DESCRIBE `commentaires`;
+
 
