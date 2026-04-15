@@ -8,57 +8,92 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="12.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="javafx.forum1.controller.PosteController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="javafx.forum1.controller.PosteController" styleClass="app-root">
+    <top>
+        <VBox spacing="6.0" styleClass="header-box">
+            <padding>
+                <Insets top="18.0" right="18.0" bottom="12.0" left="18.0"/>
+            </padding>
+            <Label styleClass="app-title" text="Forum1 - Gestion des postes"/>
+            <Label styleClass="app-subtitle" text="Interface dynamique: selectionnez un poste pour voir et gerer ses commentaires"/>
+        </VBox>
+    </top>
 
-    <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Gestion des postes"/>
+    <center>
+        <SplitPane dividerPositions="0.52" orientation="VERTICAL" styleClass="content-split">
+            <items>
+                <VBox spacing="10.0" styleClass="card">
+                    <padding>
+                        <Insets top="14.0" right="14.0" bottom="14.0" left="14.0"/>
+                    </padding>
 
-    <Label text="Titre"/>
-    <TextField fx:id="titreField" promptText="Saisir un titre"/>
+                    <Label styleClass="section-title" text="Postes"/>
 
-    <Label text="Description"/>
-    <TextArea fx:id="descriptionArea" prefRowCount="4" promptText="Saisir une description" wrapText="true"/>
+                    <Label styleClass="field-label" text="Titre"/>
+                    <TextField fx:id="titreField" promptText="Saisir un titre" styleClass="field"/>
 
-    <HBox spacing="8.0">
-        <Button onAction="#onAjouterClick" text="Ajouter"/>
-        <Button fx:id="modifierButton" onAction="#onModifierClick" text="Modifier"/>
-        <Button fx:id="supprimerButton" onAction="#onSupprimerClick" text="Supprimer"/>
-        <Button onAction="#onNouveauClick" text="Nouveau"/>
-    </HBox>
+                    <Label styleClass="field-label" text="Description"/>
+                    <TextArea fx:id="descriptionArea" prefRowCount="3" promptText="Saisir une description" styleClass="field" wrapText="true"/>
 
-    <TableView fx:id="posteTable" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="idColumn" prefWidth="70.0" text="ID"/>
-            <TableColumn fx:id="titreColumn" prefWidth="180.0" text="Titre"/>
-            <TableColumn fx:id="descriptionColumn" prefWidth="320.0" text="Description"/>
-            <TableColumn fx:id="dateCreationColumn" prefWidth="160.0" text="Date creation"/>
-        </columns>
-    </TableView>
+                    <HBox spacing="8.0">
+                        <Button onAction="#onAjouterClick" styleClass="btn btn-primary" text="Ajouter"/>
+                        <Button fx:id="modifierButton" onAction="#onModifierClick" styleClass="btn btn-secondary" text="Modifier"/>
+                        <Button fx:id="supprimerButton" onAction="#onSupprimerClick" styleClass="btn btn-danger" text="Supprimer"/>
+                        <Button onAction="#onNouveauClick" styleClass="btn btn-ghost" text="Nouveau"/>
+                    </HBox>
 
-    <Label style="-fx-font-size: 15px; -fx-font-weight: bold;" text="Commentaires du poste selectionne"/>
-    <ToggleButton fx:id="triCommentairesToggle" onAction="#onToggleTriCommentairesClick" text="Tri: plus recents"/>
-    <TextArea fx:id="commentaireArea" prefRowCount="3" promptText="Saisir un commentaire" wrapText="true"/>
+                    <TableView fx:id="posteTable" styleClass="data-table" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="idColumn" prefWidth="70.0" text="ID"/>
+                            <TableColumn fx:id="titreColumn" prefWidth="210.0" text="Titre"/>
+                            <TableColumn fx:id="descriptionColumn" prefWidth="410.0" text="Description"/>
+                            <TableColumn fx:id="dateCreationColumn" prefWidth="170.0" text="Date creation"/>
+                        </columns>
+                    </TableView>
+                </VBox>
 
-    <HBox spacing="8.0">
-        <Button fx:id="ajouterCommentaireButton" onAction="#onAjouterCommentaireClick" text="Ajouter commentaire"/>
-        <Button fx:id="modifierCommentaireButton" onAction="#onModifierCommentaireClick" text="Modifier commentaire"/>
-        <Button fx:id="supprimerCommentaireButton" onAction="#onSupprimerCommentaireClick" text="Supprimer commentaire"/>
-        <Button onAction="#onNouveauCommentaireClick" text="Nouveau commentaire"/>
-    </HBox>
+                <VBox spacing="10.0" styleClass="card">
+                    <padding>
+                        <Insets top="14.0" right="14.0" bottom="14.0" left="14.0"/>
+                    </padding>
 
-    <TableView fx:id="commentaireTable" prefHeight="190.0" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="commentaireIdColumn" prefWidth="80.0" text="ID"/>
-            <TableColumn fx:id="commentaireContenuColumn" prefWidth="510.0" text="Contenu"/>
-            <TableColumn fx:id="commentaireDateColumn" prefWidth="160.0" text="Date creation"/>
-        </columns>
-    </TableView>
+                    <HBox alignment="CENTER_LEFT" spacing="8.0">
+                        <Label styleClass="section-title" text="Commentaires du poste selectionne"/>
+                        <ToggleButton fx:id="triCommentairesToggle" onAction="#onToggleTriCommentairesClick" styleClass="btn btn-ghost" text="Tri: plus recents"/>
+                    </HBox>
 
-    <Label fx:id="messageLabel" style="-fx-text-fill: #1f4b99;" text="Pret"/>
-</VBox>
+                    <TextArea fx:id="commentaireArea" prefRowCount="3" promptText="Saisir un commentaire" styleClass="field" wrapText="true"/>
+
+                    <HBox spacing="8.0">
+                        <Button fx:id="ajouterCommentaireButton" onAction="#onAjouterCommentaireClick" styleClass="btn btn-primary" text="Ajouter commentaire"/>
+                        <Button fx:id="modifierCommentaireButton" onAction="#onModifierCommentaireClick" styleClass="btn btn-secondary" text="Modifier commentaire"/>
+                        <Button fx:id="supprimerCommentaireButton" onAction="#onSupprimerCommentaireClick" styleClass="btn btn-danger" text="Supprimer commentaire"/>
+                        <Button onAction="#onNouveauCommentaireClick" styleClass="btn btn-ghost" text="Nouveau commentaire"/>
+                    </HBox>
+
+                    <TableView fx:id="commentaireTable" styleClass="data-table" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="commentaireIdColumn" prefWidth="85.0" text="ID"/>
+                            <TableColumn fx:id="commentaireContenuColumn" prefWidth="570.0" text="Contenu"/>
+                            <TableColumn fx:id="commentaireDateColumn" prefWidth="190.0" text="Date creation"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </items>
+        </SplitPane>
+    </center>
+
+    <bottom>
+        <HBox styleClass="status-bar">
+            <padding>
+                <Insets top="10.0" right="18.0" bottom="12.0" left="18.0"/>
+            </padding>
+            <Label fx:id="messageLabel" styleClass="status-label" text="Pret"/>
+        </HBox>
+    </bottom>
+</BorderPane>
