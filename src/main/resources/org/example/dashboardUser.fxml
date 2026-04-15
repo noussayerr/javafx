@@ -169,7 +169,8 @@
                             </VBox>
                         </HBox>
                         <FlowPane hgap="15" style="-fx-padding: 0 25 25 25;" vgap="15">
-                            <Button style="-fx-background-color: white; -fx-border-color: #10b981; -fx-border-radius: 8; -fx-text-fill: #10b981; -fx-padding: 12; -fx-pref-width: 180;">
+                            <Button onAction="#handleProfileAction" style="-fx-background-color: white; -fx-border-color: #10b981; -fx-border-radius: 8; -fx-text-fill: #10b981; -fx-padding: 12; -fx-pref-width: 180;">
+
                                 <graphic>
                                     <VBox alignment="CENTER" spacing="5">
                                         <Text fill="#10b981" style="-fx-font-size: 18;" text="👤" />
